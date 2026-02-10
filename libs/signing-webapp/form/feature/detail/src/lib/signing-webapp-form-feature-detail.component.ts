@@ -35,8 +35,8 @@ export class SigningWebappFormFeatureDetailComponent {
 
   constructor() {
     effect(() => {
-      console.log(this.signingModel());
-      console.log(this.signingForm().valid());
+      console.debug('form changed: ', this.signingModel());
+      console.debug('form valid: ', this.signingForm().valid());
     });
   }
 }

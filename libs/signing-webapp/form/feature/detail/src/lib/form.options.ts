@@ -3,6 +3,7 @@ import {
   fileMimeTypeValidator,
   fileSizeValidator,
   pemCertificateValidator,
+  pemKeyValidator,
 } from '@c2pa-mcnl/shared/utils/validators';
 import { MIME_TYPES } from '@c2pa-mcnl/shared/utils/constants';
 import { FormData } from './form.model';
@@ -49,6 +50,7 @@ export const FormOptions: SchemaOrSchemaFn<FormData> = (schemaPath) => {
     maxSize: CERTIFICATE_MAX_SIZE,
   });
   fileMimeTypeValidator(schemaPath.leafPrivateKey, CERTIFICATE_MIME_TYPES);
+  pemKeyValidator(schemaPath.leafPrivateKey);
 
   /**
    * `intermediateCertificate` Validations
