@@ -11,6 +11,8 @@ import {
   DID_MAX_SIZE,
   DID_MIME_TYPES,
   FormOptions,
+  KEY_MAX_SIZE,
+  KEY_MIME_TYPES,
 } from './form.options';
 
 @Component({
@@ -25,6 +27,8 @@ export class SigningWebappFormFeatureDetailComponent {
 
   certificateMimeTypes = CERTIFICATE_MIME_TYPES;
   certificateMaxSize = CERTIFICATE_MAX_SIZE;
+  keyMimeTypes = KEY_MIME_TYPES;
+  keyMaxSize = KEY_MAX_SIZE;
   didMimeTypes = DID_MIME_TYPES;
   didMaxSize = DID_MAX_SIZE;
   assetMimeTypes = ASSET_MIME_TYPES;

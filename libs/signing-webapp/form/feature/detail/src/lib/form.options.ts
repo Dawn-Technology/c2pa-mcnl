@@ -13,6 +13,13 @@ export const CERTIFICATE_MIME_TYPES = [
   MIME_TYPES.APPLICATION_X_PEM_FILE,
 ];
 
+export const KEY_MIME_TYPES = [
+  ...CERTIFICATE_MIME_TYPES,
+  MIME_TYPES.APPLICATION_PKCS8,
+  MIME_TYPES.APPLICATION_X_PKCS8,
+  MIME_TYPES.TEXT_PLAIN,
+];
+
 export const DID_MIME_TYPES = [
   MIME_TYPES.APPLICATION_JSON,
   MIME_TYPES.APPLICATION_LD_JSON,
@@ -28,6 +35,7 @@ export const ASSET_MIME_TYPES = [
 ];
 
 export const CERTIFICATE_MAX_SIZE = 5 * 1024 * 1024;
+export const KEY_MAX_SIZE = 5 * 1024 * 1024;
 export const DID_MAX_SIZE = 2 * 1024 * 1024;
 export const ASSET_MAX_SIZE = 1024 * 1024 * 1024;
 
@@ -49,7 +57,7 @@ export const FormOptions: SchemaOrSchemaFn<FormData> = (schemaPath) => {
   fileSizeValidator(schemaPath.leafPrivateKey, {
     maxSize: CERTIFICATE_MAX_SIZE,
   });
-  fileMimeTypeValidator(schemaPath.leafPrivateKey, CERTIFICATE_MIME_TYPES);
+  fileMimeTypeValidator(schemaPath.leafPrivateKey, KEY_MIME_TYPES);
   pemKeyValidator(schemaPath.leafPrivateKey);
 
   /**

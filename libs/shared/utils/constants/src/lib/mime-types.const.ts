@@ -9,4 +9,7 @@ export const MIME_TYPES = {
   APPLICATION_LD_JSON: 'application/ld+json',
   APPLICATION_X_X509_CA_CERT: 'application/x-x509-ca-cert',
   APPLICATION_X_PEM_FILE: 'application/x-pem-file',
+  APPLICATION_PKCS8: 'application/pkcs8',
+  APPLICATION_X_PKCS8: 'application/x-pkcs8',
+  TEXT_PLAIN: 'text/plain',
 };

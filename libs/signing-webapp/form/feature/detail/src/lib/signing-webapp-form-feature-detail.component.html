@@ -14,8 +14,8 @@
     label="Step 1.2: Upload the Leaf private key"
     description="This is the private key corresponding to your Leaf certificate."
     [required]="true"
-    [acceptedMimeTypes]="certificateMimeTypes"
-    [maxFileSizeBytes]="certificateMaxSize"
+    [acceptedMimeTypes]="keyMimeTypes"
+    [maxFileSizeBytes]="keyMaxSize"
     [control]="signingForm.leafPrivateKey"
   />
 
