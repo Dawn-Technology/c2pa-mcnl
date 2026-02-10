@@ -181,7 +181,7 @@ export async function generateLeafCertificate(
       namedCurve: 'P-256',
     },
     true,
-    ['sign', 'verify'],
+    ['sign'],
   );
 
   const subjectName = formatSubjectName(subject);
