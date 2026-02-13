@@ -30,18 +30,39 @@
   />
 
   <lib-signing-webapp-form-ui-upload-file-input
-    inputId="did-upload"
-    label="Step 2: Upload the DID document"
-    description="This document contains your decentralized identifier information."
-    [acceptedMimeTypes]="didMimeTypes"
-    [maxFileSizeBytes]="didMaxSize"
-    [control]="signingForm.didFile"
+    inputId="vc-key-upload"
+    label="Step 2.1: Upload your Verifiable Credential's private key"
+    description="This is the private key corresponding to your Verifiable Credential's DID."
+    [acceptedMimeTypes]="verifiableCredentialPrivateKeyMimeTypes"
+    [maxFileSizeBytes]="verifiableCredentialPrivateKeyMaxSize"
+    [control]="signingForm.verifiableCredentialPrivateKey"
   />
+
+  <div class="flex flex-col gap-5 text-center">
+    <label for="vc-issuer" class="text-xl font-bold"
+      >Stap 2.2: Select your employer</label
+    >
+    <p class="text-xs text-gray-700">
+      This is the organization that <span class="italic">issued</span> your
+      Verifiable Credential and can verify its authenticity.
+    </p>
+    <select
+      type="text"
+      id="vc-issuer"
+      class="text-center p-2"
+      [formField]="signingForm.verifiableCredentialIssuer"
+    >
+      <option value="" selected>--- Maak een keuze ---</option>
+      @for (issuer of verifiableCredentialIssuers; track $index) {
+        <option [value]="issuer.did">{{ issuer.name }}</option>
+      }
+    </select>
+  </div>
 
   <lib-signing-webapp-form-ui-upload-file-input
     inputId="asset-upload"
     label="Step 3: Upload the asset"
-    description="This certificate links your Leaf certificate to a trusted root."
+    description="This is the file you want to sign."
     [required]="true"
     [acceptedMimeTypes]="assetMimeTypes"
     [maxFileSizeBytes]="assetMaxSize"

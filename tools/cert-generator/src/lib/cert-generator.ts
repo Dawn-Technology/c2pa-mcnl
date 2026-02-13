@@ -8,6 +8,7 @@ import {
   X509Certificate,
   X509CertificateGenerator,
 } from '@peculiar/x509';
+import { extractBase64FromPem } from '@c2pa-mcnl/shared/utils/helpers';
 
 export interface CertificateSubject {
   country?: string;
@@ -299,10 +300,7 @@ async function exportPrivateKeyPem(key: CryptoKey): Promise<string> {
  * Import private key from PEM format
  */
 export async function importPrivateKeyFromPem(pem: string): Promise<CryptoKey> {
-  const base64 = pem
-    .replace(/-----BEGIN PRIVATE KEY-----/, '')
-    .replace(/-----END PRIVATE KEY-----/, '')
-    .replace(/\s/g, '');
+  const base64 = extractBase64FromPem(pem);
 
   const der = Buffer.from(base64, 'base64');
 

@@ -1,5 +1,6 @@
 import { SchemaPath, validateAsync } from '@angular/forms/signals';
 import { resource } from '@angular/core';
+import { extractBase64FromPem } from '@c2pa-mcnl/shared/utils/helpers';
 
 export function pemKeyValidator(field: SchemaPath<unknown>) {
   validateAsync(field, {
@@ -17,10 +18,7 @@ export function pemKeyValidator(field: SchemaPath<unknown>) {
           }
 
           try {
-            const base64 = (await params.text())
-              .replace(/-----BEGIN PRIVATE KEY-----/, '')
-              .replace(/-----END PRIVATE KEY-----/, '')
-              .replace(/\s/g, '');
+            const base64 = extractBase64FromPem(await params.text());
 
             const der = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 
