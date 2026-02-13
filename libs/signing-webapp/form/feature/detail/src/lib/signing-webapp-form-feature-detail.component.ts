@@ -148,7 +148,7 @@ export class SigningWebappFormFeatureDetailComponent {
               id: vcIssuer.site,
               name: vcIssuer.name,
             },
-            verifiedAt: '2024-07-26T22:29:57Z',
+            verifiedAt: new Date().toISOString(),
           },
         ],
         c2paAsset: {
