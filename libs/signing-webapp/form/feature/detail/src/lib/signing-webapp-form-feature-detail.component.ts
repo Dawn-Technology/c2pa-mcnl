@@ -98,7 +98,7 @@ export class SigningWebappFormFeatureDetailComponent {
     // Build COSE_Sign1: tag 18 + [protected, unprotected, payload, signature]
     const coseSign1Array = [
       protectedHeaderBytes,
-      Object.fromEntries(unprotectedHeader),
+      unprotectedHeader,
       payload,
       new Uint8Array(signature),
     ];
