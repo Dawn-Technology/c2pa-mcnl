@@ -14,7 +14,7 @@ import {
   VC_ISSUERS,
 } from './form.options';
 import { extractBase64FromPem } from '@c2pa-mcnl/shared/utils/helpers';
-import * as cose from 'cosette';
+import * as cbor from 'cbor-x';
 import { addYears } from 'date-fns';
 
 @Component({
@@ -58,6 +58,54 @@ export class SigningWebappFormFeatureDetailComponent {
     });
   }
 
+  private async generateCoseSign1(
+    payload: Uint8Array,
+    privateKey: CryptoKey,
+    kid: string,
+  ): Promise<Uint8Array> {
+    // COSE_Sign1 structure: [protected, unprotected, payload, signature]
+
+    // Protected header: { alg: ES256 (-7) }
+    const protectedHeader = new Map<number, number>();
+    protectedHeader.set(1, -7); // alg: ES256
+    const protectedHeaderBytes = cbor.encode(
+      Object.fromEntries(protectedHeader),
+    );
+
+    // Unprotected header: { kid }
+    const unprotectedHeader = new Map<number, string>();
+    unprotectedHeader.set(4, kid); // kid
+
+    // Sig_structure for signing: ["Signature1", protected, external_aad, payload]
+    const sigStructure = [
+      'Signature1',
+      protectedHeaderBytes,
+      new Uint8Array(0), // external_aad (empty)
+      payload,
+    ];
+    const toBeSigned = cbor.encode(sigStructure);
+
+    // Sign with ECDSA
+    const signature = await crypto.subtle.sign(
+      { name: 'ECDSA', hash: 'SHA-256' },
+      privateKey,
+      toBeSigned,
+    );
+
+    // Build COSE_Sign1: tag 18 + [protected, unprotected, payload, signature]
+    const coseSign1Array = [
+      protectedHeaderBytes,
+      Object.fromEntries(unprotectedHeader),
+      payload,
+      new Uint8Array(signature),
+    ];
+
+    // Encode with CBOR tag 18 (COSE_Sign1)
+    return new cbor.Encoder({ tagUint8Array: false }).encode(
+      new cbor.Tag(coseSign1Array, 18),
+    );
+  }
+
   private async generateVerifiableCredential(): Promise<void> {
     const vcIssuer = this.verifiableCredentialIssuers.find(
       (i) => i.did === this.signingModel().verifiableCredentialIssuer,
@@ -80,13 +128,6 @@ export class SigningWebappFormFeatureDetailComponent {
       true,
       ['sign'],
     );
-
-    const headers = {
-      p: { alg: 'ES256' },
-      u: { kid: vcIssuer.did },
-    };
-
-    const signer = { key: privateKey };
 
     const vcJson = {
       '@context': [
@@ -116,13 +157,14 @@ export class SigningWebappFormFeatureDetailComponent {
       },
     };
 
-    const coseSign1 = await cose.sign.create(
-      headers,
-      JSON.stringify(vcJson),
-      signer,
+    const vcPayload = new TextEncoder().encode(JSON.stringify(vcJson));
+    const coseSign1 = await this.generateCoseSign1(
+      vcPayload,
+      privateKey,
+      vcIssuer.did,
     );
 
-    console.debug('Generated VC JSON:', JSON.stringify(vcJson));
+    console.debug('Generated VC JSON:', vcJson);
     console.log('Generated VC (COSE_Sign1):', coseSign1);
   }
 }

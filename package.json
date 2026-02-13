@@ -14,8 +14,8 @@
     "@nx/cypress": "22.4.5",
     "@nx/jest": "22.4.5",
     "@peculiar/x509": "^1.14.3",
+    "cbor-x": "^1.6.0",
     "commander": "^14.0.3",
-    "cosette": "^0.8.0",
     "date-fns": "^4.1.0",
     "rxjs": "~7.8.0"
   },
