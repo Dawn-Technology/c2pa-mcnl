@@ -41,14 +41,16 @@ export class SigningWebappFormFeatureDetailComponent {
   signingForm = signalForm(this.signingModel, FormOptions);
 
   constructor() {
-    effect(async () => {
+    effect(() => {
       if (
         this.signingForm.verifiableCredentialIssuer().dirty() &&
         this.signingForm.verifiableCredentialIssuer().valid() &&
         this.signingForm.verifiableCredentialPrivateKey().dirty() &&
         this.signingForm.verifiableCredentialPrivateKey().valid()
       ) {
-        this.generateVerifiableCredential();
+        void this.generateVerifiableCredential().catch((error) => {
+          console.error('Failed to generate verifiable credential', error);
+        });
       }
     });
 
@@ -73,8 +75,9 @@ export class SigningWebappFormFeatureDetailComponent {
     );
 
     // Unprotected header: { kid }
-    const unprotectedHeader = new Map<number, string>();
-    unprotectedHeader.set(4, kid); // kid
+    const kidBytes = new TextEncoder().encode(kid);
+    const unprotectedHeader = new Map<number, Uint8Array>();
+    unprotectedHeader.set(4, kidBytes); // kid as CBOR bstr
 
     // Sig_structure for signing: ["Signature1", protected, external_aad, payload]
     const sigStructure = [
@@ -125,7 +128,7 @@ export class SigningWebappFormFeatureDetailComponent {
       'pkcs8',
       derBytes,
       { name: 'ECDSA', namedCurve: 'P-256' },
-      true,
+      false,
       ['sign'],
     );
 

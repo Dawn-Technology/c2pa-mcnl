@@ -40,14 +40,13 @@
 
   <div class="flex flex-col gap-5 text-center">
     <label for="vc-issuer" class="text-xl font-bold"
-      >Stap 2.2: Select your employer</label
+      >Step 2.2: Select your employer</label
     >
     <p class="text-xs text-gray-700">
       This is the organization that <span class="italic">issued</span> your
       Verifiable Credential and can verify its authenticity.
     </p>
     <select
-      type="text"
       id="vc-issuer"
       class="text-center p-2"
       [formField]="signingForm.verifiableCredentialIssuer"
