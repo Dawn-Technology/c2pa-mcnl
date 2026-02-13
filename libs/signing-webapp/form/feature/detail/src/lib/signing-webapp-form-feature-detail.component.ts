@@ -140,7 +140,7 @@ export class SigningWebappFormFeatureDetailComponent {
       issuanceDate: new Date().toISOString(),
       expirationDate: addYears(new Date(), 1).toISOString(),
       credentialSubject: {
-        id: `${vcIssuer.did}:user:${Math.floor(Math.random() * 100) + 1}`,
+        id: `${vcIssuer.did}:user:${crypto.randomUUID()}`,
         verifiedIdentities: [
           {
             type: 'cawg.affiliation',
