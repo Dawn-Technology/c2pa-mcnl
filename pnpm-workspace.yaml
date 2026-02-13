@@ -8,4 +8,4 @@ onlyBuiltDependencies:
   - lmdb
   - msgpackr-extract
   - nx
-  - cbor-extract
+  - unrs-resolver
