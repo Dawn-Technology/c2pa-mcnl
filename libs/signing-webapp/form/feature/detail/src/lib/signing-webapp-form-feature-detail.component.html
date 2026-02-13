@@ -67,4 +67,13 @@
     [maxFileSizeBytes]="assetMaxSize"
     [control]="signingForm.assetFile"
   />
+
+  <button
+    type="button"
+    (click)="createAndSignManifest()"
+    [disabled]="signingForm().invalid()"
+    class="bg-blue-500 text-white py-2 px-5"
+  >
+    Sign
+  </button>
 </form>
