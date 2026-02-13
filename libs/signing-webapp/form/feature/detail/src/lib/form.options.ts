@@ -6,7 +6,7 @@ import {
   pemKeyValidator,
 } from '@c2pa-mcnl/shared/utils/validators';
 import { MIME_TYPES } from '@c2pa-mcnl/shared/utils/constants';
-import { FormData } from './form.model';
+import { FormData, VerifiableCredentialIssuer } from './form.model';
 
 export const CERTIFICATE_MIME_TYPES = [
   MIME_TYPES.APPLICATION_X_X509_CA_CERT,
@@ -20,11 +20,6 @@ export const KEY_MIME_TYPES = [
   MIME_TYPES.TEXT_PLAIN,
 ];
 
-export const DID_MIME_TYPES = [
-  MIME_TYPES.APPLICATION_JSON,
-  MIME_TYPES.APPLICATION_LD_JSON,
-];
-
 export const ASSET_MIME_TYPES = [
   MIME_TYPES.IMAGE_JPEG,
   MIME_TYPES.IMAGE_PNG,
@@ -36,8 +31,25 @@ export const ASSET_MIME_TYPES = [
 
 export const CERTIFICATE_MAX_SIZE = 5 * 1024 * 1024;
 export const KEY_MAX_SIZE = 5 * 1024 * 1024;
-export const DID_MAX_SIZE = 2 * 1024 * 1024;
 export const ASSET_MAX_SIZE = 1024 * 1024 * 1024;
+
+export const VC_ISSUERS: VerifiableCredentialIssuer[] = [
+  {
+    name: 'VPRO',
+    did: 'did:web:verifieermij.nl:vpro',
+    site: 'https://verifieermij.nl',
+  },
+  {
+    name: 'Media Campus Nederland',
+    did: 'did:web:verifieermij.nl:mcnl',
+    site: 'https://verifieermij.nl',
+  },
+  {
+    name: 'Dawn Technology',
+    did: 'did:web:verifieermij.nl:dawn-technology',
+    site: 'https://verifieermij.nl',
+  },
+];
 
 export const FormOptions: SchemaOrSchemaFn<FormData> = (schemaPath) => {
   /**
@@ -55,7 +67,7 @@ export const FormOptions: SchemaOrSchemaFn<FormData> = (schemaPath) => {
    */
   required(schemaPath.leafPrivateKey);
   fileSizeValidator(schemaPath.leafPrivateKey, {
-    maxSize: CERTIFICATE_MAX_SIZE,
+    maxSize: KEY_MAX_SIZE,
   });
   fileMimeTypeValidator(schemaPath.leafPrivateKey, KEY_MIME_TYPES);
   pemKeyValidator(schemaPath.leafPrivateKey);
@@ -74,13 +86,22 @@ export const FormOptions: SchemaOrSchemaFn<FormData> = (schemaPath) => {
   );
 
   /**
-   * `didFile` Validations
+   * `verifiableCredentialIssuer` Validations
    */
-  required(schemaPath.didFile);
-  fileSizeValidator(schemaPath.didFile, {
-    maxSize: DID_MAX_SIZE,
+  required(schemaPath.verifiableCredentialIssuer);
+
+  /**
+   * `verifiableCredentialPrivateKey` Validations
+   */
+  required(schemaPath.verifiableCredentialPrivateKey);
+  fileSizeValidator(schemaPath.verifiableCredentialPrivateKey, {
+    maxSize: KEY_MAX_SIZE,
   });
-  fileMimeTypeValidator(schemaPath.didFile, DID_MIME_TYPES);
+  fileMimeTypeValidator(
+    schemaPath.verifiableCredentialPrivateKey,
+    KEY_MIME_TYPES,
+  );
+  pemKeyValidator(schemaPath.verifiableCredentialPrivateKey);
 
   /**
    * `assetFile` Validations
