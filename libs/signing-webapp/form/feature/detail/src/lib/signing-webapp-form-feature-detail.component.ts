@@ -70,9 +70,7 @@ export class SigningWebappFormFeatureDetailComponent {
     // Protected header: { alg: ES256 (-7) }
     const protectedHeader = new Map<number, number>();
     protectedHeader.set(1, -7); // alg: ES256
-    const protectedHeaderBytes = cbor.encode(
-      Object.fromEntries(protectedHeader),
-    );
+    const protectedHeaderBytes = cbor.encode(protectedHeader);
 
     // Unprotected header: { kid }
     const kidBytes = new TextEncoder().encode(kid);
