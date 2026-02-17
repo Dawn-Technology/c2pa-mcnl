@@ -36,7 +36,10 @@
       "@c2pa-mcnl/shared/utils/constants": [
         "libs/shared/utils/constants/src/index.ts"
       ],
-      "@c2pa-mcnl/shared/utils/cli": ["libs/shared/utils/cli/src/index.ts"]
+      "@c2pa-mcnl/shared/utils/cli": ["libs/shared/utils/cli/src/index.ts"],
+      "@c2pa-mcnl/signing-webapp/form/ui/form-group": [
+        "libs/signing-webapp/form/ui/form-group/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

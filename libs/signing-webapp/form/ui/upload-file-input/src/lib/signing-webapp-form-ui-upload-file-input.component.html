@@ -1,20 +1,14 @@
-<div class="flex flex-col items-center gap-5">
-  <div class="flex flex-col items-center gap-0">
-    <label [for]="inputId()" class="text-xl font-bold">
-      {{ label() }}
-      @if (required()) {
-        <span class="text-red-600">*</span>
-      }
-    </label>
-    @if (description()) {
-      <p class="text-xs text-gray-700">{{ description() }}</p>
-    }
-  </div>
-
+<lib-signing-webapp-form-ui-form-group
+  [inputId]="inputId()"
+  [label]="label()"
+  [description]="description()"
+  [help]="help()"
+  [required]="required()"
+>
   <lib-shared-ui-file-upload
     [fieldId]="inputId()"
     [acceptedMimeTypes]="acceptedMimeTypes()"
     [maxFileSizeBytes]="maxFileSizeBytes()"
     [formField]="control()"
   />
-</div>
+</lib-signing-webapp-form-ui-form-group>

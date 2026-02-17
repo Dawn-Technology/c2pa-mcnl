@@ -1,9 +1,12 @@
-<div class="min-h-screen bg-gray-100">
-  <div class="container mx-auto py-10">
-    <h1 class="text-3xl font-bold text-gray-900 mb-12 text-center">
-      {{title}}
-    </h1>
-
-    <router-outlet></router-outlet>
+<header class="fixed top-0 left-0 w-full z-50 bg-white shadow py-4" #header>
+  <div class="container mx-auto flex flex-col items-center justify-between">
+    <h1 class="text-2xl font-bold text-gray-900">{{title}}</h1>
   </div>
+</header>
+
+<div
+  class="min-h-screen bg-gray-100"
+  [ngStyle]="{'padding-top': header.offsetHeight + 25 + 'px'}"
+>
+  <router-outlet></router-outlet>
 </div>

@@ -36,7 +36,10 @@
       "cache": true,
       "inputs": ["default", "^production"]
     },
-    "@nx/vitest:test": { "cache": true, "inputs": ["default", "^production"] },
+    "@nx/vitest:test": {
+      "cache": true,
+      "inputs": ["default", "^production"]
+    },
     "@nx/js:tsc": {
       "cache": true,
       "dependsOn": ["^build"],
@@ -58,8 +61,18 @@
         "ciTargetName": "e2e-ci"
       }
     },
-    { "plugin": "@nx/eslint/plugin", "options": { "targetName": "lint" } },
-    { "plugin": "@nx/jest/plugin", "options": { "targetName": "test" } },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nx/jest/plugin",
+      "options": {
+        "targetName": "test"
+      }
+    },
     {
       "plugin": "@nx/vitest",
       "options": {
@@ -80,8 +93,12 @@
       "linter": "eslint",
       "unitTestRunner": "vitest-analog"
     },
-    "@nx/angular:component": { "style": "css" }
+    "@nx/angular:component": {
+      "style": "css"
+    }
   },
-  "tui": { "enabled": false },
+  "tui": {
+    "enabled": false
+  },
   "nxCloudId": "698645eba554a970c7d8da44"
 }

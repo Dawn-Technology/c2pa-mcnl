@@ -13,11 +13,18 @@ import {
   KEY_MIME_TYPES,
   VC_ISSUERS,
 } from './form.options';
+import { NgStyle } from '@angular/common';
+import { SigningWebappFormUiFormGroup } from '@c2pa-mcnl/signing-webapp/form/ui/form-group';
 
 @Component({
   standalone: true,
   selector: 'lib-signing-webapp-feature-signing-form',
-  imports: [SigningWebappFormUiUploadFileInputComponent, FormField],
+  imports: [
+    SigningWebappFormUiUploadFileInputComponent,
+    FormField,
+    NgStyle,
+    SigningWebappFormUiFormGroup,
+  ],
   templateUrl: './signing-webapp-form-feature-detail.component.html',
   providers: [SigningWebappFormFeatureDetailService],
 })

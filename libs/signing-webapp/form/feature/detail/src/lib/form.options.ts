@@ -31,7 +31,7 @@ export const ASSET_MIME_TYPES = [
 
 export const CERTIFICATE_MAX_SIZE = 5 * 1024 * 1024;
 export const KEY_MAX_SIZE = 5 * 1024 * 1024;
-export const ASSET_MAX_SIZE = 1024 * 1024 * 1024;
+export const ASSET_MAX_SIZE = 1024 * 1024 * 1024 * 10;
 
 export const VC_ISSUERS: VerifiableCredentialIssuer[] = [
   {

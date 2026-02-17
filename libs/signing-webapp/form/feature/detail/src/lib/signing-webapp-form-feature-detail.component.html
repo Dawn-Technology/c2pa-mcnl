@@ -1,79 +1,105 @@
-<form class="flex flex-col items-center gap-10">
-  <lib-signing-webapp-form-ui-upload-file-input
-    inputId="leaf-certificate-upload"
-    label="Step 1.1: Upload the Leaf certificate"
-    description="This is your end-entity certificate used for signing."
-    [required]="true"
-    [acceptedMimeTypes]="certificateMimeTypes"
-    [maxFileSizeBytes]="certificateMaxSize"
-    [control]="signingForm.leafCertificate"
-  />
-
-  <lib-signing-webapp-form-ui-upload-file-input
-    inputId="leaf-private-key-upload"
-    label="Step 1.2: Upload the Leaf private key"
-    description="This is the private key corresponding to your Leaf certificate."
-    [required]="true"
-    [acceptedMimeTypes]="keyMimeTypes"
-    [maxFileSizeBytes]="keyMaxSize"
-    [control]="signingForm.leafPrivateKey"
-  />
-
-  <lib-signing-webapp-form-ui-upload-file-input
-    inputId="intermediate-certificate-upload"
-    label="Step 1.3: Upload the Intermediate certificate"
-    description="This certificate links your Leaf certificate to a trusted root."
-    [required]="true"
-    [acceptedMimeTypes]="certificateMimeTypes"
-    [maxFileSizeBytes]="certificateMaxSize"
-    [control]="signingForm.intermediateCertificate"
-  />
-
-  <lib-signing-webapp-form-ui-upload-file-input
-    inputId="vc-key-upload"
-    label="Step 2.1: Upload your Verifiable Credential's private key"
-    description="This is the private key corresponding to your Verifiable Credential's DID."
-    [acceptedMimeTypes]="verifiableCredentialPrivateKeyMimeTypes"
-    [maxFileSizeBytes]="verifiableCredentialPrivateKeyMaxSize"
-    [control]="signingForm.verifiableCredentialPrivateKey"
-  />
-
-  <div class="flex flex-col gap-5 text-center">
-    <label for="vc-issuer" class="text-xl font-bold"
-      >Step 2.2: Select your employer</label
-    >
-    <p class="text-xs text-gray-700">
-      This is the organization that <span class="italic">issued</span> your
-      Verifiable Credential and can verify its authenticity.
-    </p>
-    <select
-      id="vc-issuer"
-      class="text-center p-2"
-      [formField]="signingForm.verifiableCredentialIssuer"
-    >
-      <option value="" selected>--- Select an option ---</option>
-      @for (issuer of verifiableCredentialIssuers; track $index) {
-        <option [value]="issuer.did">{{ issuer.name }}</option>
-      }
-    </select>
-  </div>
-
-  <lib-signing-webapp-form-ui-upload-file-input
-    inputId="asset-upload"
-    label="Step 3: Upload the asset"
-    description="This is the file you want to sign."
-    [required]="true"
-    [acceptedMimeTypes]="assetMimeTypes"
-    [maxFileSizeBytes]="assetMaxSize"
-    [control]="signingForm.assetFile"
-  />
-
-  <button
-    type="button"
-    (click)="createAndSignManifest()"
-    [disabled]="signingForm().invalid()"
-    class="bg-blue-500 text-white py-2 px-5"
+<div class="w-full mx-auto px-10 lg:w-1/2 xl:w-1/3">
+  <form
+    class="flex flex-col items-center gap-10"
+    [ngStyle]="{ 'padding-bottom': footer.offsetHeight + 25 + 'px' }"
   >
-    Sign
-  </button>
-</form>
+    <lib-signing-webapp-form-ui-upload-file-input
+      inputId="leaf-certificate-upload"
+      label="Leaf Certificate (X.509)"
+      description="Upload the public certificate file (e.g., .pem, .cer) that contains your signing identity. This certificate will be used to cryptographically sign the manifest."
+      help="⚠️ This manual upload is for Proof-of-Concept testing only. In a
+        real-world C2PA implementation, signing credentials are never handled manually;
+        they are securely managed and accessed via a Hardware Security Module
+        (HSM) or Key Management Service (KMS)."
+      [required]="true"
+      [acceptedMimeTypes]="certificateMimeTypes"
+      [maxFileSizeBytes]="certificateMaxSize"
+      [control]="signingForm.leafCertificate"
+    />
+
+    <lib-signing-webapp-form-ui-upload-file-input
+      inputId="leaf-private-key-upload"
+      label="Leaf Private Key"
+      description="Upload the private key file associated with your Leaf Certificate. This key is used to generate the cryptographic signature for the manifest."
+      help="⚠️ This manual upload is for Proof-of-Concept testing only. In a real-world C2PA implementation, private keys are never handled manually; they are securely managed and accessed via a Hardware Security Module
+        (HSM) or Key Management Service (KMS)."
+      [required]="true"
+      [acceptedMimeTypes]="keyMimeTypes"
+      [maxFileSizeBytes]="keyMaxSize"
+      [control]="signingForm.leafPrivateKey"
+    />
+
+    <lib-signing-webapp-form-ui-upload-file-input
+      inputId="intermediate-certificate-upload"
+      label="Intermediate Certificate (X.509)"
+      description="Upload the public certificate file (e.g., .pem, .cer) that issued your Leaf Certificate. This certificate is required to complete the 'Chain of Trust', linking your identity to a trusted Root Authority."
+      help="ℹ️ Pilot Note: In a production C2PA workflow, the 'Chain of Trust' (Leaf + Intermediates) is usually assembled automatically by the signing service or embedded directly within the signing identity. Manual assembly is required here for demonstration purposes only."
+      [required]="true"
+      [acceptedMimeTypes]="certificateMimeTypes"
+      [maxFileSizeBytes]="certificateMaxSize"
+      [control]="signingForm.intermediateCertificate"
+    />
+
+    <lib-signing-webapp-form-ui-upload-file-input
+      inputId="vc-key-upload"
+      label="Digital Identity's Private Key"
+      description="Upload the private key file (e.g., .pem, .key) used to sign the Verifiable Credential. This key represents the Issuer's authority and is required to cryptographically mint the credential."
+      help="⚠️ Pilot Note: This simulates the Issuer's workflow. In production, this key is locked in the Issuer's secure server. Real users (Holders) only receive the final signed credential, they do not possess the private key used to create it."
+      [acceptedMimeTypes]="verifiableCredentialPrivateKeyMimeTypes"
+      [maxFileSizeBytes]="verifiableCredentialPrivateKeyMaxSize"
+      [control]="signingForm.verifiableCredentialPrivateKey"
+    />
+
+    <lib-signing-webapp-form-ui-form-group
+      inputId="vc-issuer"
+      label="Digital Identity's issuer"
+      description="Enter the name or identifier (e.g., DID) of the organization that
+          issued the Verifiable Credential. This entity acts as the trusted
+          authority - such as a government, university, or employer - that
+          vouches for the authenticity of your identity data."
+      help="   ⚠️ Pilot Note: In a real-world Verifiable Credential workflow, the
+          Issuer's identity is cryptographically locked within the credential
+          itself (often as a Decentralized Identifier). We ask you to define it
+          here to simulate the issuance process and demonstrate how the Issuer
+          is displayed in the Manifest."
+    >
+      <select
+        id="vc-issuer"
+        class="text-center p-2"
+        [formField]="signingForm.verifiableCredentialIssuer"
+      >
+        <option value="" selected>--- Select an option ---</option>
+        @for (issuer of verifiableCredentialIssuers; track $index) {
+          <option [value]="issuer.did">{{ issuer.name }}</option>
+        }
+      </select>
+    </lib-signing-webapp-form-ui-form-group>
+
+    <lib-signing-webapp-form-ui-upload-file-input
+      inputId="asset-upload"
+      label="The Asset"
+      description="Upload the media file (e.g., .jpg, .png, .mp4) you wish to secure. This asset will be cryptographically bound to the C2PA Manifest, ensuring that any future tampering with the file can be detected."
+      help="⚠️ Pilot Note: This tool simulates a 'post-production' signing workflow. In a fully integrated C2PA ecosystem, this signing process often happens automatically at the source (inside a secure camera) or during export (inside creative software like Adobe Photoshop), rather than via a manual web upload."
+      [required]="true"
+      [acceptedMimeTypes]="assetMimeTypes"
+      [maxFileSizeBytes]="assetMaxSize"
+      [control]="signingForm.assetFile"
+    />
+  </form>
+
+  <footer
+    class="fixed bottom-0 left-0 w-full z-50 bg-white shadow-2xl py-4"
+    #footer
+  >
+    <div class="container mx-auto flex flex-col items-center justify-between">
+      <button
+        type="button"
+        (click)="createAndSignManifest()"
+        [disabled]="signingForm().invalid()"
+        class="bg-blue-500 text-white py-2 px-5 disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
+      >
+        Create and sign C2PA Manifest
+      </button>
+    </div>
+  </footer>
+</div>

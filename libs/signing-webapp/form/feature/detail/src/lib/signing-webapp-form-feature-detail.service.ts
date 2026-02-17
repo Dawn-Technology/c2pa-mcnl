@@ -85,6 +85,8 @@ export class SigningWebappFormFeatureDetailService {
     // update the hard binding
     await dataHashAssertion.updateWithAsset(asset);
 
+    console.log(manifest);
+
     // create the signature
     await manifest.sign(signer, timestampProvider);
 

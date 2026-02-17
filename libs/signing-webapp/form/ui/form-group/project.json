@@ -1,0 +1,13 @@
+{
+  "name": "signing-webapp-form-ui-form-group",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/signing-webapp/form/ui/form-group/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": ["scope:signing-webapp", "type:ui"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
