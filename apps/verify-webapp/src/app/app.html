@@ -1,2 +1,7 @@
-<app-nx-welcome></app-nx-welcome>
-<router-outlet></router-outlet>
+<lib-verify-webapp-shared-ui-layout-header #header />
+
+<main
+  [ngStyle]="{'padding-top': header.elementHeight + 'px', 'height': '100dvh'}"
+>
+  <router-outlet></router-outlet>
+</main>

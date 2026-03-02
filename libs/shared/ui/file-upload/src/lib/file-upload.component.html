@@ -11,7 +11,7 @@
   />
 
   <div
-    class="relative border-2 border-dashed rounded-lg transition-all duration-200 ease-in-out"
+    class="relative border-2 border-dashed border-gray-600 rounded-lg transition-all duration-200 ease-in-out bg-surface"
     [class.border-blue-500]="isDragging()"
     [class.bg-blue-50]="isDragging()"
     [class.border-gray-300]="!isDragging() && !hasErrors()"
@@ -23,47 +23,53 @@
   >
     <!-- Upload Area -->
     @if (!value()) {
-      <div class="p-6 text-center">
-        <div class="mb-4">
-          <svg
-            class="mx-auto h-12 w-12 transition-colors"
-            [class.text-blue-500]="isDragging()"
-            [class.text-gray-400]="!isDragging() && !hasErrors()"
-            [class.text-red-500]="hasErrors()"
-            stroke="currentColor"
-            fill="none"
-            viewBox="0 0 48 48"
-            aria-hidden="true"
-          >
-            <path
-              d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </div>
+      <div class="px-6 py-10 flex flex-col gap-3 text-center">
+        <svg
+          width="32"
+          height="27"
+          viewBox="0 0 32 27"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          class="mx-auto h-12 w-12 transition-colors"
+          [class.text-blue-500]="isDragging()"
+          [class.text-gray-400]="!isDragging() && !hasErrors()"
+          [class.text-red-500]="hasErrors()"
+        >
+          <path
+            d="M21.2571 18.5801L15.9238 13.2467M15.9238 13.2467L10.5904 18.5801M15.9238 13.2467V25.2467M27.1104 21.7667C28.4109 21.0578 29.4382 19.9359 30.0303 18.5782C30.6223 17.2205 30.7454 15.7044 30.3801 14.269C30.0147 12.8336 29.1818 11.5607 28.0127 10.6513C26.8436 9.7419 25.4049 9.2477 23.9238 9.24672H22.2438C21.8402 7.68571 21.088 6.2365 20.0437 5.00805C18.9994 3.77959 17.6902 2.80386 16.2146 2.1542C14.7389 1.50454 13.1352 1.19787 11.5239 1.25723C9.91269 1.3166 8.33586 1.74046 6.91201 2.49694C5.48816 3.25343 4.25432 4.32286 3.30327 5.62483C2.35222 6.9268 1.7087 8.42744 1.42108 10.0139C1.13347 11.6004 1.20925 13.2314 1.64273 14.7844C2.0762 16.3374 2.8561 17.7719 3.92378 18.9801"
+            stroke="#1C1C1C"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
 
-        <div class="mb-2">
+        <div>
           <label
             [for]="fieldId()"
-            class="cursor-pointer rounded-md font-semibold text-blue-600 hover:text-blue-500"
+            class="cursor-pointer rounded-md font-semibold hover:text-blue-500"
           >
-            <span>Upload a file</span>
+            Sleep bestand in het vak
           </label>
-          <span class="text-gray-600"> or drag and drop</span>
+          <p class="text-sm">
+            @if (acceptedMimeTypes().length > 0) {
+              <span class="block"
+                >Formaten: {{ acceptAttributeHumanReadable() }}</span
+              >
+            }
+            <span class="block mt-1"
+              >Maximale grootte: {{ formatFileSize(maxFileSizeBytes()) }}</span
+            >
+          </p>
         </div>
 
-        <p class="text-xs text-gray-500">
-          @if (acceptedMimeTypes().length > 0) {
-            <span class="block"
-              >Accepted types: {{ acceptedMimeTypes().join(', ') }}</span
-            >
-          }
-          <span class="block mt-1"
-            >Maximum file size: {{ formatFileSize(maxFileSizeBytes()) }}</span
+        <div>
+          <button
+            class="border border-gray-600 rounded-lg px-4 py-2 bg-white font-medium text-sm"
           >
-        </p>
+            Selecteer bestand
+          </button>
+        </div>
       </div>
     }
 

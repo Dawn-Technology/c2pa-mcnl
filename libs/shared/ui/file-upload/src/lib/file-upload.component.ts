@@ -37,6 +37,11 @@ export class FileUploadComponent implements FormValueControl<File | null> {
   fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
   acceptAttribute = computed(() => this.acceptedMimeTypes().join(','));
+  acceptAttributeHumanReadable = computed(() =>
+    this.acceptedMimeTypes()
+      .map((mime) => '.' + mime.split('/')[1])
+      .join(', '),
+  );
 
   errorMessages = computed(() => {
     const errors: string[] = [];

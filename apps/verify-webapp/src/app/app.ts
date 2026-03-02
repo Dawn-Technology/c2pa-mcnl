@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NxWelcome } from './nx-welcome';
+import { VerifyWebappSharedUiLayoutHeaderComponent } from '@c2pa-mcnl/verify-webapp/shared/ui/layout-header';
+import { NgStyle } from '@angular/common';
 
 @Component({
-  imports: [NxWelcome, RouterModule],
+  imports: [RouterModule, VerifyWebappSharedUiLayoutHeaderComponent, NgStyle],
   selector: 'app-root',
   templateUrl: './app.html',
-  styleUrl: './app.css',
 })
-export class App {
-  protected title = 'verify-webapp';
-}
+export class App {}

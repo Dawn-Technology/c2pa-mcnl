@@ -1,0 +1,12 @@
+import { MIME_TYPES } from './mime-types.const';
+
+export const ASSET_MIME_TYPES = [
+  MIME_TYPES.IMAGE_JPEG,
+  MIME_TYPES.IMAGE_PNG,
+  MIME_TYPES.IMAGE_HEIC,
+  MIME_TYPES.IMAGE_HEIF,
+  MIME_TYPES.VIDEO_MP4,
+  MIME_TYPES.AUDIO_MPEG,
+];
+
+export const ASSET_MAX_SIZE = 1024 * 1024 * 1024 * 10;

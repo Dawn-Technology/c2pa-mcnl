@@ -58,6 +58,10 @@ describe('FileUploadComponent', () => {
     expect(component.acceptAttribute()).toBe('image/png,image/jpeg');
   });
 
+  it('should compute acceptAttribute correctly', () => {
+    expect(component.acceptAttributeHumanReadable()).toBe('.png, .jpeg');
+  });
+
   describe('Drag and Drop interactions', () => {
     let dropZone: any;
 

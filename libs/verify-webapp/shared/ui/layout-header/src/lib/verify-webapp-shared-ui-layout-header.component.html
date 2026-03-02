@@ -1,0 +1,35 @@
+<header
+  role="banner"
+  aria-label="Siteheader"
+  class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50"
+  [style.height.px]="elementHeight"
+>
+  <div class="flex items-center justify-between h-full px-4 sm:px-8">
+    <a
+      routerLink="/"
+      class="flex items-center gap-3 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+      aria-label="Verifieermij - ga naar de homepage"
+    >
+      <img
+        ngSrc="/logo.svg"
+        alt=""
+        aria-hidden="true"
+        width="32"
+        height="32"
+        priority
+        class="h-8 w-auto"
+      />
+      <span class="text-gray-900 font-semibold text-lg max-sm:text-sm"
+        >Verifieermij</span
+      >
+    </a>
+
+    <p
+      class="text-sm max-sm:text-xs italic text-gray-600 text-right"
+      role="note"
+    >
+      <span class="hidden md:inline">Let op:</span> verifieermij.nl is een pilot
+      en kan fouten maken
+    </p>
+  </div>
+</header>
