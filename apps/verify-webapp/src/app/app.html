@@ -1,7 +1,5 @@
 <lib-verify-webapp-shared-ui-layout-header #header />
 
-<main
-  [ngStyle]="{'padding-top': header.elementHeight + 'px', 'height': '100dvh'}"
->
+<main [ngStyle]="{'padding-top': header.elementHeight + 'px'}">
   <router-outlet></router-outlet>
 </main>
