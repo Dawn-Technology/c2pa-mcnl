@@ -21,9 +21,9 @@
     [attr.role]="!value() ? 'button' : null"
     [attr.tabindex]="!value() ? '0' : null"
     [attr.aria-label]="!value() ? 'Bestand uploaden' : null"
-    (click)="!value() && chooseNewFile()"
-    (keydown.enter)="!value() && chooseNewFile()"
-    (keydown.space)="!value() && chooseNewFile()"
+    (click)="!value() && chooseNewFile($event)"
+    (keydown.enter)="!value() && chooseNewFile($event)"
+    (keydown.space)="!value() && chooseNewFile($event)"
     (dragover)="onDragOver($event)"
     (dragleave)="onDragLeave($event)"
     (drop)="onDrop($event)"
@@ -70,7 +70,9 @@
         <div>
           <button
             class="border border-gray-600 rounded-lg px-4 py-2 bg-white font-medium text-sm"
-            (click)="$event.stopPropagation(); chooseNewFile()"
+            (click)="chooseNewFile($event)"
+            (keydown.enter)="$event.stopPropagation()"
+            (keydown.space)="$event.stopPropagation()"
           >
             Selecteer bestand
           </button>
@@ -135,7 +137,7 @@
         <div class="mt-4 text-center">
           <button
             type="button"
-            (click)="chooseNewFile()"
+            (click)="chooseNewFile($event)"
             class="text-sm text-blue-600 hover:text-blue-500 font-medium"
           >
             Choose a different file
