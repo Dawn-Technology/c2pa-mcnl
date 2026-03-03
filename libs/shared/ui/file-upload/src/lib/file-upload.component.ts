@@ -37,6 +37,11 @@ export class FileUploadComponent implements FormValueControl<File | null> {
   fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
   acceptAttribute = computed(() => this.acceptedMimeTypes().join(','));
+  acceptAttributeHumanReadable = computed(() =>
+    this.acceptedMimeTypes()
+      .map((mime) => '.' + mime.split('/')[1])
+      .join(', '),
+  );
 
   errorMessages = computed(() => {
     const errors: string[] = [];
@@ -97,7 +102,10 @@ export class FileUploadComponent implements FormValueControl<File | null> {
     }
   }
 
-  chooseNewFile(): void {
+  chooseNewFile(event?: Event): void {
+    event?.stopPropagation();
+    event?.stopImmediatePropagation();
+
     const input = this.fileInput();
     if (input?.nativeElement) {
       input.nativeElement.click();

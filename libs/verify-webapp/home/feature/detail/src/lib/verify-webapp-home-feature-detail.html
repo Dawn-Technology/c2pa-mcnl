@@ -1,0 +1,117 @@
+<section class="h-full px-6 py-8 md:py-32 sm:px-10">
+  <div
+    class="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-12 items-start"
+  >
+    <!-- Column 1: Header, Subtext & Upload -->
+    <div class="flex flex-col gap-8 h-full">
+      <div class="flex flex-col gap-4">
+        <h1 class="text-4xl sm:text-5xl font-black text-gray-900 leading-tight">
+          Zeker van je zaak, zeker van je bron
+        </h1>
+        <p class="text-lg text-gray-700 leading-relaxed">
+          In een wereld vol digitale manipulatie biedt onze tool zekerheid.
+          Verifieer eenvoudig de oorsprong van mediabestanden en voorkom
+          misinformatie voordat die zich verspreidt.
+        </p>
+      </div>
+
+      <!-- Upload Section (placeholder) -->
+      <div
+        class="flex flex-1 flex-col items-center justify-center gap-6 rounded-2xl border border-black bg-white shadow-surround p-6 text-center"
+      >
+        <span class="bg-gray-200 rounded-full py-2 px-3"
+          >Probeer nu gratis 🚀</span
+        >
+
+        <lib-shared-ui-file-upload
+          [acceptedMimeTypes]="uploadMimeTypes"
+          [maxFileSizeBytes]="uploadMaxSize"
+        />
+      </div>
+    </div>
+
+    <!-- Column 2: Image & Collaboration Banner -->
+    <div class="flex flex-col gap-8">
+      <div class="overflow-hidden">
+        <img
+          ngSrc="/hero.png"
+          alt="Media verificatie illustratie"
+          width="588"
+          height="519"
+        />
+      </div>
+
+      <!-- Collaboration Banner -->
+      <div
+        class="flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl bg-white shadow-surround px-6 py-4"
+      >
+        <span class="text-sm font-medium text-gray-700 whitespace-nowrap"
+          >Een samenwerking tussen</span
+        >
+
+        <div class="flex flex-1 items-center justify-between">
+          <a
+            href="https://www.vpro.nl"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="VPRO (opent in nieuw tabblad)"
+            class="rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+          >
+            <img
+              ngSrc="/vpro.png"
+              alt="VPRO"
+              width="80"
+              height="32"
+              class="h-8 w-auto object-contain"
+            />
+          </a>
+          <a
+            href="https://www.mediacampus.nl"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Media Campus Nederland (opent in nieuw tabblad)"
+            class="rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+          >
+            <img
+              ngSrc="/mcnl.png"
+              alt="MCNL"
+              width="80"
+              height="32"
+              class="h-8 w-auto object-contain"
+            />
+          </a>
+          <a
+            href="https://www.sidn.nl"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="SIDN (opent in nieuw tabblad)"
+            class="rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+          >
+            <img
+              ngSrc="/sidn.png"
+              alt="SIDN"
+              width="80"
+              height="32"
+              class="h-8 w-auto object-contain"
+            />
+          </a>
+          <a
+            href="https://www.dawn.tech"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Dawn Technology (opent in nieuw tabblad)"
+            class="rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+          >
+            <img
+              ngSrc="/dawn.png"
+              alt="Dawn Technology"
+              width="80"
+              height="32"
+              class="h-8 w-auto object-contain"
+            />
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

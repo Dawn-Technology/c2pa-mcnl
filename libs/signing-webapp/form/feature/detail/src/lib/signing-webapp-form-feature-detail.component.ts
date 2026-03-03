@@ -4,8 +4,6 @@ import { form as signalForm, FormField } from '@angular/forms/signals';
 import { SigningWebappFormUiUploadFileInputComponent } from '@c2pa-mcnl/signing-webapp/form/ui/upload-file-input';
 import { FormModel } from './form.model';
 import {
-  ASSET_MAX_SIZE,
-  ASSET_MIME_TYPES,
   CERTIFICATE_MAX_SIZE,
   CERTIFICATE_MIME_TYPES,
   FormOptions,
@@ -15,6 +13,10 @@ import {
 } from './form.options';
 import { NgStyle } from '@angular/common';
 import { SigningWebappFormUiFormGroup } from '@c2pa-mcnl/signing-webapp/form/ui/form-group';
+import {
+  ASSET_MAX_SIZE,
+  ASSET_MIME_TYPES,
+} from '@c2pa-mcnl/shared/utils/constants';
 
 @Component({
   standalone: true,

@@ -5,7 +5,11 @@ import {
   pemCertificateValidator,
   pemKeyValidator,
 } from '@c2pa-mcnl/shared/utils/validators';
-import { MIME_TYPES } from '@c2pa-mcnl/shared/utils/constants';
+import {
+  ASSET_MAX_SIZE,
+  ASSET_MIME_TYPES,
+  MIME_TYPES,
+} from '@c2pa-mcnl/shared/utils/constants';
 import { FormData, VerifiableCredentialIssuer } from './form.model';
 
 export const CERTIFICATE_MIME_TYPES = [
@@ -20,18 +24,8 @@ export const KEY_MIME_TYPES = [
   MIME_TYPES.TEXT_PLAIN,
 ];
 
-export const ASSET_MIME_TYPES = [
-  MIME_TYPES.IMAGE_JPEG,
-  MIME_TYPES.IMAGE_PNG,
-  MIME_TYPES.IMAGE_HEIC,
-  MIME_TYPES.IMAGE_HEIF,
-  MIME_TYPES.VIDEO_MP4,
-  MIME_TYPES.AUDIO_MPEG,
-];
-
 export const CERTIFICATE_MAX_SIZE = 5 * 1024 * 1024;
 export const KEY_MAX_SIZE = 5 * 1024 * 1024;
-export const ASSET_MAX_SIZE = 1024 * 1024 * 1024 * 10;
 
 export const VC_ISSUERS: VerifiableCredentialIssuer[] = [
   {

@@ -2,7 +2,6 @@ import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'lib-signing-webapp-form-ui-form-group',
-  imports: [],
   template: `
     <div class="flex flex-col gap-5 group">
       <div class="flex flex-col gap-0 text-center">

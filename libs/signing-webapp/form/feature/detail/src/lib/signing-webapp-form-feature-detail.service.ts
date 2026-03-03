@@ -59,6 +59,7 @@ export class SigningWebappFormFeatureDetailService {
       privateKey,
       CoseAlgorithmIdentifier.ES256,
       leafCertificate,
+      // [intermediate],
     );
 
     const timestampProvider = new LocalTimestampProvider(
@@ -86,6 +87,7 @@ export class SigningWebappFormFeatureDetailService {
     await dataHashAssertion.updateWithAsset(asset);
 
     console.log(manifest);
+    console.log(dataHashAssertion.hash);
 
     // create the signature
     await manifest.sign(signer, timestampProvider);
@@ -112,6 +114,7 @@ export class SigningWebappFormFeatureDetailService {
   async generateVerifiableCredential(
     verifiableCredentialIssuer: VerifiableCredentialIssuer,
     verifiableCredentialPrivateKey: File,
+    // TODO ADD ASSET HASH
   ): Promise<{ vcJson: object; coseSign1: Uint8Array }> {
     const pemText = await verifiableCredentialPrivateKey.text();
     const base64 = extractBase64FromPem(pemText);
@@ -148,7 +151,9 @@ export class SigningWebappFormFeatureDetailService {
         ],
         c2paAsset: {
           sig_type: 'cawg.identity_claims_aggregation',
-          referenced_assertions: [{ url: '...', hash: '...' }],
+          referenced_assertions: [
+            { url: 'self#jumbf=c2pa.assertions/c2pa.hash.data', hash: '...' },
+          ],
         },
       },
     };
