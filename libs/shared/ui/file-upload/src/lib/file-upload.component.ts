@@ -102,10 +102,9 @@ export class FileUploadComponent implements FormValueControl<File | null> {
     }
   }
 
-  chooseNewFile(event: Event): void {
-    console.log('here');
-    event.stopPropagation();
-    event.stopImmediatePropagation();
+  chooseNewFile(event?: Event): void {
+    event?.stopPropagation();
+    event?.stopImmediatePropagation();
 
     const input = this.fileInput();
     if (input?.nativeElement) {
