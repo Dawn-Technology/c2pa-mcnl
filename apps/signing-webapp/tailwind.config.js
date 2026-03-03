@@ -8,8 +8,8 @@ module.exports = {
     join(
       __dirname,
       '../../libs/signing-webapp/**/!(*.stories|*.spec).{ts,html}',
-      '../../libs/shared/**/!(*.stories|*.spec).{ts,html}',
     ),
+    join(__dirname, '../../libs/shared/**/!(*.stories|*.spec).{ts,html}'),
     ...createGlobPatternsForDependencies(__dirname),
   ],
   theme: {
