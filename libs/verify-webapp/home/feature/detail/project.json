@@ -6,6 +6,13 @@
   "projectType": "library",
   "tags": ["scope:verify-webapp", "type:feature"],
   "targets": {
+    "test": {
+      "executor": "@nx/vitest:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../../coverage/libs/verify-webapp/home/feature/detail"
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint"
     }
