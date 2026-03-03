@@ -1,4 +1,5 @@
 # c2pa-mcnl
+[![CI](https://github.com/Dawn-Technology/c2pa-mcnl/actions/workflows/ci.yml/badge.svg)](https://github.com/Dawn-Technology/c2pa-mcnl/actions/workflows/ci.yml)
 ![GitHub License](https://img.shields.io/github/license/Dockbite/c2pa-mcnl)
 ![GitHub Created At](https://img.shields.io/github/created-at/Dockbite/c2pa-mcnl)
 ![GitHub contributors](https://img.shields.io/github/contributors/Dockbite/c2pa-mcnl)
