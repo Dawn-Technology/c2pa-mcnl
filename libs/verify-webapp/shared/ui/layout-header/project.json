@@ -4,7 +4,7 @@
   "sourceRoot": "libs/verify-webapp/shared/ui/layout-header/src",
   "prefix": "lib",
   "projectType": "library",
-  "tags": ["scope:verify-webapp", "type:uio"],
+  "tags": ["scope:verify-webapp", "type:ui"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"

@@ -11,12 +11,19 @@
   />
 
   <div
-    class="relative border-2 border-dashed border-gray-600 rounded-lg transition-all duration-200 ease-in-out bg-surface"
+    class="group relative border-2 border-dashed border-gray-600 rounded-lg transition-all duration-200 ease-in-out bg-surface"
     [class.border-blue-500]="isDragging()"
     [class.bg-blue-50]="isDragging()"
     [class.border-gray-300]="!isDragging() && !hasErrors()"
     [class.border-red-500]="hasErrors()"
     [class.bg-red-50]="hasErrors()"
+    [class.cursor-pointer]="!value()"
+    [attr.role]="!value() ? 'button' : null"
+    [attr.tabindex]="!value() ? '0' : null"
+    [attr.aria-label]="!value() ? 'Bestand uploaden' : null"
+    (click)="!value() && chooseNewFile()"
+    (keydown.enter)="!value() && chooseNewFile()"
+    (keydown.space)="!value() && chooseNewFile()"
     (dragover)="onDragOver($event)"
     (dragleave)="onDragLeave($event)"
     (drop)="onDrop($event)"
@@ -45,12 +52,9 @@
         </svg>
 
         <div>
-          <label
-            [for]="fieldId()"
-            class="cursor-pointer rounded-md font-semibold hover:text-blue-500"
-          >
+          <span class="rounded-md font-semibold group-hover:text-blue-500">
             Sleep bestand in het vak
-          </label>
+          </span>
           <p class="text-sm">
             @if (acceptedMimeTypes().length > 0) {
               <span class="block"
@@ -66,6 +70,7 @@
         <div>
           <button
             class="border border-gray-600 rounded-lg px-4 py-2 bg-white font-medium text-sm"
+            (click)="$event.stopPropagation(); chooseNewFile()"
           >
             Selecteer bestand
           </button>
@@ -107,7 +112,7 @@
           </div>
           <button
             type="button"
-            (click)="removeFile()"
+            (click)="$event.stopPropagation(); removeFile()"
             class="ml-4 flex-shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-label="Remove file"
           >
