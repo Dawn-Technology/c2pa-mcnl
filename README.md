@@ -11,6 +11,7 @@ C2PA implementation for Media Campus Nederland (MCNL) using Digital Verifiable C
 - [About](#about)
 - [Install](#install)
 - [Usage](#usage)
+- [Testing and Linting](#testing-and-linting)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -149,7 +150,6 @@ nx affected -t test lint
 ```
 
 > **Affected** means Nx will only run the target for projects that are impacted by your current changes (compared to the main branch), saving time by avoiding unnecessary work across the entire monorepo.
-
 
 ## Contributing
 
