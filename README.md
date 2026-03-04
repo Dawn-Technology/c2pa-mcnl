@@ -94,7 +94,62 @@ The project uses [PNPM](https://pnpm.io/installation) as the package manager. To
 `pnpm install`
 
 ## Usage
-`TODO`
+For detailed information about the individual applications and tools, please refer to their respective README files as linked in the [Structure](#structure) section above.
+
+### Running the development server for the signing web application:
+
+```bash
+  nx serve signing-webapp
+```
+
+### Running the development server for the verification web application:
+
+```bash
+  nx serve verify-webapp
+```
+
+## Testing and Linting
+
+Testing and linting are built into Nx and configured for every project in this monorepo's apps, libs, and tools alike.
+
+### Running tests
+
+Run tests for a specific project:
+
+```bash
+nx test <project-name>
+```
+
+Run tests for all projects affected by your current changes:
+
+```bash
+nx affected -t test
+```
+
+### Linting
+
+Lint a specific project:
+
+```bash
+nx lint <project-name>
+```
+
+Lint all projects affected by your current changes:
+
+```bash
+nx affected -t lint
+```
+
+### Running both
+
+Run tests and linting together for all affected projects:
+
+```bash
+nx affected -t test lint
+```
+
+> **Affected** means Nx will only run the target for projects that are impacted by your current changes (compared to the main branch), saving time by avoiding unnecessary work across the entire monorepo.
+
 
 ## Contributing
 
