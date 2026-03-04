@@ -92,7 +92,9 @@ Learn more:
 ## Install
 The project uses [PNPM](https://pnpm.io/installation) as the package manager. To install the dependencies, run the following command in the root directory:
 
-`pnpm install`
+```bash
+pnpm install
+```
 
 ## Usage
 For detailed information about the individual applications and tools, please refer to their respective README files as linked in the [Structure](#structure) section above.
@@ -100,13 +102,27 @@ For detailed information about the individual applications and tools, please ref
 ### Running the development server for the signing web application:
 
 ```bash
-  nx serve signing-webapp
+nx serve signing-webapp
 ```
 
 ### Running the development server for the verification web application:
 
 ```bash
-  nx serve verify-webapp
+nx serve verify-webapp
+```
+
+### Running the CLI tools:
+
+```bash
+nx run did-generator:help
+nx run cert-generator:help
+```
+
+### Project graph
+To visualize the dependencies between projects in this monorepo, you can use the Nx project graph:
+
+```bash
+nx graph
 ```
 
 ## Testing and Linting
