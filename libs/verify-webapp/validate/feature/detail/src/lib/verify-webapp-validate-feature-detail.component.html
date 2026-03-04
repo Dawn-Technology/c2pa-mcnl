@@ -1,0 +1,63 @@
+<lib-verify-webapp-shared-ui-loading-overlay [shown]="store.isLoading()" />
+
+<div
+  class="grid grid-cols-[347px_220px_1fr] lg:h-[calc(100vh-var(--header-height))]"
+>
+  <div
+    class="flex flex-col gap-6 p-6 bg-gray-100 border-b lg:border-b-0 lg:border-r border-gray-300 overflow-y-auto"
+  >
+    <h2 class="text-sm">Huidig bestand</h2>
+
+    <!-- File preview + info -->
+    <div class="flex items-center gap-3">
+      <div
+        class="rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[65px] h-[65px]"
+      >
+        <img
+          [src]="'https://picsum.photos/seed/current/200/300'"
+          alt="Current file thumbnail"
+          class="w-full h-full object-contain"
+        />
+      </div>
+      <div class="min-w-0">
+        <p class="text-sm font-bold text-gray-900 truncate">
+          {{ store.file()?.name }}
+        </p>
+        <p class="text-sm mt-0.5">{{ store.fileDate() }}</p>
+      </div>
+    </div>
+
+    <hr class="border-gray-300 -mx-6" />
+
+    <h3 class="text-sm">Selecteer een ander bestand</h3>
+
+    <button
+      type="button"
+      class="border border-gray-600 rounded-lg px-4 py-2 bg-white font-medium text-sm w-full"
+    >
+      Selecteer bestand
+    </button>
+
+    <hr class="border-gray-300 -mx-6" />
+  </div>
+
+  <div
+    class="flex flex-col gap-6 p-6 bg-gray-200 border-b lg:border-b-0 lg:border-r border-gray-300 overflow-y-auto"
+  >
+    <h2 class="text-sm">Versiehistorie</h2>
+
+    @for (thumb of [1, 2, 3]; track thumb) {
+      <div
+        class="rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[165px] h-[150px]"
+      >
+        <img
+          [src]="'https://picsum.photos/seed/' + thumb + '/200/300'"
+          alt="Manifest thumbnail"
+          class="w-full h-full object-contain"
+        />
+      </div>
+    }
+  </div>
+
+  <div class="bg-white p-12">test</div>
+</div>

@@ -1,7 +1,7 @@
 {
-  "name": "verify-webapp-home-feature-detail",
+  "name": "verify-webapp-validate-feature-home",
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/verify-webapp/home/feature/detail/src",
+  "sourceRoot": "libs/verify-webapp/validate/feature/home/src",
   "prefix": "lib",
   "projectType": "library",
   "tags": ["scope:verify-webapp", "type:feature"],
@@ -10,7 +10,7 @@
       "executor": "@nx/vitest:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../../coverage/libs/verify-webapp/home/feature/detail"
+        "reportsDirectory": "../../../coverage/libs/verify-webapp/validate/feature/home"
       }
     },
     "lint": {

@@ -1,1 +1,1 @@
-export * from './lib/verify-webapp-validate-feature-detail';
+export * from './lib/verify-webapp-validate-feature-detail.component';

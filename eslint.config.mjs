@@ -48,6 +48,7 @@ export default [
             {
               sourceTag: 'type:feature',
               onlyDependOnLibsWithTags: [
+                'type:feature',
                 'type:ui',
                 'type:data-access',
                 'type:util',

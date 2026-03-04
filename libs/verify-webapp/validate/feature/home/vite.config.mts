@@ -7,14 +7,14 @@ import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 export default defineConfig(() => ({
   root: __dirname,
   cacheDir:
-    '../../../../../node_modules/.vite/libs/verify-webapp/shared/ui/header-height',
+    '../../../../../node_modules/.vite/libs/verify-webapp/validate/feature/home',
   plugins: [angular(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
   // Uncomment this if you are using workers.
   // worker: {
   //   plugins: () => [ nxViteTsPaths() ],
   // },
   test: {
-    name: 'verify-webapp-shared-ui-header-height',
+    name: 'verify-webapp-validate-feature-home',
     watch: false,
     globals: true,
     environment: 'jsdom',
@@ -23,7 +23,7 @@ export default defineConfig(() => ({
     reporters: ['default'],
     coverage: {
       reportsDirectory:
-        '../../../../../coverage/libs/verify-webapp/shared/ui/header-height',
+        '../../../../../coverage/libs/verify-webapp/validate/feature/home',
       provider: 'v8' as const,
     },
   },
