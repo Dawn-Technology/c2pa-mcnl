@@ -45,6 +45,9 @@
       ],
       "@c2pa-mcnl/verify-webapp/home/feature/detail": [
         "libs/verify-webapp/home/feature/detail/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/feature/detail": [
+        "libs/verify-webapp/validate/feature/detail/src/index.ts"
       ]
     }
   },
