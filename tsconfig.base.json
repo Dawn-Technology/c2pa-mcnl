@@ -66,6 +66,9 @@
       ],
       "@c2pa-mcnl/verify-webapp/validate/ui/detail/manifest-info": [
         "libs/verify-webapp/validate/ui/detail/manifest-info/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/ui/file-card": [
+        "libs/verify-webapp/validate/ui/file-card/src/index.ts"
       ]
     }
   },

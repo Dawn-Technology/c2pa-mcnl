@@ -3,23 +3,11 @@
 >
   <h2 class="text-sm">Huidig bestand</h2>
 
-  <div class="flex items-center gap-3">
-    <div
-      class="rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[65px] h-[65px]"
-    >
-      <img
-        [src]="'https://picsum.photos/seed/current/200/300'"
-        alt="Current file thumbnail"
-        class="w-full h-full object-contain"
-      />
-    </div>
-    <div class="min-w-0">
-      <p class="text-sm font-bold text-gray-900 truncate">
-        {{ store.file()?.name }}
-      </p>
-      <p class="text-sm mt-0.5">{{ store.fileDate() }}</p>
-    </div>
-  </div>
+  <lib-verify-webapp-validate-ui-file-card
+    fileUrl="https://picsum.photos/seed/current/200/300"
+    [fileName]="store.file()?.name!"
+    [subText]="store.fileDate()"
+  />
 
   <hr class="border-gray-300 -mx-6" />
 
