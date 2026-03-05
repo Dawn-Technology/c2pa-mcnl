@@ -16,6 +16,7 @@ module.exports = {
     extend: {
       colors: {
         surface: '#F6F7F9',
+        surfaceLight: '#FAFBFD',
       },
       boxShadow: {
         surround: '0 0 16px 0 rgba(0, 0, 0, 0.12)',
