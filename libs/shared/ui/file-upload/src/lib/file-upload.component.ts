@@ -31,6 +31,8 @@ export class FileUploadComponent implements FormValueControl<File | null> {
   );
   acceptedMimeTypes = input.required<string[]>();
   maxFileSizeBytes = input.required<number>();
+  buttonOnly = input(false);
+  buttonClass = input('');
 
   isDragging = signal(false);
 

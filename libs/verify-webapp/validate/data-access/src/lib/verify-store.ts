@@ -14,12 +14,15 @@ type VerifyStoreState = {
   c2paResult: {
     mocked: any;
   } | null;
+
+  activeManifest: number | null;
 };
 
 const initialState: VerifyStoreState = {
   isLoading: false,
   file: null,
   c2paResult: null,
+  activeManifest: 1,
 };
 
 export const VerifyStore = signalStore(
@@ -60,6 +63,11 @@ export const VerifyStore = signalStore(
           },
         }));
       }, 1000);
+    },
+    setActiveManifest(manifestIndex: number) {
+      patchState(store, () => ({
+        activeManifest: manifestIndex,
+      }));
     },
   })),
   withHooks({

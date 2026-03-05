@@ -10,86 +10,120 @@
     (change)="onFileSelected($event)"
   />
 
-  <div
-    class="group relative border-2 border-dashed border-gray-600 rounded-lg transition-all duration-200 ease-in-out bg-surface"
-    [class.border-blue-500]="isDragging()"
-    [class.bg-blue-50]="isDragging()"
-    [class.border-gray-300]="!isDragging() && !hasErrors()"
-    [class.border-red-500]="hasErrors()"
-    [class.bg-red-50]="hasErrors()"
-    [class.cursor-pointer]="!value()"
-    [attr.role]="!value() ? 'button' : null"
-    [attr.tabindex]="!value() ? '0' : null"
-    [attr.aria-label]="!value() ? 'Bestand uploaden' : null"
-    (click)="!value() && chooseNewFile($event)"
-    (keydown.enter)="!value() && chooseNewFile($event)"
-    (keydown.space)="!value() && chooseNewFile($event)"
-    (dragover)="onDragOver($event)"
-    (dragleave)="onDragLeave($event)"
-    (drop)="onDrop($event)"
-  >
-    <!-- Upload Area -->
-    @if (!value()) {
-      <div class="px-6 py-10 flex flex-col gap-3 text-center">
-        <svg
-          width="32"
-          height="27"
-          viewBox="0 0 32 27"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          class="mx-auto h-12 w-12 transition-colors"
-          [class.text-blue-500]="isDragging()"
-          [class.text-gray-400]="!isDragging() && !hasErrors()"
-          [class.text-red-500]="hasErrors()"
-        >
-          <path
-            d="M21.2571 18.5801L15.9238 13.2467M15.9238 13.2467L10.5904 18.5801M15.9238 13.2467V25.2467M27.1104 21.7667C28.4109 21.0578 29.4382 19.9359 30.0303 18.5782C30.6223 17.2205 30.7454 15.7044 30.3801 14.269C30.0147 12.8336 29.1818 11.5607 28.0127 10.6513C26.8436 9.7419 25.4049 9.2477 23.9238 9.24672H22.2438C21.8402 7.68571 21.088 6.2365 20.0437 5.00805C18.9994 3.77959 17.6902 2.80386 16.2146 2.1542C14.7389 1.50454 13.1352 1.19787 11.5239 1.25723C9.91269 1.3166 8.33586 1.74046 6.91201 2.49694C5.48816 3.25343 4.25432 4.32286 3.30327 5.62483C2.35222 6.9268 1.7087 8.42744 1.42108 10.0139C1.13347 11.6004 1.20925 13.2314 1.64273 14.7844C2.0762 16.3374 2.8561 17.7719 3.92378 18.9801"
-            stroke="#1C1C1C"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-
-        <div>
-          <span class="rounded-md font-semibold group-hover:text-blue-500">
-            Sleep bestand in het vak
-          </span>
-          <p class="text-sm">
-            @if (acceptedMimeTypes().length > 0) {
-              <span class="block"
-                >Formaten: {{ acceptAttributeHumanReadable() }}</span
-              >
-            }
-            <span class="block mt-1"
-              >Maximale grootte: {{ formatFileSize(maxFileSizeBytes()) }}</span
-            >
-          </p>
-        </div>
-
-        <div>
-          <button
-            class="border border-gray-600 rounded-lg px-4 py-2 bg-white font-medium text-sm"
-            (click)="chooseNewFile($event)"
-            (keydown.enter)="$event.stopPropagation()"
-            (keydown.space)="$event.stopPropagation()"
+  @if (!buttonOnly()) {
+    <div
+      class="group relative border-2 border-dashed border-gray-600 rounded-lg transition-all duration-200 ease-in-out bg-surface"
+      [class.border-blue-500]="isDragging()"
+      [class.bg-blue-50]="isDragging()"
+      [class.border-gray-300]="!isDragging() && !hasErrors()"
+      [class.border-red-500]="hasErrors()"
+      [class.bg-red-50]="hasErrors()"
+      [class.cursor-pointer]="!value()"
+      [attr.role]="!value() ? 'button' : null"
+      [attr.tabindex]="!value() ? '0' : null"
+      [attr.aria-label]="!value() ? 'Bestand uploaden' : null"
+      (click)="!value() && chooseNewFile($event)"
+      (keydown.enter)="!value() && chooseNewFile($event)"
+      (keydown.space)="!value() && chooseNewFile($event)"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      <!-- Upload Area -->
+      @if (!value()) {
+        <div class="px-6 py-10 flex flex-col gap-3 text-center">
+          <svg
+            width="32"
+            height="27"
+            viewBox="0 0 32 27"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            class="mx-auto h-12 w-12 transition-colors"
+            [class.text-blue-500]="isDragging()"
+            [class.text-gray-400]="!isDragging() && !hasErrors()"
+            [class.text-red-500]="hasErrors()"
           >
-            Selecteer bestand
-          </button>
-        </div>
-      </div>
-    }
+            <path
+              d="M21.2571 18.5801L15.9238 13.2467M15.9238 13.2467L10.5904 18.5801M15.9238 13.2467V25.2467M27.1104 21.7667C28.4109 21.0578 29.4382 19.9359 30.0303 18.5782C30.6223 17.2205 30.7454 15.7044 30.3801 14.269C30.0147 12.8336 29.1818 11.5607 28.0127 10.6513C26.8436 9.7419 25.4049 9.2477 23.9238 9.24672H22.2438C21.8402 7.68571 21.088 6.2365 20.0437 5.00805C18.9994 3.77959 17.6902 2.80386 16.2146 2.1542C14.7389 1.50454 13.1352 1.19787 11.5239 1.25723C9.91269 1.3166 8.33586 1.74046 6.91201 2.49694C5.48816 3.25343 4.25432 4.32286 3.30327 5.62483C2.35222 6.9268 1.7087 8.42744 1.42108 10.0139C1.13347 11.6004 1.20925 13.2314 1.64273 14.7844C2.0762 16.3374 2.8561 17.7719 3.92378 18.9801"
+              stroke="#1C1C1C"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
 
-    <!-- Selected File Display -->
-    @if (value()) {
-      <div class="p-8">
-        <div
-          class="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm border border-gray-200"
-        >
-          <div class="flex items-center space-x-4 flex-1 min-w-0">
-            <div class="flex-shrink-0">
+          <div>
+            <span class="rounded-md font-semibold group-hover:text-blue-500">
+              Sleep bestand in het vak
+            </span>
+            <p class="text-sm">
+              @if (acceptedMimeTypes().length > 0) {
+                <span class="block"
+                  >Formaten: {{ acceptAttributeHumanReadable() }}</span
+                >
+              }
+              <span class="block mt-1"
+                >Maximale grootte:
+                {{ formatFileSize(maxFileSizeBytes()) }}</span
+              >
+            </p>
+          </div>
+
+          <div>
+            <!--          <button-->
+            <!--            class="border border-gray-600 rounded-lg px-4 py-2 bg-white font-medium text-sm"-->
+            <!--            (click)="chooseNewFile($event)"-->
+            <!--            (keydown.enter)="$event.stopPropagation()"-->
+            <!--            (keydown.space)="$event.stopPropagation()"-->
+            <!--          >-->
+            <!--            Selecteer bestand-->
+            <!--          </button-->
+
+            <ng-container *ngTemplateOutlet="buttonTemplate" />
+          </div>
+        </div>
+      }
+
+      <!-- Selected File Display -->
+      @if (value()) {
+        <div class="p-8">
+          <div
+            class="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm border border-gray-200"
+          >
+            <div class="flex items-center space-x-4 flex-1 min-w-0">
+              <div class="flex-shrink-0">
+                <svg
+                  class="h-10 w-10 text-blue-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">
+                  {{ value()!.name }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  {{ formatFileSize(value()!.size) }} •
+                  {{ value()!.type }}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              (click)="$event.stopPropagation(); removeFile()"
+              class="ml-4 flex-shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Remove file"
+            >
               <svg
-                class="h-10 w-10 text-blue-500"
+                class="h-5 w-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -98,55 +132,27 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate">
-                {{ value()!.name }}
-              </p>
-              <p class="text-sm text-gray-500">
-                {{ formatFileSize(value()!.size) }} •
-                {{ value()!.type }}
-              </p>
-            </div>
+            </button>
           </div>
-          <button
-            type="button"
-            (click)="$event.stopPropagation(); removeFile()"
-            class="ml-4 flex-shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            aria-label="Remove file"
-          >
-            <svg
-              class="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+
+          <div class="mt-4 text-center">
+            <button
+              type="button"
+              (click)="chooseNewFile($event)"
+              class="text-sm text-blue-600 hover:text-blue-500 font-medium"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              Choose a different file
+            </button>
+          </div>
         </div>
-
-        <div class="mt-4 text-center">
-          <button
-            type="button"
-            (click)="chooseNewFile($event)"
-            class="text-sm text-blue-600 hover:text-blue-500 font-medium"
-          >
-            Choose a different file
-          </button>
-        </div>
-      </div>
-    }
-  </div>
-
+      }
+    </div>
+  } @else {
+    <ng-container *ngTemplateOutlet="buttonTemplate" />
+  }
   @for (errorMessage of errorMessages(); track $index) {
     <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
       <div class="flex">
@@ -172,3 +178,15 @@
     </div>
   }
 </div>
+
+<ng-template #buttonTemplate>
+  <button
+    class="border border-gray-600 rounded-lg px-4 py-2 bg-white font-medium text-sm"
+    [ngClass]="buttonClass()"
+    (click)="chooseNewFile($event)"
+    (keydown.enter)="$event.stopPropagation()"
+    (keydown.space)="$event.stopPropagation()"
+  >
+    Selecteer bestand
+  </button>
+</ng-template>

@@ -1,0 +1,37 @@
+<div
+  class="flex flex-col gap-6 p-6 bg-surface border-b lg:border-b-0 lg:border-r border-gray-300 overflow-y-auto h-full"
+>
+  <h2 class="text-sm">Huidig bestand</h2>
+
+  <div class="flex items-center gap-3">
+    <div
+      class="rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[65px] h-[65px]"
+    >
+      <img
+        [src]="'https://picsum.photos/seed/current/200/300'"
+        alt="Current file thumbnail"
+        class="w-full h-full object-contain"
+      />
+    </div>
+    <div class="min-w-0">
+      <p class="text-sm font-bold text-gray-900 truncate">
+        {{ store.file()?.name }}
+      </p>
+      <p class="text-sm mt-0.5">{{ store.fileDate() }}</p>
+    </div>
+  </div>
+
+  <hr class="border-gray-300 -mx-6" />
+
+  <h3 class="text-sm">Selecteer een ander bestand</h3>
+
+  <lib-shared-ui-file-upload
+    [acceptedMimeTypes]="uploadMimeTypes"
+    [maxFileSizeBytes]="uploadMaxSize"
+    [buttonOnly]="true"
+    [buttonClass]="'w-full'"
+    (valueChange)="store.setFile($event)"
+  />
+
+  <hr class="border-gray-300 -mx-6" />
+</div>

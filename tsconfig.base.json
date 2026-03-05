@@ -57,6 +57,15 @@
       ],
       "@c2pa-mcnl/verify-webapp/shared/ui/loading-overlay": [
         "libs/verify-webapp/shared/ui/loading-overlay/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/ui/detail/file-handler": [
+        "libs/verify-webapp/validate/ui/detail/file-handler/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/ui/detail/manifest-list": [
+        "libs/verify-webapp/validate/ui/detail/manifest-list/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/ui/detail/manifest-info": [
+        "libs/verify-webapp/validate/ui/detail/manifest-info/src/index.ts"
       ]
     }
   },
