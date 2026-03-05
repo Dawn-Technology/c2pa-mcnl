@@ -66,8 +66,15 @@ export const VerifyStore = signalStore(
     },
     setActiveManifest(manifestIndex: number) {
       patchState(store, () => ({
-        activeManifest: manifestIndex,
+        isLoading: true,
       }));
+
+      setTimeout(() => {
+        patchState(store, () => ({
+          activeManifest: manifestIndex,
+          isLoading: false,
+        }));
+      }, 500);
     },
   })),
   withHooks({
