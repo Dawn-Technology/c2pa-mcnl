@@ -8,7 +8,6 @@
   >
     <h2 class="text-sm">Huidig bestand</h2>
 
-    <!-- File preview + info -->
     <div class="flex items-center gap-3">
       <div
         class="rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[65px] h-[65px]"
@@ -59,5 +58,87 @@
     }
   </div>
 
-  <div class="bg-white p-12">test</div>
+  <div class="bg-white p-12 flex flex-col gap-6">
+    <div>
+      <h3 class="font-extrabold">{{ store.file()?.name }}</h3>
+      <p class="text-sm">Uitgegeven door Dawn Technology</p>
+    </div>
+    <div class="flex flex-col gap-4">
+      <div>
+        <h4 class="font-bold">Het proces</h4>
+        <p class="text-sm">
+          De app of het apparaat dat is gebruikt om deze content te produceren,
+          heeft de volgende informatie vastgelegd:
+        </p>
+      </div>
+
+      <div>
+        <h5 class="text-sm font-bold">Gebruikte app of apparaat</h5>
+        <p class="text-sm">Lightroom 8.5.1</p>
+      </div>
+
+      <div>
+        <h5 class="text-sm font-bold">Bewerkingen</h5>
+        <p class="text-sm">A</p>
+        <p class="text-sm">B</p>
+      </div>
+
+      <div>
+        <h5 class="text-sm font-bold mb-2">Bestandsdelen</h5>
+        <div class="flex items-center gap-3">
+          <div
+            class="rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[65px] h-[65px]"
+          >
+            <img
+              [src]="'https://picsum.photos/seed/current/200/300'"
+              alt="Current file thumbnail"
+              class="w-full h-full object-contain"
+            />
+          </div>
+          <div class="min-w-0">
+            <p class="text-sm text-gray-900 truncate">
+              {{ store.file()?.name }}
+            </p>
+            <p class="text-sm mt-0.5">{{ store.fileDate() }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div>
+        <h4 class="font-bold">Gegevens over camera-opname</h4>
+        <p class="text-sm">
+          Aanvullende gegevens afkomstig van de camera die is gebruikt om een
+          foto of video te maken. EXIF-gegevens kunnen worden bewerkt door de
+          maker van de content.
+        </p>
+      </div>
+
+      <div>
+        <h5 class="text-sm font-bold">Info</h5>
+        <p class="text-sm">SM-A525F</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div>
+        <h4 class="font-bold">Over deze Content Credential</h4>
+        <p class="text-sm">
+          De app of het apparaat dat is gebruikt om deze content te produceren,
+          heeft de volgende informatie vastgelegd:
+        </p>
+      </div>
+
+      <div>
+        <h5 class="text-sm font-bold">Uitgegeven door</h5>
+        <p class="text-sm">OpenAI</p>
+      </div>
+
+      <div>
+        <h5 class="text-sm font-bold">Uitgegeven op</h5>
+        <p class="text-sm">4 feb 2026 om 10:17 CET</p>
+      </div>
+    </div>
+  </div>
 </div>
