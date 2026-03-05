@@ -69,6 +69,9 @@
       ],
       "@c2pa-mcnl/verify-webapp/validate/ui/file-card": [
         "libs/verify-webapp/validate/ui/file-card/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/ui/validation-badge": [
+        "libs/verify-webapp/validate/ui/validation-badge/src/index.ts"
       ]
     }
   },

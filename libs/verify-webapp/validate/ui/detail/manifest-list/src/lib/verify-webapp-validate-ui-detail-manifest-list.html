@@ -5,7 +5,7 @@
 
   @for (thumb of [1, 2, 3]; track thumb) {
   <div
-    class="rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[165px] h-[150px]"
+    class="relative rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[165px] h-[150px]"
     [ngClass]="{ 'border-2': store.activeManifest() === thumb }"
     (click)="store.setActiveManifest(thumb)"
     (keydown.enter)="store.setActiveManifest(thumb)"
@@ -18,6 +18,18 @@
       alt="Manifest thumbnail"
       class="w-full h-full object-contain"
     />
+    @if (thumb === 1) {
+    <div class="absolute top-2 left-2">
+      <lib-verify-webapp-validate-ui-validation-badge
+        [valid]="true"
+        textValid="OpenAI"
+      />
+    </div>
+    } @if (thumb === 2) {
+    <div class="absolute top-2 left-2">
+      <lib-verify-webapp-validate-ui-validation-badge [valid]="false" />
+    </div>
+    }
   </div>
   }
 </div>
