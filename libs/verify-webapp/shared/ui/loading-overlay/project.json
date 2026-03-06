@@ -1,0 +1,20 @@
+{
+  "name": "verify-webapp-shared-ui-loading-overlay",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/verify-webapp/shared/ui/loading-overlay/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": ["scope:verify-webapp", "type:ui"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/vitest:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../../coverage/libs/verify-webapp/shared/ui/loading-overlay"
+      }
+    }
+  }
+}

@@ -43,8 +43,35 @@
       "@c2pa-mcnl/verify-webapp/shared/ui/layout-header": [
         "libs/verify-webapp/shared/ui/layout-header/src/index.ts"
       ],
-      "@c2pa-mcnl/verify-webapp/home/feature/detail": [
-        "libs/verify-webapp/home/feature/detail/src/index.ts"
+      "@c2pa-mcnl/verify-webapp/validate/feature/detail": [
+        "libs/verify-webapp/validate/feature/detail/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/feature/shell": [
+        "libs/verify-webapp/validate/feature/shell/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/feature/home": [
+        "libs/verify-webapp/validate/feature/home/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/data-access": [
+        "libs/verify-webapp/validate/data-access/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/shared/ui/loading-overlay": [
+        "libs/verify-webapp/shared/ui/loading-overlay/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/ui/detail/file-handler": [
+        "libs/verify-webapp/validate/ui/detail/file-handler/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/ui/detail/manifest-list": [
+        "libs/verify-webapp/validate/ui/detail/manifest-list/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/ui/detail/manifest-info": [
+        "libs/verify-webapp/validate/ui/detail/manifest-info/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/ui/file-card": [
+        "libs/verify-webapp/validate/ui/file-card/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/ui/validation-badge": [
+        "libs/verify-webapp/validate/ui/validation-badge/src/index.ts"
       ]
     }
   },

@@ -48,6 +48,7 @@ export default [
             {
               sourceTag: 'type:feature',
               onlyDependOnLibsWithTags: [
+                'type:feature',
                 'type:ui',
                 'type:data-access',
                 'type:util',
@@ -55,7 +56,11 @@ export default [
             },
             {
               sourceTag: 'type:ui',
-              onlyDependOnLibsWithTags: ['type:ui', 'type:util'],
+              onlyDependOnLibsWithTags: [
+                'type:ui',
+                'type:util',
+                'type:data-access',
+              ],
             },
             {
               sourceTag: 'type:data-access',

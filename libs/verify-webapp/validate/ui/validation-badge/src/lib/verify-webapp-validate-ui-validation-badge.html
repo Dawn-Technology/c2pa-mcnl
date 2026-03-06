@@ -1,0 +1,23 @@
+<div
+  class="flex items-center gap-1.5 rounded-xl shadow- drop-shadow-xl bg-white px-2 py-1"
+>
+  @if (valid()) {
+  <img src="logo.svg" alt="Logo" class="h-4 w-4" />
+  <span class="font-bold text-xs">{{textValid()}}</span>
+  } @else {
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    class="h-4 w-4 text-orange-600"
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path
+      d="M12 2.25a.75.75 0 0 1 .649.374l9.75 16.5A.75.75 0 0 1 21.75 20.25H2.25a.75.75 0 0 1-.649-1.126l9.75-16.5A.75.75 0 0 1 12 2.25zm0 5.25a.75.75 0 0 0-.75.75v5.25a.75.75 0 0 0 1.5 0V8.25A.75.75 0 0 0 12 7.5zm0 9.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5z"
+    />
+  </svg>
+
+  <span class="font-bold text-xs">{{textInvalid()}}</span>
+  }
+</div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-non-null-assertion */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FileUploadComponent } from './file-upload.component';
 import { By } from '@angular/platform-browser';
@@ -25,7 +26,6 @@ if (!globalThis.DragEvent) {
     },
   });
 }
-// ----------------------------------------
 
 describe('FileUploadComponent', () => {
   let component: FileUploadComponent;

@@ -1,0 +1,71 @@
+<div class="bg-white p-12 flex flex-col gap-6 h-full">
+  <div>
+    <h3 class="font-extrabold">{{ store.file()?.name }}</h3>
+    <p class="text-sm">Uitgegeven door Dawn Technology</p>
+  </div>
+  <div class="flex flex-col gap-4">
+    <div>
+      <h4 class="font-bold">Het proces</h4>
+      <p class="text-sm">
+        De app of het apparaat dat is gebruikt om deze content te produceren,
+        heeft de volgende informatie vastgelegd:
+      </p>
+    </div>
+
+    <div>
+      <h5 class="text-sm font-bold">Gebruikte app of apparaat</h5>
+      <p class="text-sm">Lightroom 8.5.1</p>
+    </div>
+
+    <div>
+      <h5 class="text-sm font-bold">Bewerkingen</h5>
+      <p class="text-sm">A</p>
+      <p class="text-sm">B</p>
+    </div>
+
+    <div>
+      <h5 class="text-sm font-bold mb-2">Bestandsdelen</h5>
+      <lib-verify-webapp-validate-ui-file-card
+        fileUrl="https://picsum.photos/seed/current/200/300"
+        [fileName]="store.file()?.name!"
+        [subText]="store.fileDate()"
+      />
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <div>
+      <h4 class="font-bold">Gegevens over camera-opname</h4>
+      <p class="text-sm">
+        Aanvullende gegevens afkomstig van de camera die is gebruikt om een foto
+        of video te maken. EXIF-gegevens kunnen worden bewerkt door de maker van
+        de content.
+      </p>
+    </div>
+
+    <div>
+      <h5 class="text-sm font-bold">Info</h5>
+      <p class="text-sm">SM-A525F</p>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <div>
+      <h4 class="font-bold">Over deze Content Credential</h4>
+      <p class="text-sm">
+        De app of het apparaat dat is gebruikt om deze content te produceren,
+        heeft de volgende informatie vastgelegd:
+      </p>
+    </div>
+
+    <div>
+      <h5 class="text-sm font-bold">Uitgegeven door</h5>
+      <p class="text-sm">OpenAI</p>
+    </div>
+
+    <div>
+      <h5 class="text-sm font-bold">Uitgegeven op</h5>
+      <p class="text-sm">4 feb 2026 om 10:17 CET</p>
+    </div>
+  </div>
+</div>
