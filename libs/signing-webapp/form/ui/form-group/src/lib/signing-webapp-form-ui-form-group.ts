@@ -20,7 +20,7 @@ import { Component, input } from '@angular/core';
 
           @if (help()) {
             <p
-              class="text-xs opacity-30 group-hover:opacity-100 group-hover:font-bold transition-all duration-500 ease-in-out"
+              class="text-xs opacity-30 group-hover:opacity-100 transition-all duration-500 ease-in-out"
             >
               {{ help() }}
             </p>

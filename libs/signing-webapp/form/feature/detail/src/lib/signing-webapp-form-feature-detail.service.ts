@@ -5,13 +5,20 @@ import * as cbor from 'cbor-x';
 import { VerifiableCredentialIssuer } from './form.model';
 import { JPEG } from '@dockbite/c2pa-ts/asset';
 import {
+  ActionAssertion,
+  ActionType,
   DataHashAssertion,
+  DigitalSourceType,
+  IngredientAssertion,
   Manifest,
   ManifestStore,
+  RelationshipType,
+  ThumbnailAssertion,
 } from '@dockbite/c2pa-ts/manifest';
 import * as x509 from '@peculiar/x509';
 import { CoseAlgorithmIdentifier, LocalSigner } from '@dockbite/c2pa-ts/cose';
 import { LocalTimestampProvider } from '@dockbite/c2pa-ts/rfc3161';
+import { SuperBox } from '@dockbite/c2pa-ts/jumbf';
 
 @Injectable()
 export class SigningWebappFormFeatureDetailService {
@@ -55,6 +62,8 @@ export class SigningWebappFormFeatureDetailService {
       );
     }
 
+    const instanceID = crypto.randomUUID();
+
     const signer = new LocalSigner(
       privateKey,
       CoseAlgorithmIdentifier.ES256,
@@ -69,13 +78,77 @@ export class SigningWebappFormFeatureDetailService {
 
     const asset = await JPEG.create(opts.assetFile);
 
-    const manifestStore = new ManifestStore();
+    // 1. Extract the raw JUMBF bytes from the asset (asset-specific)
+    const jumbfBytes = await asset.getManifestJUMBF(); // depends on asset class
+
+    console.log('got jumbf bytes', jumbfBytes);
+
+    const actionAssertion = new ActionAssertion();
+    let manifestStore: ManifestStore;
+    let previousManifest: Manifest | undefined;
+    if (jumbfBytes) {
+      console.log('got jumbf bytes', jumbfBytes);
+      const superBox = SuperBox.fromBuffer(jumbfBytes);
+
+      manifestStore = ManifestStore.read(superBox);
+      previousManifest = manifestStore.getActiveManifest();
+
+      console.log(manifestStore.getActiveManifest());
+    } else {
+      console.log('no existing manifest found, creating new one');
+      manifestStore = new ManifestStore();
+    }
+
     const manifest: Manifest = manifestStore.createManifest({
+      // claimVersion: 1,
       assetFormat: 'image/jpeg',
-      instanceID: 'xyzxyz',
+      instanceID,
       defaultHashAlgorithm: 'SHA-256',
       signer,
     });
+
+    console.log('manifest store', manifestStore);
+
+    const thumbnalClaimAssertion = ThumbnailAssertion.create(
+      'jpeg',
+      new Uint8Array(await opts.assetFile.arrayBuffer()),
+      0,
+    );
+    manifest.addAssertion(thumbnalClaimAssertion);
+
+    const thumbnalIngredientAssertion = ThumbnailAssertion.create(
+      'jpeg',
+      new Uint8Array(await opts.assetFile.arrayBuffer()),
+      1,
+    );
+    manifest.addAssertion(thumbnalIngredientAssertion);
+
+    if (previousManifest) {
+      console.log('prev claim', previousManifest.claim?.assertions[0]?.hash);
+      const ingredientAssertion = new IngredientAssertion();
+      ingredientAssertion.title = 'Parent Asset';
+      ingredientAssertion.format = previousManifest.claim?.format as string;
+      ingredientAssertion.instanceID = previousManifest.claim
+        ?.instanceID as string;
+      ingredientAssertion.relationship = RelationshipType.ParentOf;
+      ingredientAssertion.c2pa_manifest = manifest.createHashedReference(
+        `/c2pa/${previousManifest.label}/c2pa.claim`,
+      );
+      ingredientAssertion.thumbnail = manifest.createHashedReference(
+        `c2pa.assertions/c2pa.thumbnail.ingredient.jpeg`,
+      );
+      console.log(ingredientAssertion);
+      manifest.addAssertion(ingredientAssertion);
+    }
+
+    actionAssertion.actions.push({
+      action: ActionType.C2paOpened,
+      digitalSourceType: DigitalSourceType.DigitalArt,
+      reason: 'Opened the media',
+      instanceID,
+    });
+
+    manifest.addAssertion(actionAssertion);
 
     const dataHashAssertion = DataHashAssertion.create('SHA-512');
     manifest.addAssertion(dataHashAssertion);
@@ -86,9 +159,6 @@ export class SigningWebappFormFeatureDetailService {
     // update the hard binding
     await dataHashAssertion.updateWithAsset(asset);
 
-    console.log(manifest);
-    console.log(dataHashAssertion.hash);
-
     // create the signature
     await manifest.sign(signer, timestampProvider);
 
@@ -96,7 +166,6 @@ export class SigningWebappFormFeatureDetailService {
     await asset.writeManifestJUMBF(manifestStore.getBytes());
 
     const newFile = await asset.getDataRange();
-    console.log(newFile);
 
     return newFile;
   }
