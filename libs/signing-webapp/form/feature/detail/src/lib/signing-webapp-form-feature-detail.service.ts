@@ -5,8 +5,10 @@ import * as cbor from 'cbor-x';
 import { VerifiableCredentialIssuer } from './form.model';
 import { JPEG } from '@dockbite/c2pa-ts/asset';
 import {
+  Action,
   ActionAssertion,
   ActionType,
+  ClaimVersion,
   DataHashAssertion,
   DigitalSourceType,
   IngredientAssertion,
@@ -19,6 +21,7 @@ import * as x509 from '@peculiar/x509';
 import { CoseAlgorithmIdentifier, LocalSigner } from '@dockbite/c2pa-ts/cose';
 import { LocalTimestampProvider } from '@dockbite/c2pa-ts/rfc3161';
 import { SuperBox } from '@dockbite/c2pa-ts/jumbf';
+import * as exifr from 'exifr';
 
 @Injectable()
 export class SigningWebappFormFeatureDetailService {
@@ -78,12 +81,14 @@ export class SigningWebappFormFeatureDetailService {
 
     const asset = await JPEG.create(opts.assetFile);
 
-    // 1. Extract the raw JUMBF bytes from the asset (asset-specific)
+    const { instanceID: xmpInstanceId, documentID: xmpDocumentID } =
+      await this.getXmpInstanceId(opts.assetFile);
+
+    console.log('xmp instance id', xmpInstanceId);
+    console.log('xmp document id', xmpDocumentID);
+
     const jumbfBytes = await asset.getManifestJUMBF(); // depends on asset class
 
-    console.log('got jumbf bytes', jumbfBytes);
-
-    const actionAssertion = new ActionAssertion();
     let manifestStore: ManifestStore;
     let previousManifest: Manifest | undefined;
     if (jumbfBytes) {
@@ -93,21 +98,21 @@ export class SigningWebappFormFeatureDetailService {
       manifestStore = ManifestStore.read(superBox);
       previousManifest = manifestStore.getActiveManifest();
 
-      console.log(manifestStore.getActiveManifest());
+      console.log(
+        'existing manifest found, loading it into the manifest store',
+      );
     } else {
-      console.log('no existing manifest found, creating new one');
+      console.log('no existing manifest found, creating a new manifest store');
       manifestStore = new ManifestStore();
     }
 
     const manifest: Manifest = manifestStore.createManifest({
-      // claimVersion: 1,
+      claimVersion: ClaimVersion.V2,
       assetFormat: 'image/jpeg',
       instanceID,
       defaultHashAlgorithm: 'SHA-256',
       signer,
     });
-
-    console.log('manifest store', manifestStore);
 
     const thumbnalClaimAssertion = ThumbnailAssertion.create(
       'jpeg',
@@ -123,30 +128,39 @@ export class SigningWebappFormFeatureDetailService {
     );
     manifest.addAssertion(thumbnalIngredientAssertion);
 
+    const ingredientAssertion = IngredientAssertion.create(
+      opts.assetFile.name,
+      'image/jpeg',
+      xmpInstanceId || `urn:uuid:${crypto.randomUUID()}`,
+      xmpDocumentID,
+    );
+    ingredientAssertion.relationship = RelationshipType.ParentOf;
+    ingredientAssertion.thumbnail = manifest.createHashedReference(
+      `c2pa.assertions/c2pa.thumbnail.ingredient.jpeg`,
+    );
+
     if (previousManifest) {
-      console.log('prev claim', previousManifest.claim?.assertions[0]?.hash);
-      const ingredientAssertion = new IngredientAssertion();
-      ingredientAssertion.title = 'Parent Asset';
-      ingredientAssertion.format = previousManifest.claim?.format as string;
-      ingredientAssertion.instanceID = previousManifest.claim
-        ?.instanceID as string;
-      ingredientAssertion.relationship = RelationshipType.ParentOf;
+      ingredientAssertion.instanceID = previousManifest.claim?.instanceID;
       ingredientAssertion.c2pa_manifest = manifest.createHashedReference(
-        `/c2pa/${previousManifest.label}/c2pa.claim`,
+        `/c2pa/${previousManifest.label}/c2pa.claim.v2`,
       );
-      ingredientAssertion.thumbnail = manifest.createHashedReference(
-        `c2pa.assertions/c2pa.thumbnail.ingredient.jpeg`,
-      );
-      console.log(ingredientAssertion);
-      manifest.addAssertion(ingredientAssertion);
     }
 
-    actionAssertion.actions.push({
+    manifest.addAssertion(ingredientAssertion);
+
+    const actionAssertion = new ActionAssertion();
+    const openedAction: Action = {
       action: ActionType.C2paOpened,
       digitalSourceType: DigitalSourceType.DigitalArt,
-      reason: 'Opened the media',
       instanceID,
-    });
+      parameters: {
+        ingredients: [
+          manifest.createHashedReference(`c2pa.assertions/c2pa.ingredient`),
+        ],
+      },
+    };
+
+    actionAssertion.actions.push(openedAction);
 
     manifest.addAssertion(actionAssertion);
 
@@ -274,7 +288,10 @@ export class SigningWebappFormFeatureDetailService {
       new Uint8Array(0), // external_aad (empty)
       payload,
     ];
-    const toBeSigned = cbor.encode(sigStructure);
+    const toBeSignedBuffer = cbor.encode(sigStructure);
+    const toBeSigned: Uint8Array<ArrayBuffer> = new Uint8Array(
+      new Uint8Array(toBeSignedBuffer).buffer,
+    );
 
     // Sign with ECDSA
     const signature = await crypto.subtle.sign(
@@ -295,5 +312,32 @@ export class SigningWebappFormFeatureDetailService {
     return new cbor.Encoder({ tagUint8Array: false }).encode(
       new cbor.Tag(coseSign1Array, 18),
     );
+  }
+
+  async getXmpInstanceId(input: Parameters<typeof exifr.parse>[0]): Promise<{
+    instanceID: string | undefined;
+    documentID: string | undefined;
+  }> {
+    try {
+      // Tell exifr to exclusively parse XMP data to keep it fast
+      const metadata = await exifr.parse(input, {
+        xmp: true,
+        tiff: false,
+        exif: false,
+        icc: false,
+      });
+
+      return {
+        instanceID: metadata?.InstanceID
+          ? metadata?.InstanceID.replace('xmp.iid:', 'xmp:iid:')
+          : undefined,
+        documentID: metadata?.DocumentID
+          ? metadata?.DocumentID.replace('xmp.did:', 'xmp:did:')
+          : undefined,
+      };
+    } catch (error) {
+      console.error('Error extracting metadata:', error);
+      return { instanceID: undefined, documentID: undefined };
+    }
   }
 }
