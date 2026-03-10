@@ -66,6 +66,10 @@ export class SigningWebappFormFeatureDetailService {
       throw new Error('Unsupported file type. Only JPEG is supported.');
     }
 
+    const fileName = opts.assetFile.name;
+    const fileType = opts.assetFile.type;
+    const fileExtension = fileType.replace(/.*\//, '');
+
     const leafCertificate = await createX509CertFromFile(
       opts.leafCertificateFile,
     );
@@ -121,35 +125,35 @@ export class SigningWebappFormFeatureDetailService {
 
     const manifest: Manifest = manifestStore.createManifest({
       claimVersion: ClaimVersion.V2,
-      assetFormat: 'image/jpeg',
+      assetFormat: fileType,
       instanceID,
       defaultHashAlgorithm: 'SHA-256',
       signer,
     });
 
     const thumbnailClaimAssertion = ThumbnailAssertion.create(
-      'jpeg',
+      fileExtension,
       new Uint8Array(await opts.assetFile.arrayBuffer()),
       0,
     );
     manifest.addAssertion(thumbnailClaimAssertion);
 
     const thumbnailIngredientAssertion = ThumbnailAssertion.create(
-      'jpeg',
+      fileExtension,
       new Uint8Array(await opts.assetFile.arrayBuffer()),
       1,
     );
     manifest.addAssertion(thumbnailIngredientAssertion);
 
     const ingredientAssertion = IngredientAssertion.create(
-      opts.assetFile.name,
-      'image/jpeg',
+      fileName,
+      fileType,
       xmpInstanceId || `urn:uuid:${crypto.randomUUID()}`,
       xmpDocumentID,
     );
     ingredientAssertion.relationship = RelationshipType.ParentOf;
     ingredientAssertion.thumbnail = manifest.createHashedReference(
-      `c2pa.assertions/c2pa.thumbnail.ingredient.jpeg`,
+      `c2pa.assertions/c2pa.thumbnail.ingredient.${fileExtension}`,
     );
 
     if (previousManifest) {
