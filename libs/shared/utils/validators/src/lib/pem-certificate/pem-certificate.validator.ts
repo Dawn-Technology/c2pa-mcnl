@@ -1,6 +1,6 @@
 import { SchemaPath, validateAsync } from '@angular/forms/signals';
 import { resource } from '@angular/core';
-import * as x509 from '@peculiar/x509';
+import { createX509CertFromFile } from '@c2pa-mcnl/shared/utils/helpers';
 
 export function pemCertificateValidator(field: SchemaPath<unknown>) {
   validateAsync(field, {
@@ -18,8 +18,7 @@ export function pemCertificateValidator(field: SchemaPath<unknown>) {
           }
 
           try {
-            const pem = await params.text();
-            new x509.X509Certificate(pem);
+            await createX509CertFromFile(params);
           } catch (e) {
             console.error(e);
             return {

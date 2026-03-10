@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { extractBase64FromPem } from '@c2pa-mcnl/shared/utils/helpers';
+import {
+  createX509CertFromFile,
+  extractBase64FromPem,
+  extractDerFromFile,
+} from '@c2pa-mcnl/shared/utils/helpers';
 import { addYears } from 'date-fns';
 import * as cbor from 'cbor-x';
 import { VerifiableCredentialIssuer } from './form.model';
@@ -17,7 +21,6 @@ import {
   RelationshipType,
   ThumbnailAssertion,
 } from '@dockbite/c2pa-ts/manifest';
-import * as x509 from '@peculiar/x509';
 import { CoseAlgorithmIdentifier, LocalSigner } from '@dockbite/c2pa-ts/cose';
 import { LocalTimestampProvider } from '@dockbite/c2pa-ts/rfc3161';
 import { SuperBox } from '@dockbite/c2pa-ts/jumbf';
@@ -26,57 +29,63 @@ import * as exifr from 'exifr';
 @Injectable()
 export class SigningWebappFormFeatureDetailService {
   /**
-   * TODO
-   * - add CAWG Identity Assertion
-   * - add chain certification
-   * @param opts
+   * This method performs the following steps:
+   * 1. Validates that the provided asset file is a JPEG. (TODO: Extend support to other formats)
+   * 2. Reads the leaf certificate, private key, and intermediate certificate from the provided PEM files.
+   * 3. Creates a LocalSigner using the leaf certificate and private key.
+   * 4. Creates a LocalTimestampProvider for timestamping the signature. (TODO: this should probably be excluded for the POC)
+   * 5. Loads the asset and extracts existing XMP metadata to retrieve instanceID and documentID if they exist.
+   * 6. Checks if the asset already contains a C2PA manifest in a JUMBF box. If it does, it loads the existing manifest into a ManifestStore; otherwise, it creates a new ManifestStore.
+   * 7. Creates a new Manifest with the appropriate claim version, asset format, instanceID, and signer.
+   * 8. Adds assertions to the manifest:
+   *   - A ThumbnailAssertion containing the original asset data as a thumbnail.
+   *   - Another ThumbnailAssertion for the ingredient thumbnail.
+   *   - An IngredientAssertion referencing the original asset and linking to the previous manifest if it exists.
+   *   - An ActionAssertion indicating that the asset was opened, with a relationship to the ingredient assertion.
+   *   - A DataHashAssertion to create a hard binding between the manifest and the asset.
+   * 9. Ensures that there is enough space in the asset for the manifest JUMBF box.
+   * 10. Updates the DataHashAssertion with the actual asset data to create the hard binding.
+   * 11. Signs the manifest using the LocalSigner and LocalTimestampProvider.
+   * 12. Writes the manifest JUMBF box back into the asset.
+   * 13. Returns the modified asset data as a Uint8Array.
+   *
+   * @summary Builds a C2PA manifest with the provided certificates and asset, embeds it into the asset's JUMBF box, and returns the modified asset data.
+   * @param opts.assetFile - The image file to which the C2PA manifest will be added
+   * @param opts.leafCertificateFile - The PEM file containing the leaf X.509 certificate for signing
+   * @param opts.leafCertificateKeyFile - The PEM file containing the private key corresponding to the leaf certificate
+   * @param opts.intermediateCertificate - The PEM file containing the intermediate X.509 certificate (if applicable)
+   * @returns A Uint8Array containing the modified asset data with the embedded C2PA manifest
    */
-  async createManifest(opts: {
+  async addC2paManifest(opts: {
     assetFile: File;
     leafCertificateFile: File;
     leafCertificateKeyFile: File;
     intermediateCertificate: File;
-  }) {
+  }): Promise<Uint8Array> {
     if (!(await JPEG.canRead(opts.assetFile))) {
       throw new Error('Unsupported file type. Only JPEG is supported.');
     }
 
-    let leafCertificate: x509.X509Certificate;
-    try {
-      const pem = await opts.leafCertificateFile.text();
-      leafCertificate = new x509.X509Certificate(pem);
-    } catch (err) {
-      console.error(err);
-      throw new Error(
-        'Invalid certificate file. Please provide a valid PEM-encoded X.509 certificate.',
-      );
-    }
-
-    let privateKey: Uint8Array;
-    try {
-      const base64 = extractBase64FromPem(
-        await opts.leafCertificateKeyFile.text(),
-      );
-      privateKey = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-    } catch (err) {
-      console.error(err);
-      throw new Error(
-        'Invalid private key file. Please provide a valid PEM-encoded private key in PKCS#8 format.',
-      );
-    }
+    const leafCertificate = await createX509CertFromFile(
+      opts.leafCertificateFile,
+    );
+    const leafKeyDer = await extractDerFromFile(opts.leafCertificateKeyFile);
+    const intermediateCertificate = await createX509CertFromFile(
+      opts.intermediateCertificate,
+    );
 
     const instanceID = crypto.randomUUID();
 
     const signer = new LocalSigner(
-      privateKey,
+      leafKeyDer,
       CoseAlgorithmIdentifier.ES256,
       leafCertificate,
-      // [intermediate],
+      [intermediateCertificate],
     );
 
     const timestampProvider = new LocalTimestampProvider(
       leafCertificate,
-      privateKey,
+      leafKeyDer,
     );
 
     const asset = await JPEG.create(opts.assetFile);
@@ -84,8 +93,12 @@ export class SigningWebappFormFeatureDetailService {
     const { instanceID: xmpInstanceId, documentID: xmpDocumentID } =
       await this.getXmpInstanceId(opts.assetFile);
 
-    console.log('xmp instance id', xmpInstanceId);
-    console.log('xmp document id', xmpDocumentID);
+    console.debug(
+      'xmp instance id',
+      xmpInstanceId,
+      'xmp document id',
+      xmpDocumentID,
+    );
 
     const jumbfBytes = await asset.getManifestJUMBF(); // depends on asset class
 
@@ -114,19 +127,19 @@ export class SigningWebappFormFeatureDetailService {
       signer,
     });
 
-    const thumbnalClaimAssertion = ThumbnailAssertion.create(
+    const thumbnailClaimAssertion = ThumbnailAssertion.create(
       'jpeg',
       new Uint8Array(await opts.assetFile.arrayBuffer()),
       0,
     );
-    manifest.addAssertion(thumbnalClaimAssertion);
+    manifest.addAssertion(thumbnailClaimAssertion);
 
-    const thumbnalIngredientAssertion = ThumbnailAssertion.create(
+    const thumbnailIngredientAssertion = ThumbnailAssertion.create(
       'jpeg',
       new Uint8Array(await opts.assetFile.arrayBuffer()),
       1,
     );
-    manifest.addAssertion(thumbnalIngredientAssertion);
+    manifest.addAssertion(thumbnailIngredientAssertion);
 
     const ingredientAssertion = IngredientAssertion.create(
       opts.assetFile.name,
@@ -179,9 +192,7 @@ export class SigningWebappFormFeatureDetailService {
     // write the JUMBF box to the asset
     await asset.writeManifestJUMBF(manifestStore.getBytes());
 
-    const newFile = await asset.getDataRange();
-
-    return newFile;
+    return await asset.getDataRange();
   }
 
   /**

@@ -1,6 +1,6 @@
 import { SchemaPath, validateAsync } from '@angular/forms/signals';
 import { resource } from '@angular/core';
-import { extractBase64FromPem } from '@c2pa-mcnl/shared/utils/helpers';
+import { extractDerFromFile } from '@c2pa-mcnl/shared/utils/helpers';
 
 export function pemKeyValidator(field: SchemaPath<unknown>) {
   validateAsync(field, {
@@ -18,9 +18,7 @@ export function pemKeyValidator(field: SchemaPath<unknown>) {
           }
 
           try {
-            const base64 = extractBase64FromPem(await params.text());
-
-            const der = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+            const der = await extractDerFromFile(params);
 
             // validate the key by trying to import it using Web Crypto API
             await crypto.subtle.importKey(

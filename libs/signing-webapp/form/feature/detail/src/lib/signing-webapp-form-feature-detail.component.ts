@@ -67,21 +67,30 @@ export class SigningWebappFormFeatureDetailComponent {
   async createAndSignManifest() {
     const model = this.signingModel();
 
-    const file = await this.service.createManifest({
-      assetFile: model.assetFile!,
-      leafCertificateFile: model.leafCertificate!,
-      leafCertificateKeyFile: model.leafPrivateKey!,
-      intermediateCertificate: model.intermediateCertificate!,
+    if (
+      !model.assetFile ||
+      !model.leafCertificate ||
+      !model.leafPrivateKey ||
+      !model.intermediateCertificate
+    ) {
+      console.error('One or more required fields are missing');
+      return;
+    }
+
+    const file = await this.service.addC2paManifest({
+      assetFile: model.assetFile,
+      leafCertificateFile: model.leafCertificate,
+      leafCertificateKeyFile: model.leafPrivateKey,
+      intermediateCertificate: model.intermediateCertificate,
     });
 
-    // Trigger file download
     const blob = new Blob([new Uint8Array(file)], {
-      type: 'application/octet-stream',
+      type: model.assetFile.type || 'application/octet-stream',
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'signed_manifest.jpeg';
+    a.download = model.assetFile.name;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
