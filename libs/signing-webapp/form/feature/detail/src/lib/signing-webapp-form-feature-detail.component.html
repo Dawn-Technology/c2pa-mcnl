@@ -5,12 +5,9 @@
   >
     <lib-signing-webapp-form-ui-upload-file-input
       inputId="leaf-certificate-upload"
-      label="Leaf Certificate (X.509)"
-      description="Upload the public certificate file (e.g., .pem, .cer) that contains your signing identity. This certificate will be used to cryptographically sign the manifest."
-      help="⚠️ This manual upload is for Proof-of-Concept testing only. In a
-        real-world C2PA implementation, signing credentials are never handled manually;
-        they are securely managed and accessed via a Hardware Security Module
-        (HSM) or Key Management Service (KMS)."
+      label="Leaf Certificaat (X.509)"
+      description="Upload het publieke certificaatbestand (bijv. .pem, .cer) dat uw ondertekeningsidentiteit bevat. Dit certificaat wordt gebruikt om het manifest cryptografisch te ondertekenen."
+      help="⚠️ Deze handmatige upload is uitsluitend bedoeld voor Proof-of-Concept-tests. In een echte C2PA-implementatie worden ondertekeningsreferenties nooit handmatig verwerkt; ze worden veilig beheerd en benaderd via een Hardware Security Module (HSM) of Key Management Service (KMS)."
       [required]="true"
       [acceptedMimeTypes]="certificateMimeTypes"
       [maxFileSizeBytes]="certificateMaxSize"
@@ -19,10 +16,9 @@
 
     <lib-signing-webapp-form-ui-upload-file-input
       inputId="leaf-private-key-upload"
-      label="Leaf Private Key"
-      description="Upload the private key file associated with your Leaf Certificate. This key is used to generate the cryptographic signature for the manifest."
-      help="⚠️ This manual upload is for Proof-of-Concept testing only. In a real-world C2PA implementation, private keys are never handled manually; they are securely managed and accessed via a Hardware Security Module
-        (HSM) or Key Management Service (KMS)."
+      label="Leaf Privésleutel"
+      description="Upload het privésleutelbestand dat hoort bij uw Leaf Certificaat. Deze sleutel wordt gebruikt om de cryptografische handtekening voor het manifest te genereren."
+      help="⚠️ Deze handmatige upload is uitsluitend bedoeld voor Proof-of-Concept-tests. In een echte C2PA-implementatie worden privésleutels nooit handmatig verwerkt; ze worden veilig beheerd en benaderd via een Hardware Security Module (HSM) of Key Management Service (KMS)."
       [required]="true"
       [acceptedMimeTypes]="keyMimeTypes"
       [maxFileSizeBytes]="keyMaxSize"
@@ -31,9 +27,9 @@
 
     <lib-signing-webapp-form-ui-upload-file-input
       inputId="intermediate-certificate-upload"
-      label="Intermediate Certificate (X.509)"
-      description="Upload the public certificate file (e.g., .pem, .cer) that issued your Leaf Certificate. This certificate is required to complete the 'Chain of Trust', linking your identity to a trusted Root Authority."
-      help="ℹ️ Pilot Note: In a production C2PA workflow, the 'Chain of Trust' (Leaf + Intermediates) is usually assembled automatically by the signing service or embedded directly within the signing identity. Manual assembly is required here for demonstration purposes only."
+      label="Tussenliggend Certificaat (X.509)"
+      description="Upload het publieke certificaatbestand (bijv. .pem, .cer) dat uw Leaf Certificaat heeft uitgegeven. Dit certificaat is vereist om de 'Vertrouwensketen' te voltooien, waarmee uw identiteit wordt gekoppeld aan een vertrouwde Root-autoriteit."
+      help="⚠️ In een productie-C2PA-workflow wordt de 'Vertrouwensketen' (Leaf + Tussenliggende certificaten) meestal automatisch samengesteld door de ondertekeningsservice of rechtstreeks ingesloten in de ondertekeningsidentiteit. Handmatige samenstelling is hier uitsluitend vereist voor demonstratiedoeleinden."
       [required]="true"
       [acceptedMimeTypes]="certificateMimeTypes"
       [maxFileSizeBytes]="certificateMaxSize"
@@ -42,9 +38,9 @@
 
     <lib-signing-webapp-form-ui-upload-file-input
       inputId="vc-key-upload"
-      label="Digital Identity's Private Key"
-      description="Upload the private key file (e.g., .pem, .key) used to sign the Verifiable Credential. This key represents the Issuer's authority and is required to cryptographically mint the credential."
-      help="⚠️ Pilot Note: This simulates the Issuer's workflow. In production, this key is locked in the Issuer's secure server. Real users (Holders) only receive the final signed credential, they do not possess the private key used to create it."
+      label="Privésleutel van Digitale Identiteit"
+      description="Upload het privésleutelbestand (bijv. .pem, .key) dat wordt gebruikt om het Verifieerbaar Credential te ondertekenen. Deze sleutel vertegenwoordigt de autoriteit van de Uitgever en is vereist om het credential cryptografisch aan te maken."
+      help="⚠️ Dit simuleert de workflow van de Uitgever. In productie is deze sleutel vergrendeld op de beveiligde server van de Uitgever. Echte gebruikers (Houders) ontvangen alleen het definitieve ondertekende credential; zij beschikken niet over de privésleutel die is gebruikt om het aan te maken."
       [acceptedMimeTypes]="verifiableCredentialPrivateKeyMimeTypes"
       [maxFileSizeBytes]="verifiableCredentialPrivateKeyMaxSize"
       [control]="signingForm.verifiableCredentialPrivateKey"
@@ -52,16 +48,9 @@
 
     <lib-signing-webapp-form-ui-form-group
       inputId="vc-issuer"
-      label="Digital Identity's issuer"
-      description="Enter the name or identifier (e.g., DID) of the organization that
-          issued the Verifiable Credential. This entity acts as the trusted
-          authority - such as a government, university, or employer - that
-          vouches for the authenticity of your identity data."
-      help="⚠️ Pilot Note: In a real-world Verifiable Credential workflow, the
-          Issuer's identity is cryptographically locked within the credential
-          itself (often as a Decentralized Identifier). We ask you to define it
-          here to simulate the issuance process and demonstrate how the Issuer
-          is displayed in the Manifest."
+      label="Uitgever van Digitale Identiteit"
+      description="Voer de naam of het identificator (bijv. DID) in van de organisatie die het Verifieerbaar Credential heeft uitgegeven. Deze entiteit fungeert als de vertrouwde autoriteit — zoals een overheid, universiteit of werkgever — die instaat voor de authenticiteit van uw identiteitsgegevens."
+      help="ℹ️ In een echte Verifieerbaar Credential-workflow is de identiteit van de Uitgever cryptografisch vergrendeld binnen het credential zelf (vaak als een Gedecentraliseerde Identifier). We vragen u dit hier te definiëren om het uitgifteproces te simuleren en te demonstreren hoe de Uitgever wordt weergegeven in het Manifest."
       class="w-full"
     >
       <select
@@ -69,7 +58,7 @@
         class="text-center p-2"
         [formField]="signingForm.verifiableCredentialIssuer"
       >
-        <option value="" selected>--- Select an option ---</option>
+        <option value="" selected>--- Selecteer een optie ---</option>
         @for (issuer of verifiableCredentialIssuers; track $index) {
           <option [value]="issuer.did">{{ issuer.name }}</option>
         }
@@ -78,9 +67,9 @@
 
     <lib-signing-webapp-form-ui-upload-file-input
       inputId="asset-upload"
-      label="The Asset"
-      description="Upload the media file (e.g., .jpg, .png, .mp4) you wish to secure. This asset will be cryptographically bound to the C2PA Manifest, ensuring that any future tampering with the file can be detected."
-      help="⚠️ Pilot Note: This tool simulates a 'post-production' signing workflow. In a fully integrated C2PA ecosystem, this signing process often happens automatically at the source (inside a secure camera) or during export (inside creative software like Adobe Photoshop), rather than via a manual web upload."
+      label="Het Bestand"
+      description="Upload het mediabestand (bijv. .jpg, .png, .mp4) dat u wilt beveiligen. Dit bestand wordt cryptografisch gebonden aan het C2PA Manifest, zodat toekomstige manipulatie van het bestand kan worden gedetecteerd."
+      help="ℹ️ Dit hulpmiddel simuleert een 'post-productie'-ondertekeningsworkflow. In een volledig geïntegreerd C2PA-ecosysteem verloopt dit ondertekeningsproces vaak automatisch aan de bron (in een beveiligde camera) of tijdens het exporteren (in creatieve software zoals Adobe Photoshop), in plaats van via een handmatige webupload."
       [required]="true"
       [acceptedMimeTypes]="assetMimeTypes"
       [maxFileSizeBytes]="assetMaxSize"
@@ -89,8 +78,8 @@
 
     <lib-signing-webapp-form-ui-form-group
       inputId="actionsToBeAdded"
-      label="Action Assertions"
-      description="Select the actions that were performed on this asset. The Opened action is always included by default, as the asset is being 'opened' for signing."
+      label="Actie-asserties"
+      description="Selecteer de acties die op dit bestand zijn uitgevoerd. De actie 'Geopend' is standaard altijd inbegrepen, omdat het bestand wordt 'geopend' voor ondertekening."
       class="w-full"
     >
       <ul class="w-full divide-y divide-gray-200">
@@ -130,7 +119,7 @@
         [disabled]="signingForm().invalid()"
         class="bg-blue-500 text-white py-2 px-5 disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
       >
-        Create and sign C2PA Manifest
+        C2PA Manifest aanmaken en ondertekenen
       </button>
     </div>
   </footer>
