@@ -82,14 +82,16 @@ export const FormOptions: SchemaOrSchemaFn<FormData> = (schemaPath) => {
   /**
    * `verifiableCredentialIssuer` Validations
    */
-  // todo required if key is present
-  // required(schemaPath.verifiableCredentialIssuer);
+  required(schemaPath.verifiableCredentialIssuer, {
+    when: ({ valueOf }) => !!valueOf(schemaPath.verifiableCredentialPrivateKey),
+  });
 
   /**
    * `verifiableCredentialPrivateKey` Validations
    */
-  // todo required if issuer is present
-  // required(schemaPath.verifiableCredentialPrivateKey);
+  required(schemaPath.verifiableCredentialPrivateKey, {
+    when: ({ valueOf }) => !!valueOf(schemaPath.verifiableCredentialIssuer),
+  });
   fileSizeValidator(schemaPath.verifiableCredentialPrivateKey, {
     maxSize: KEY_MAX_SIZE,
   });
