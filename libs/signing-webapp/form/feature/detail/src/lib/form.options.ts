@@ -22,54 +22,52 @@ export interface ActionOption {
 
 export const ACTION_OPTIONS: ActionOption[] = [
   {
-    label: 'Opened',
-    description: 'The asset was opened',
+    label: 'Geopend',
+    description: 'Het bestand werd geopend',
     value: ActionType.C2paOpened,
     disabled: true,
   },
   {
-    label: 'Edited',
-    description: 'The asset was modified or edited',
+    label: 'Bewerkt',
+    description: 'Het bestand werd gewijzigd of bewerkt',
     value: ActionType.C2paEdited,
   },
   {
-    label: 'Cropped',
-    description: 'The asset was cropped to a different frame or region',
+    label: 'Bijgesneden',
+    description: 'Het bestand werd bijgesneden tot een ander kader of gebied',
     value: ActionType.C2paCropped,
   },
   {
-    label: 'Filtered',
-    description: 'A visual filter or effect was applied to the asset',
+    label: 'Gefilterd',
+    description: 'Een visueel filter of effect werd toegepast op het bestand',
     value: ActionType.C2paFiltered,
   },
   {
-    label: 'Color Adjustments',
-    description: 'Color, brightness, contrast, or tone adjustments were made',
+    label: 'Kleuraanpassingen',
+    description:
+      'Kleur-, helderheids-, contrast- of toonaanpassingen werden aangebracht',
     value: ActionType.C2paColorAdjustments,
   },
   {
-    label: 'Resized',
-    description: 'The asset was scaled or resized',
+    label: 'Vergroot/verkleind',
+    description: 'Het bestand werd geschaald of van formaat gewijzigd',
     value: ActionType.C2paResized,
   },
   {
-    label: 'Converted',
-    description: 'The asset was converted to a different file format',
+    label: 'Geconverteerd',
+    description:
+      'Het bestand werd geconverteerd naar een ander bestandsformaat',
     value: ActionType.C2paConverted,
   },
   {
-    label: 'Transcoded',
-    description: 'The asset was transcoded (e.g. re-encoded video or audio)',
-    value: ActionType.C2paTranscoded,
-  },
-  {
-    label: 'Published',
-    description: 'The asset was published or distributed',
+    label: 'Gepubliceerd',
+    description: 'Het bestand werd gepubliceerd of verspreid',
     value: ActionType.C2paPublished,
   },
   {
-    label: 'Watermarked',
-    description: 'A visible or invisible watermark was applied to the asset',
+    label: 'Watermerk toegevoegd',
+    description:
+      'Een zichtbaar of onzichtbaar watermerk werd toegepast op het bestand',
     value: ActionType.C2paWatermarked,
   },
 ];
