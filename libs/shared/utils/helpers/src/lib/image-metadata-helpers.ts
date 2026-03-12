@@ -16,7 +16,7 @@ export async function getImageXmpIdentifiers(
 ): Promise<{ instanceID: string | undefined; documentID: string | undefined }> {
   try {
     const metadata = await imageMetadataHelpers(input);
-    console.log(metadata);
+
     return {
       instanceID: metadata['InstanceID']
         ? metadata['InstanceID'].replace('xmp.iid:', 'xmp:iid:')
