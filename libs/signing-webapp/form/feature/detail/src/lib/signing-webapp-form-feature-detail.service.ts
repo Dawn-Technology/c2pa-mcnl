@@ -27,6 +27,7 @@ import { CoseAlgorithmIdentifier, LocalSigner } from '@dockbite/c2pa-ts/cose';
 import { LocalTimestampProvider } from '@dockbite/c2pa-ts/rfc3161';
 import { SuperBox } from '@dockbite/c2pa-ts/jumbf';
 import { generateThumbnail } from '@c2pa-mcnl/verify-webapp/shared/utils/helpers';
+import * as x509 from '@peculiar/x509';
 
 /**
  * @property assetFile - The image file to which the C2PA manifest will be added
@@ -38,7 +39,7 @@ interface CreateC2paManifestOptions {
   assetFile: File;
   leafCertificateFile: File;
   leafCertificateKeyFile: File;
-  intermediateCertificate: File;
+  intermediateCertificate?: File | null;
   actions?: ActionType[];
 }
 
@@ -98,15 +99,17 @@ export class SigningWebappFormFeatureDetailService {
       opts.leafCertificateFile,
     );
     const leafKeyDer = await extractDerFromFile(opts.leafCertificateKeyFile);
-    const intermediateCertificate = await createX509CertFromFile(
-      opts.intermediateCertificate,
-    );
+
+    let certChain: x509.X509Certificate[] | undefined = undefined;
+    if (opts.intermediateCertificate) {
+      certChain = [await createX509CertFromFile(opts.intermediateCertificate)];
+    }
 
     const signer = new LocalSigner(
       leafKeyDer,
       CoseAlgorithmIdentifier.ES256,
       leafCertificate,
-      [intermediateCertificate],
+      certChain ?? certChain,
     );
 
     const timestampProvider = new LocalTimestampProvider(

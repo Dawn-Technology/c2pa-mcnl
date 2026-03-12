@@ -70,12 +70,7 @@ export class SigningWebappFormFeatureDetailComponent {
   async createAndSignManifest() {
     const model = this.signingModel();
 
-    if (
-      !model.assetFile ||
-      !model.leafCertificate ||
-      !model.leafPrivateKey ||
-      !model.intermediateCertificate
-    ) {
+    if (!model.assetFile || !model.leafCertificate || !model.leafPrivateKey) {
       console.error('One or more required fields are missing');
       return;
     }

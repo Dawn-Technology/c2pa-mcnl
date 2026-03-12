@@ -2,6 +2,7 @@
   <form
     class="flex flex-col items-center gap-10"
     [ngStyle]="{ 'padding-bottom': footer.offsetHeight + 25 + 'px' }"
+    (submit)="createAndSignManifest()"
   >
     <lib-signing-webapp-form-ui-upload-file-input
       inputId="leaf-certificate-upload"
