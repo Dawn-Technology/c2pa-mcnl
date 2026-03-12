@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "license": "Apache-2.0",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "prepare": "husky"
+  },
   "dependencies": {
     "@angular/common": "21.1.6",
     "@angular/compiler": "21.1.6",
@@ -57,8 +59,10 @@
     "esbuild": "^0.27.2",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
+    "husky": "^9.1.7",
     "jsdom": "^27.1.0",
     "jsonc-eslint-parser": "^2.1.0",
+    "lint-staged": "^16.3.3",
     "nx": "22.5.4",
     "postcss": "^8.4.5",
     "prettier": "~3.6.2",
