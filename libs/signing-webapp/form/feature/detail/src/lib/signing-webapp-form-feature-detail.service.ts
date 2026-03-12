@@ -224,6 +224,8 @@ export class SigningWebappFormFeatureDetailService {
     actionAssertion.actions.push(openedAction);
 
     for (const action of actions) {
+      if (action === ActionType.C2paOpened) continue; // already added
+
       actionAssertion.actions.push({
         action: action,
         instanceID,

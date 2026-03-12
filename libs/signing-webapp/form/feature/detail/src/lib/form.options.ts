@@ -17,9 +17,16 @@ export interface ActionOption {
   label: string;
   description: string;
   value: ActionType;
+  disabled?: boolean;
 }
 
 export const ACTION_OPTIONS: ActionOption[] = [
+  {
+    label: 'Opened',
+    description: 'The asset was opened',
+    value: ActionType.C2paOpened,
+    disabled: true,
+  },
   {
     label: 'Edited',
     description: 'The asset was modified or edited',

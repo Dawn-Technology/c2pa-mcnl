@@ -30,5 +30,5 @@ export const FormModel = signal<FormData>({
 
   assetFile: null,
 
-  actionsToBeAdded: [],
+  actionsToBeAdded: [ActionType.C2paOpened],
 });

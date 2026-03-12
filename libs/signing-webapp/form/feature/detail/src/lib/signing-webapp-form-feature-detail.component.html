@@ -90,7 +90,7 @@
     <lib-signing-webapp-form-ui-form-group
       inputId="actionsToBeAdded"
       label="Action Assertions"
-      description="Select the actions that were performed on this asset."
+      description="Select the actions that were performed on this asset. The Opened action is always included by default, as the asset is being 'opened' for signing."
       class="w-full"
     >
       <ul class="w-full divide-y divide-gray-200">
@@ -111,6 +111,7 @@
               [id]="'action-' + option.value"
               [checked]="isActionSelected(option.value)"
               (change)="toggleAction(option.value)"
+              [disabled]="option.disabled"
             />
           </li>
         }
