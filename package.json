@@ -11,7 +11,7 @@
     "@angular/forms": "21.1.6",
     "@angular/platform-browser": "21.1.6",
     "@angular/router": "21.1.6",
-    "@dockbite/c2pa-ts": "^0.13.2",
+    "@dockbite/c2pa-ts": "^0.14.0",
     "@ngrx/signals": "^21.0.1",
     "@nx/cypress": "22.5.4",
     "@nx/jest": "22.5.4",

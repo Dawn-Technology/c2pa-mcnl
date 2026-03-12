@@ -1,0 +1,13 @@
+{
+  "name": "signing-webapp-utils-helpers",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/signing-webapp/shared/utils/helpers/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": ["scope:signing-webapp", "type:util"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

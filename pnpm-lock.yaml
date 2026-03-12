@@ -27,8 +27,8 @@ importers:
         specifier: 21.1.6
         version: 21.1.6(@angular/common@21.1.6(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2))(@angular/platform-browser@21.1.6(@angular/common@21.1.6(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2)))(rxjs@7.8.2)
       '@dockbite/c2pa-ts':
-        specifier: ^0.13.2
-        version: 0.13.2
+        specifier: ^0.14.0
+        version: 0.14.0
       '@ngrx/signals':
         specifier: ^21.0.1
         version: 21.0.1(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2))(rxjs@7.8.2)
@@ -1189,8 +1189,8 @@ packages:
     resolution: {integrity: sha512-QxULHAm7cNu72w97JUNCBFODFaXpbDg+dP8b/oWFAZ2MTRppA3U00Y2L1HqaS4J6yBqxwa/Y3nMBaxVKbB/NsA==}
     engines: {node: '>=20.19.0'}
 
-  '@dockbite/c2pa-ts@0.13.2':
-    resolution: {integrity: sha512-SoJj9sOcRmd78eDJpZH/bK1X5xr1ZEL/GQGtx7yG6mjwf8MTjnKq6+hmgxUJmhpJ8L4s1THG8W9G3HNbOyGiog==}
+  '@dockbite/c2pa-ts@0.14.0':
+    resolution: {integrity: sha512-+4F238sTncjqgyJ1WbdYpDBPLEQsoULM2AeI9GZdpkJaGVa7Rst9weVv4I6LtFzW2O7LAA97MdbhOA+91tWi7A==}
 
   '@emnapi/core@1.8.1':
     resolution: {integrity: sha512-AvT9QFpxK0Zd8J0jopedNm+w/2fIzvtPKPjqyw9jwvBaReTTqPBk9Hixaz7KbjimP+QNz605/XnjFcDAL2pqBg==}
@@ -9359,7 +9359,7 @@ snapshots:
 
   '@csstools/css-tokenizer@4.0.0': {}
 
-  '@dockbite/c2pa-ts@0.13.2':
+  '@dockbite/c2pa-ts@0.14.0':
     dependencies:
       '@noble/hashes': 2.0.1
       '@peculiar/x509': 1.14.3

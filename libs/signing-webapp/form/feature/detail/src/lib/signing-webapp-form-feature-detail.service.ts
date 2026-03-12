@@ -3,18 +3,19 @@ import {
   createX509CertFromFile,
   extractBase64FromPem,
   extractDerFromFile,
+  generateCoseSign1,
+  getImageXmpIdentifiers,
 } from '@c2pa-mcnl/shared/utils/helpers';
 import { addYears } from 'date-fns';
-import * as cbor from 'cbor-x';
+
 import { VerifiableCredentialIssuer } from './form.model';
-import { JPEG } from '@dockbite/c2pa-ts/asset';
+import { createAsset } from '@dockbite/c2pa-ts/asset';
 import {
   Action,
   ActionAssertion,
   ActionType,
   ClaimVersion,
   DataHashAssertion,
-  DigitalSourceType,
   IngredientAssertion,
   Manifest,
   ManifestStore,
@@ -24,13 +25,13 @@ import {
 import { CoseAlgorithmIdentifier, LocalSigner } from '@dockbite/c2pa-ts/cose';
 import { LocalTimestampProvider } from '@dockbite/c2pa-ts/rfc3161';
 import { SuperBox } from '@dockbite/c2pa-ts/jumbf';
-import * as exifr from 'exifr';
+import { generateThumbnail } from '@c2pa-mcnl/verify-webapp/shared/utils/helpers';
 
 @Injectable()
 export class SigningWebappFormFeatureDetailService {
   /**
    * This method performs the following steps:
-   * 1. Validates that the provided asset file is a JPEG. (TODO: Extend support to other formats)
+   * 1. Creates an Asset instance from the provided file.
    * 2. Reads the leaf certificate, private key, and intermediate certificate from the provided PEM files.
    * 3. Creates a LocalSigner using the leaf certificate and private key.
    * 4. Creates a LocalTimestampProvider for timestamping the signature. (TODO: this should probably be excluded for the POC)
@@ -62,9 +63,7 @@ export class SigningWebappFormFeatureDetailService {
     leafCertificateKeyFile: File;
     intermediateCertificate: File;
   }): Promise<Uint8Array> {
-    if (!(await JPEG.canRead(opts.assetFile))) {
-      throw new Error('Unsupported file type. Only JPEG is supported.');
-    }
+    const asset = await createAsset(opts.assetFile);
 
     const fileName = opts.assetFile.name;
     const fileType = opts.assetFile.type;
@@ -92,10 +91,8 @@ export class SigningWebappFormFeatureDetailService {
       leafKeyDer,
     );
 
-    const asset = await JPEG.create(opts.assetFile);
-
     const { instanceID: xmpInstanceId, documentID: xmpDocumentID } =
-      await this.getXmpInstanceId(opts.assetFile);
+      await getImageXmpIdentifiers(opts.assetFile);
 
     console.debug(
       'xmp instance id',
@@ -131,19 +128,15 @@ export class SigningWebappFormFeatureDetailService {
       signer,
     });
 
-    const thumbnailClaimAssertion = ThumbnailAssertion.create(
-      fileExtension,
-      new Uint8Array(await opts.assetFile.arrayBuffer()),
-      0,
-    );
-    manifest.addAssertion(thumbnailClaimAssertion);
+    const thumbnail = await generateThumbnail(opts.assetFile, 250, 250);
+    const thumbnailBytes = new Uint8Array(await thumbnail.arrayBuffer());
 
-    const thumbnailIngredientAssertion = ThumbnailAssertion.create(
-      fileExtension,
-      new Uint8Array(await opts.assetFile.arrayBuffer()),
-      1,
+    manifest.addAssertion(
+      ThumbnailAssertion.create(fileExtension, thumbnailBytes, 0),
     );
-    manifest.addAssertion(thumbnailIngredientAssertion);
+    manifest.addAssertion(
+      ThumbnailAssertion.create(fileExtension, thumbnailBytes, 1),
+    );
 
     const ingredientAssertion = IngredientAssertion.create(
       fileName,
@@ -168,7 +161,6 @@ export class SigningWebappFormFeatureDetailService {
     const actionAssertion = new ActionAssertion();
     const openedAction: Action = {
       action: ActionType.C2paOpened,
-      digitalSourceType: DigitalSourceType.DigitalArt,
       instanceID,
       parameters: {
         ingredients: [
@@ -257,7 +249,7 @@ export class SigningWebappFormFeatureDetailService {
     };
 
     const vcPayload = new TextEncoder().encode(JSON.stringify(vcJson));
-    const coseSign1 = await this.generateCoseSign1(
+    const coseSign1 = await generateCoseSign1(
       vcPayload,
       privateKey,
       verifiableCredentialIssuer.did,
@@ -270,89 +262,5 @@ export class SigningWebappFormFeatureDetailService {
       vcJson,
       coseSign1,
     };
-  }
-
-  /**
-   * Generates a COSE_Sign1 structure by signing the given payload with the provided private key.
-   *
-   * COSE_Sign1 structure: [protected, unprotected, payload, signature]
-   *
-   * @param payload - The data to be signed (e.g., the VC JSON as bytes)
-   * @param privateKey - The ECDSA P-256 private key for signing
-   * @param kid - The key identifier (e.g., the issuer's DID) to include in the unprotected header
-   */
-  private async generateCoseSign1(
-    payload: Uint8Array,
-    privateKey: CryptoKey,
-    kid: string,
-  ): Promise<Uint8Array> {
-    // Protected header: { alg: ES256 (-7) }
-    const protectedHeader = new Map<number, number>();
-    protectedHeader.set(1, -7); // alg: ES256
-    const protectedHeaderBytes = cbor.encode(protectedHeader);
-
-    // Unprotected header: { kid }
-    const kidBytes = new TextEncoder().encode(kid);
-    const unprotectedHeader = new Map<number, Uint8Array>();
-    unprotectedHeader.set(4, kidBytes); // kid as CBOR bstr
-
-    // Sig_structure for signing: ["Signature1", protected, external_aad, payload]
-    const sigStructure = [
-      'Signature1',
-      protectedHeaderBytes,
-      new Uint8Array(0), // external_aad (empty)
-      payload,
-    ];
-    const toBeSignedBuffer = cbor.encode(sigStructure);
-    const toBeSigned: Uint8Array<ArrayBuffer> = new Uint8Array(
-      new Uint8Array(toBeSignedBuffer).buffer,
-    );
-
-    // Sign with ECDSA
-    const signature = await crypto.subtle.sign(
-      { name: 'ECDSA', hash: 'SHA-256' },
-      privateKey,
-      toBeSigned,
-    );
-
-    // Build COSE_Sign1: tag 18 + [protected, unprotected, payload, signature]
-    const coseSign1Array = [
-      protectedHeaderBytes,
-      unprotectedHeader,
-      payload,
-      new Uint8Array(signature),
-    ];
-
-    // Encode with CBOR tag 18 (COSE_Sign1)
-    return new cbor.Encoder({ tagUint8Array: false }).encode(
-      new cbor.Tag(coseSign1Array, 18),
-    );
-  }
-
-  async getXmpInstanceId(input: Parameters<typeof exifr.parse>[0]): Promise<{
-    instanceID: string | undefined;
-    documentID: string | undefined;
-  }> {
-    try {
-      // Tell exifr to exclusively parse XMP data to keep it fast
-      const metadata = await exifr.parse(input, {
-        xmp: true,
-        tiff: false,
-        exif: false,
-        icc: false,
-      });
-
-      return {
-        instanceID: metadata?.InstanceID
-          ? metadata?.InstanceID.replace('xmp.iid:', 'xmp:iid:')
-          : undefined,
-        documentID: metadata?.DocumentID
-          ? metadata?.DocumentID.replace('xmp.did:', 'xmp:did:')
-          : undefined,
-      };
-    } catch (error) {
-      console.error('Error extracting metadata:', error);
-      return { instanceID: undefined, documentID: undefined };
-    }
   }
 }
