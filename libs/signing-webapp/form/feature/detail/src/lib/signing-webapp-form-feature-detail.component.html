@@ -57,11 +57,12 @@
           issued the Verifiable Credential. This entity acts as the trusted
           authority - such as a government, university, or employer - that
           vouches for the authenticity of your identity data."
-      help="   ⚠️ Pilot Note: In a real-world Verifiable Credential workflow, the
+      help="⚠️ Pilot Note: In a real-world Verifiable Credential workflow, the
           Issuer's identity is cryptographically locked within the credential
           itself (often as a Decentralized Identifier). We ask you to define it
           here to simulate the issuance process and demonstrate how the Issuer
           is displayed in the Manifest."
+      class="w-full"
     >
       <select
         id="vc-issuer"
@@ -85,6 +86,36 @@
       [maxFileSizeBytes]="assetMaxSize"
       [control]="signingForm.assetFile"
     />
+
+    <lib-signing-webapp-form-ui-form-group
+      inputId="actionsToBeAdded"
+      label="Action Assertions"
+      description="Select the actions that were performed on this asset."
+      class="w-full"
+    >
+      <ul class="w-full divide-y divide-gray-200">
+        @for (option of actionOptions; track option.value) {
+          <li class="flex items-center justify-between gap-4 py-3">
+            <label
+              [for]="'action-' + option.value"
+              class="flex flex-col cursor-pointer"
+            >
+              <span class="text-sm font-semibold">{{ option.label }}</span>
+              <span class="text-xs text-gray-500">{{
+                option.description
+              }}</span>
+            </label>
+            <input
+              type="checkbox"
+              class="w-5 h-5 shrink-0 cursor-pointer accent-blue-500"
+              [id]="'action-' + option.value"
+              [checked]="isActionSelected(option.value)"
+              (change)="toggleAction(option.value)"
+            />
+          </li>
+        }
+      </ul>
+    </lib-signing-webapp-form-ui-form-group>
   </form>
 
   <footer

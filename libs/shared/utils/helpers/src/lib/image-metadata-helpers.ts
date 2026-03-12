@@ -13,9 +13,10 @@ export function imageMetadataHelpers(
 
 export async function getImageXmpIdentifiers(
   input: Parameters<typeof exifr.parse>[0],
-) {
+): Promise<{ instanceID: string | undefined; documentID: string | undefined }> {
   try {
     const metadata = await imageMetadataHelpers(input);
+    console.log(metadata);
     return {
       instanceID: metadata['InstanceID']
         ? metadata['InstanceID'].replace('xmp.iid:', 'xmp:iid:')

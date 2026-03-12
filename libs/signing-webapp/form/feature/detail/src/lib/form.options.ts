@@ -11,6 +11,61 @@ import {
   MIME_TYPES,
 } from '@c2pa-mcnl/shared/utils/constants';
 import { FormData, VerifiableCredentialIssuer } from './form.model';
+import { ActionType } from '@dockbite/c2pa-ts/manifest';
+
+export interface ActionOption {
+  label: string;
+  description: string;
+  value: ActionType;
+}
+
+export const ACTION_OPTIONS: ActionOption[] = [
+  {
+    label: 'Edited',
+    description: 'The asset was modified or edited',
+    value: ActionType.C2paEdited,
+  },
+  {
+    label: 'Cropped',
+    description: 'The asset was cropped to a different frame or region',
+    value: ActionType.C2paCropped,
+  },
+  {
+    label: 'Filtered',
+    description: 'A visual filter or effect was applied to the asset',
+    value: ActionType.C2paFiltered,
+  },
+  {
+    label: 'Color Adjustments',
+    description: 'Color, brightness, contrast, or tone adjustments were made',
+    value: ActionType.C2paColorAdjustments,
+  },
+  {
+    label: 'Resized',
+    description: 'The asset was scaled or resized',
+    value: ActionType.C2paResized,
+  },
+  {
+    label: 'Converted',
+    description: 'The asset was converted to a different file format',
+    value: ActionType.C2paConverted,
+  },
+  {
+    label: 'Transcoded',
+    description: 'The asset was transcoded (e.g. re-encoded video or audio)',
+    value: ActionType.C2paTranscoded,
+  },
+  {
+    label: 'Published',
+    description: 'The asset was published or distributed',
+    value: ActionType.C2paPublished,
+  },
+  {
+    label: 'Watermarked',
+    description: 'A visible or invisible watermark was applied to the asset',
+    value: ActionType.C2paWatermarked,
+  },
+];
 
 export const CERTIFICATE_MIME_TYPES = [
   MIME_TYPES.APPLICATION_X_X509_CA_CERT,

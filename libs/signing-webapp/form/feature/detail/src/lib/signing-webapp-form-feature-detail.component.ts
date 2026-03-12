@@ -4,6 +4,7 @@ import { form as signalForm, FormField } from '@angular/forms/signals';
 import { SigningWebappFormUiUploadFileInputComponent } from '@c2pa-mcnl/signing-webapp/form/ui/upload-file-input';
 import { FormModel } from './form.model';
 import {
+  ACTION_OPTIONS,
   CERTIFICATE_MAX_SIZE,
   CERTIFICATE_MIME_TYPES,
   FormOptions,
@@ -11,6 +12,7 @@ import {
   KEY_MIME_TYPES,
   VC_ISSUERS,
 } from './form.options';
+import { ActionType } from '@dockbite/c2pa-ts/manifest';
 import { NgStyle } from '@angular/common';
 import { SigningWebappFormUiFormGroup } from '@c2pa-mcnl/signing-webapp/form/ui/form-group';
 import {
@@ -42,6 +44,7 @@ export class SigningWebappFormFeatureDetailComponent {
   verifiableCredentialIssuers = VC_ISSUERS;
   assetMimeTypes = ASSET_MIME_TYPES;
   assetMaxSize = ASSET_MAX_SIZE;
+  actionOptions = ACTION_OPTIONS;
 
   signingModel = FormModel;
   signingForm = signalForm(this.signingModel, FormOptions);
@@ -77,11 +80,12 @@ export class SigningWebappFormFeatureDetailComponent {
       return;
     }
 
-    const file = await this.service.addC2paManifest({
+    const file = await this.service.createC2paManifest({
       assetFile: model.assetFile,
       leafCertificateFile: model.leafCertificate,
       leafCertificateKeyFile: model.leafPrivateKey,
       intermediateCertificate: model.intermediateCertificate,
+      actions: model.actionsToBeAdded,
     });
 
     const blob = new Blob([new Uint8Array(file)], {
@@ -95,6 +99,20 @@ export class SigningWebappFormFeatureDetailComponent {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  }
+
+  isActionSelected(action: ActionType): boolean {
+    return this.signingModel().actionsToBeAdded.includes(action);
+  }
+
+  toggleAction(action: ActionType): void {
+    this.signingModel.update((model) => {
+      const current = model.actionsToBeAdded;
+      const updated = current.includes(action)
+        ? current.filter((a) => a !== action)
+        : [...current, action];
+      return { ...model, actionsToBeAdded: updated };
+    });
   }
 
   private generateVerifiableCredential(): void {
