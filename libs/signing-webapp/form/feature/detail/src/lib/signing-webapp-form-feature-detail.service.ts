@@ -5,6 +5,7 @@ import {
   extractDerFromFile,
   generateCoseSign1,
   getImageXmpIdentifiers,
+  isImageMimeType,
 } from '@c2pa-mcnl/shared/utils/helpers';
 import { addYears } from 'date-fns';
 
@@ -55,7 +56,7 @@ export class SigningWebappFormFeatureDetailService {
   ): Promise<Uint8Array> {
     const { signer, timestampProvider } = await this.createSigners(opts);
 
-    const { asset, manifestStore, manifest, previousManifest } =
+    const { manifestStore, manifest, previousManifest, asset } =
       await this.buildManifest(opts.assetFile, signer);
 
     await this.addThumbnailAssertion(
@@ -100,16 +101,18 @@ export class SigningWebappFormFeatureDetailService {
     );
     const leafKeyDer = await extractDerFromFile(opts.leafCertificateKeyFile);
 
-    let certChain: x509.X509Certificate[] | undefined = undefined;
+    const certChain: x509.X509Certificate[] = [];
     if (opts.intermediateCertificate) {
-      certChain = [await createX509CertFromFile(opts.intermediateCertificate)];
+      certChain.push(
+        await createX509CertFromFile(opts.intermediateCertificate),
+      );
     }
 
     const signer = new LocalSigner(
       leafKeyDer,
       CoseAlgorithmIdentifier.ES256,
       leafCertificate,
-      certChain ?? certChain,
+      certChain,
     );
 
     const timestampProvider = new LocalTimestampProvider(
@@ -165,13 +168,23 @@ export class SigningWebappFormFeatureDetailService {
     type: ThumbnailType,
     manifest: Manifest,
   ) {
-    const thumbnail = await generateThumbnail(file, 250, 250);
-    const thumbnailBytes = new Uint8Array(await thumbnail.arrayBuffer());
-    const fileExtension = file.type.replace(/.*\//, '');
+    try {
+      if (!isImageMimeType(file)) {
+        console.warn(
+          'File type is not an image, skipping thumbnail generation',
+        );
+        return;
+      }
+      const thumbnail = await generateThumbnail(file, 250, 250);
+      const thumbnailBytes = new Uint8Array(await thumbnail.arrayBuffer());
+      const fileExtension = file.type.replace(/.*\//, '');
 
-    manifest.addAssertion(
-      ThumbnailAssertion.create(fileExtension, thumbnailBytes, type),
-    );
+      manifest.addAssertion(
+        ThumbnailAssertion.create(fileExtension, thumbnailBytes, type),
+      );
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   /**
@@ -194,9 +207,12 @@ export class SigningWebappFormFeatureDetailService {
       xmpDocumentID,
     );
     ingredientAssertion.relationship = RelationshipType.ParentOf;
-    ingredientAssertion.thumbnail = manifest.createHashedReference(
-      `c2pa.assertions/c2pa.thumbnail.ingredient.${file.type.replace(/.*\//, '')}`,
-    );
+
+    if (isImageMimeType(file)) {
+      ingredientAssertion.thumbnail = manifest.createHashedReference(
+        `c2pa.assertions/c2pa.thumbnail.ingredient.${file.type.replace(/.*\//, '')}`,
+      );
+    }
 
     if (previousManifest) {
       ingredientAssertion.instanceID = previousManifest.claim?.instanceID;

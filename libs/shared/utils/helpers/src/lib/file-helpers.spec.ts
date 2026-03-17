@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatFileSize } from './format-file-size';
+import { formatFileSize, isImageMimeType } from './file-helpers';
 
 describe('formatFileSize', () => {
   describe('zero and small values', () => {
@@ -55,6 +55,54 @@ describe('formatFileSize', () => {
 
     it('should round GB to 2 decimal places', () => {
       expect(formatFileSize(1234567890)).toBe('1.15 GB');
+    });
+  });
+});
+
+describe('isImageMimeType', () => {
+  const makeFile = (type: string) => new File([], 'test', { type });
+
+  describe('image types', () => {
+    it('should return true for image/jpeg', () => {
+      expect(isImageMimeType(makeFile('image/jpeg'))).toBe(true);
+    });
+
+    it('should return true for image/png', () => {
+      expect(isImageMimeType(makeFile('image/png'))).toBe(true);
+    });
+
+    it('should return true for image/gif', () => {
+      expect(isImageMimeType(makeFile('image/gif'))).toBe(true);
+    });
+
+    it('should return true for image/webp', () => {
+      expect(isImageMimeType(makeFile('image/webp'))).toBe(true);
+    });
+
+    it('should return true for image/svg+xml', () => {
+      expect(isImageMimeType(makeFile('image/svg+xml'))).toBe(true);
+    });
+  });
+
+  describe('non-image types', () => {
+    it('should return false for application/pdf', () => {
+      expect(isImageMimeType(makeFile('application/pdf'))).toBe(false);
+    });
+
+    it('should return false for text/plain', () => {
+      expect(isImageMimeType(makeFile('text/plain'))).toBe(false);
+    });
+
+    it('should return false for video/mp4', () => {
+      expect(isImageMimeType(makeFile('video/mp4'))).toBe(false);
+    });
+
+    it('should return false for audio/mpeg', () => {
+      expect(isImageMimeType(makeFile('audio/mpeg'))).toBe(false);
+    });
+
+    it('should return false for an empty mime type', () => {
+      expect(isImageMimeType(makeFile(''))).toBe(false);
     });
   });
 });
