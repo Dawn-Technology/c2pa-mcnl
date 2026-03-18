@@ -8,6 +8,6 @@ import { Component, input } from '@angular/core';
 })
 export class VerifyWebappValidateUiFileCard {
   fileUrl = input.required<string>();
-  fileName = input.required<string>();
+  fileName = input<string>();
   subText = input<string>();
 }

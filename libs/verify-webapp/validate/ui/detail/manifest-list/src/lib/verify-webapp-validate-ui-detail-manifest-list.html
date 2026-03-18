@@ -3,33 +3,43 @@
 >
   <h2 class="text-sm">Versiehistorie</h2>
 
-  @for (thumb of [1, 2, 3]; track thumb) {
+  @for (manifest of store.manifestsReversed(); track $index; let index = $index)
+  {
   <div
     class="relative rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[165px] h-[150px]"
-    [ngClass]="{ 'border-2': store.activeManifest() === thumb }"
-    (click)="store.setActiveManifest(thumb)"
-    (keydown.enter)="store.setActiveManifest(thumb)"
-    (keydown.space)="store.setActiveManifest(thumb)"
+    [ngClass]="{ 'border-2': store.isActiveManifest(manifest?.label) }"
+    (click)="store.setActiveManifest(manifest?.label)"
+    (keydown.enter)="store.setActiveManifest(manifest?.label)"
+    (keydown.space)="store.setActiveManifest(manifest?.label)"
     role="button"
     tabindex="0"
   >
+    @if (store.getManifestThumbnailDataUrl(manifest?.label); as
+    thumbnailDataUrl) {
     <img
-      [src]="'https://picsum.photos/seed/' + thumb + '/200/300'"
-      alt="Manifest thumbnail"
+      [src]="thumbnailDataUrl"
+      alt="Manifest claim thumbnail"
       class="w-full h-full object-contain"
     />
-    @if (thumb === 1) {
+    } @else {
+    <h1>todo: no thumbnail, show something else?</h1>
+    }
+
+    <!-- TODO handle actual validation -->
+    @if (index === 1) {
     <div class="absolute top-2 left-2">
       <lib-verify-webapp-validate-ui-validation-badge
         [valid]="true"
         textValid="OpenAI"
       />
     </div>
-    } @if (thumb === 2) {
+    } @if (index === 2) {
     <div class="absolute top-2 left-2">
       <lib-verify-webapp-validate-ui-validation-badge [valid]="false" />
     </div>
     }
   </div>
+  } @empty {
+  <h1>TODO: No manifests</h1>
   }
 </div>

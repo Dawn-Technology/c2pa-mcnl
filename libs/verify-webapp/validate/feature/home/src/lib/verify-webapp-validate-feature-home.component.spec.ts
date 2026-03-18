@@ -17,18 +17,18 @@ describe('VerifyWebappValidateFeatureHomeComponent', () => {
 
   // Controllable signals for the mock store
   const isLoadingSignal = signal(false);
-  const hasC2paResultSignal = signal(false);
+  const hasManifests = signal(false);
   const setFileSpy = vi.fn();
 
   const mockStore = {
     isLoading: isLoadingSignal,
-    hasC2paResult: hasC2paResultSignal,
+    hasManifests: hasManifests,
     setFile: setFileSpy,
   };
 
   beforeEach(async () => {
     isLoadingSignal.set(false);
-    hasC2paResultSignal.set(false);
+    hasManifests.set(false);
     setFileSpy.mockReset();
 
     await TestBed.configureTestingModule({
@@ -156,7 +156,7 @@ describe('VerifyWebappValidateFeatureHomeComponent', () => {
     });
 
     it('should navigate to /verify when the store has a C2PA result', async () => {
-      hasC2paResultSignal.set(true);
+      hasManifests.set(true);
       fixture.detectChanges();
       TestBed.flushEffects();
 

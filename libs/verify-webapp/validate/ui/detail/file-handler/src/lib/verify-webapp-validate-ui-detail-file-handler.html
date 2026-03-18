@@ -3,11 +3,15 @@
 >
   <h2 class="text-sm">Huidig bestand</h2>
 
+  @if (store.fileDataUrl(); as fileDataUrl) {
   <lib-verify-webapp-validate-ui-file-card
-    fileUrl="https://picsum.photos/seed/current/200/300"
-    [fileName]="store.file()?.name!"
+    [fileUrl]="fileDataUrl"
+    [fileName]="store.file()?.name"
     [subText]="store.fileDate()"
   />
+  } @else {
+  <h1>todo: no file data url?</h1>
+  }
 
   <hr class="border-gray-300 -mx-6" />
 

@@ -28,7 +28,7 @@ export class VerifyWebappValidateFeatureHomeComponent {
 
   constructor() {
     effect(() => {
-      if (this.store.hasC2paResult()) {
+      if (this.store.hasManifests()) {
         this.router.navigate(['verify']);
       }
     });
