@@ -3,7 +3,11 @@
 >
   <h2 class="text-sm">Versiehistorie</h2>
 
-  @for (manifest of store.manifestsReversed(); track $index; let index = $index) {
+  @for (
+    manifest of store.manifestsReversed();
+    track $index;
+    let index = $index
+  ) {
     <div
       class="relative rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[165px] h-[150px]"
       [ngClass]="{ 'border-2': store.isActiveManifest(manifest?.label) }"
@@ -13,16 +17,27 @@
       role="button"
       tabindex="0"
     >
-      @if (store.getManifestsThumbnailDataUrl(manifest?.label); as thumbnailDataUrl) {
-        <img [src]="thumbnailDataUrl" alt="Manifest claim thumbnail" class="w-full h-full object-contain" />
+      @if (
+        store.getManifestsThumbnailDataUrl(manifest?.label);
+        as thumbnailDataUrl
+      ) {
+        <img
+          [src]="thumbnailDataUrl"
+          alt="Manifest claim thumbnail"
+          class="w-full h-full object-contain"
+        />
       } @else {
+        <!-- TODO handle no thumbnails -->
         <h1>todo: no thumbnail, show something else?</h1>
       }
 
       <!-- TODO handle actual validation -->
       @if (index === 1) {
         <div class="absolute top-2 left-2">
-          <lib-verify-webapp-validate-ui-validation-badge [valid]="true" textValid="OpenAI" />
+          <lib-verify-webapp-validate-ui-validation-badge
+            [valid]="true"
+            textValid="OpenAI"
+          />
         </div>
       }
       @if (index === 2) {
@@ -32,6 +47,7 @@
       }
     </div>
   } @empty {
+    <!-- TODO handle no manifests -->
     <h1>TODO: No manifests</h1>
   }
 </div>

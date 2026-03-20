@@ -10,7 +10,7 @@
       "executor": "@nx/vitest:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../../coverage/libs/ui/file-upload"
+        "reportsDirectory": "{projectRoot}/../../../coverage/libs/ui/file-upload"
       }
     },
     "lint": {

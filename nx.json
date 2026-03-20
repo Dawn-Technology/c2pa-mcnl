@@ -100,5 +100,6 @@
   "tui": {
     "enabled": false
   },
-  "nxCloudId": "698645eba554a970c7d8da44"
+  "nxCloudId": "698645eba554a970c7d8da44",
+  "analytics": false
 }

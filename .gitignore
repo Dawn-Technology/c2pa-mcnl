@@ -49,3 +49,6 @@ vitest.config.*.timestamp*
 
 # generated files
 /output
+
+.claude/worktrees
+.claude/settings.local.json

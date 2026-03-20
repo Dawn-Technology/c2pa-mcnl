@@ -10,7 +10,7 @@
       "executor": "@nx/vitest:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../../coverage/libs/verify-webapp/validate/feature/detail"
+        "reportsDirectory": "{projectRoot}/../../../coverage/libs/verify-webapp/validate/feature/detail"
       }
     },
     "lint": {
