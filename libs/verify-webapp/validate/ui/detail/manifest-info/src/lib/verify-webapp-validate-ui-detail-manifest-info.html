@@ -7,8 +7,7 @@
     <div>
       <h4 class="font-bold">Het proces</h4>
       <p class="text-sm">
-        De app of het apparaat dat is gebruikt om deze content te produceren,
-        heeft de volgende informatie vastgelegd:
+        De app of het apparaat dat is gebruikt om deze content te produceren, heeft de volgende informatie vastgelegd:
       </p>
     </div>
 
@@ -19,10 +18,11 @@
 
     <div>
       <h5 class="text-sm font-bold">Bewerkingen</h5>
-      @for(assertions of store.getActionAssertions(); track $index) { @for
-      (action of assertions.actions; track $index) {
-      <p class="text-sm">{{ action?.action }}</p>
-      } }
+      @for (assertions of store.getActionAssertions(); track $index) {
+        @for (action of assertions.actions; track $index) {
+          <p class="text-sm">{{ action?.action }}</p>
+        }
+      }
     </div>
 
     <div>
@@ -39,9 +39,8 @@
     <div>
       <h4 class="font-bold">Gegevens over camera-opname</h4>
       <p class="text-sm">
-        Aanvullende gegevens afkomstig van de camera die is gebruikt om een foto
-        of video te maken. EXIF-gegevens kunnen worden bewerkt door de maker van
-        de content.
+        Aanvullende gegevens afkomstig van de camera die is gebruikt om een foto of video te maken. EXIF-gegevens kunnen
+        worden bewerkt door de maker van de content.
       </p>
     </div>
 
@@ -55,8 +54,7 @@
     <div>
       <h4 class="font-bold">Over deze Content Credential</h4>
       <p class="text-sm">
-        De app of het apparaat dat is gebruikt om deze content te produceren,
-        heeft de volgende informatie vastgelegd:
+        De app of het apparaat dat is gebruikt om deze content te produceren, heeft de volgende informatie vastgelegd:
       </p>
     </div>
 
