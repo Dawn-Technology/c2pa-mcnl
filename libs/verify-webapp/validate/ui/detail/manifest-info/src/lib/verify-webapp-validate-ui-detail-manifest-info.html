@@ -19,8 +19,10 @@
 
     <div>
       <h5 class="text-sm font-bold">Bewerkingen</h5>
-      <p class="text-sm">A</p>
-      <p class="text-sm">B</p>
+      @for(assertions of store.getActionAssertions(); track $index) { @for
+      (action of assertions.actions; track $index) {
+      <p class="text-sm">{{ action?.action }}</p>
+      } }
     </div>
 
     <div>
