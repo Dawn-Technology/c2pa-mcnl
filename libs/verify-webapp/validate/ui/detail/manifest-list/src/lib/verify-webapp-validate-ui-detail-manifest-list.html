@@ -26,6 +26,12 @@
           alt="Manifest claim thumbnail"
           class="w-full h-full object-contain"
         />
+      } @else if (store.fileDataUrl(); as fileDataUrl) {
+        <img
+          [src]="fileDataUrl"
+          alt="Manifest claim thumbnail"
+          class="w-full h-full object-contain"
+        />
       } @else {
         <!-- TODO handle no thumbnails -->
         <h1>todo: no thumbnail, show something else?</h1>
