@@ -8,8 +8,11 @@ import {
 } from '@ngrx/signals';
 import { computed, inject, LOCALE_ID } from '@angular/core';
 import {
+  ActionAssertion,
   Manifest,
   ManifestStore,
+  MetadataAssertion,
+  MetadataNamespace,
   ThumbnailAssertion,
   ThumbnailType,
   ValidationError,
@@ -36,6 +39,31 @@ type VerifyStoreState = {
 
   error?: unknown;
 };
+
+function toDisplayValue(value: unknown): string {
+  if (typeof value === 'string' || typeof value === 'number') {
+    return String(value);
+  }
+
+  if (Array.isArray(value)) {
+    const firstDisplayable = value.find(
+      (item) => typeof item === 'string' || typeof item === 'number',
+    );
+
+    return firstDisplayable !== undefined ? String(firstDisplayable) : '—';
+  }
+
+  if (value && typeof value === 'object') {
+    const objectValues = Object.values(value);
+    const firstDisplayable = objectValues.find(
+      (item) => typeof item === 'string' || typeof item === 'number',
+    );
+
+    return firstDisplayable !== undefined ? String(firstDisplayable) : '—';
+  }
+
+  return '—';
+}
 
 const initialState: VerifyStoreState = {
   isLoading: false,
@@ -73,6 +101,83 @@ export const VerifyStore = signalStore(
       getActionAssertions: computed(
         () => activeManifest()?.assertions?.getActionAssertions() ?? [],
       ),
+      activeManifestIssuer: computed(() => {
+        const claim = activeManifest()?.claim;
+        if (!claim?.claimGeneratorName) {
+          return '—';
+        }
+
+        return claim.claimGeneratorVersion
+          ? `${claim.claimGeneratorName} ${claim.claimGeneratorVersion}`
+          : claim.claimGeneratorName;
+      }),
+      activeManifestIssuedOn: computed(() => {
+        const timestamp = activeManifest()?.signature?.signatureData?.timestamp;
+
+        if (!timestamp) {
+          return '—';
+        }
+
+        return formatDate(timestamp, 'dd MMMM yyyy HH:mm', localeId);
+      }),
+      activeManifestSoftwareAgent: computed(() => {
+        const assertions =
+          activeManifest()?.assertions?.getActionAssertions() as
+            | ActionAssertion[]
+            | undefined;
+
+        for (const assertion of assertions ?? []) {
+          for (const action of assertion.actions) {
+            if (!action.softwareAgent?.name) {
+              continue;
+            }
+
+            const { name, version } = action.softwareAgent;
+            return version ? `${name} ${version}` : name;
+          }
+        }
+
+        const claim = activeManifest()?.claim;
+        if (!claim?.claimGeneratorName) {
+          return '—';
+        }
+
+        return claim.claimGeneratorVersion
+          ? `${claim.claimGeneratorName} ${claim.claimGeneratorVersion}`
+          : claim.claimGeneratorName;
+      }),
+      activeManifestCameraInfo: computed(() => {
+        const assertions = activeManifest()?.assertions?.assertions ?? [];
+
+        const metadataAssertions = assertions.filter(
+          (assertion): assertion is MetadataAssertion =>
+            assertion instanceof MetadataAssertion,
+        );
+
+        const cameraNamespaces = new Set<string>([
+          MetadataNamespace.Exif,
+          MetadataNamespace.ExifEx_1_0,
+          MetadataNamespace.ExifEx_2_32,
+        ]);
+
+        const preferredEntryNames = ['Model', 'LensModel', 'Make'];
+
+        for (const metadataAssertion of metadataAssertions) {
+          for (const entryName of preferredEntryNames) {
+            const entry = metadataAssertion.entries.find(
+              (metadataEntry) =>
+                cameraNamespaces.has(String(metadataEntry.namespace)) &&
+                metadataEntry.name === entryName,
+            );
+
+            if (entry) {
+              return toDisplayValue(entry.value);
+            }
+          }
+        }
+
+        return '—';
+      }),
     }),
   ),
   withMethods((store) => ({
@@ -213,6 +318,7 @@ export const VerifyStore = signalStore(
         new Map();
 
       const activeManifest = manifestStore.getActiveManifest();
+      console.log(activeManifest);
       if (!activeManifest) {
         throw new ValidationError(
           ValidationStatusCode.ClaimCBORInvalid,
@@ -233,7 +339,6 @@ export const VerifyStore = signalStore(
 
         validationResults.set(label, await manifest.validate(asset));
       }
-
       return validationResults;
     },
 

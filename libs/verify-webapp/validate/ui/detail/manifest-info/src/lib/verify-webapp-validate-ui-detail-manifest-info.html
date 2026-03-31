@@ -1,7 +1,7 @@
 <div class="bg-white p-12 flex flex-col gap-6 h-full">
   <div>
     <h3 class="font-extrabold">{{ store.file()?.name }}</h3>
-    <p class="text-sm">Uitgegeven door Dawn Technology</p>
+    <p class="text-sm">Uitgegeven door {{ store.activeManifestIssuer() }}</p>
   </div>
   <div class="flex flex-col gap-4">
     <div>
@@ -14,21 +14,21 @@
 
     <div>
       <h5 class="text-sm font-bold">Gebruikte app of apparaat</h5>
-      <p class="text-sm">Lightroom 8.5.1</p>
+      <p class="text-sm">{{ store.activeManifestSoftwareAgent() }}</p>
     </div>
 
     <div>
       <h5 class="text-sm font-bold">Bewerkingen</h5>
       @for(assertions of store.getActionAssertions(); track $index) { @for
       (action of assertions.actions; track $index) {
-      <p class="text-sm">{{ action?.action }}</p>
+      <li class="text-sm">{{ ReadableActions[action?.action ?? ''] }}</li>
       } }
     </div>
 
     <div>
       <h5 class="text-sm font-bold mb-2">Bestandsdelen</h5>
       <lib-verify-webapp-validate-ui-file-card
-        fileUrl="https://picsum.photos/seed/current/200/300"
+        [fileUrl]="store.fileDataUrl() ?? ''"
         [fileName]="store.file()?.name!"
         [subText]="store.fileDate()"
       />
@@ -47,7 +47,7 @@
 
     <div>
       <h5 class="text-sm font-bold">Info</h5>
-      <p class="text-sm">SM-A525F</p>
+      <p class="text-sm">{{ store.activeManifestCameraInfo() }}</p>
     </div>
   </div>
 
@@ -62,12 +62,12 @@
 
     <div>
       <h5 class="text-sm font-bold">Uitgegeven door</h5>
-      <p class="text-sm">OpenAI</p>
+      <p class="text-sm">{{ store.activeManifestIssuer() }}</p>
     </div>
 
     <div>
       <h5 class="text-sm font-bold">Uitgegeven op</h5>
-      <p class="text-sm">4 feb 2026 om 10:17 CET</p>
+      <p class="text-sm">{{ store.activeManifestIssuedOn() }}</p>
     </div>
   </div>
 </div>
