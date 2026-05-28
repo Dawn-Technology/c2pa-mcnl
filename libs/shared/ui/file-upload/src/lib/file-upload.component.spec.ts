@@ -62,6 +62,16 @@ describe('FileUploadComponent', () => {
     expect(component.acceptAttributeHumanReadable()).toBe('.png, .jpeg');
   });
 
+  it('should include .pem extension in acceptAttribute when PEM MIME type is allowed', () => {
+    fixture.componentRef.setInput('acceptedMimeTypes', [
+      'application/x-pem-file',
+    ]);
+    fixture.detectChanges();
+
+    expect(component.acceptAttribute()).toBe('application/x-pem-file,.pem');
+    expect(component.acceptAttributeHumanReadable()).toBe('.pem');
+  });
+
   describe('Drag and Drop interactions', () => {
     let dropZone: any;
 
@@ -121,6 +131,34 @@ describe('FileUploadComponent', () => {
       inputEl.triggerEventHandler('change', mockEvent);
 
       expect(component.value.set).toHaveBeenCalledWith(VALID_FILE);
+    });
+
+    it('should normalize empty MIME type for .pem files', () => {
+      const inputEl = fixture.debugElement.query(By.css('input[type="file"]'));
+      const pemFile = new File(['pem-content'], 'leaf-cert.pem', { type: '' });
+      const mockEvent = { target: { files: [pemFile] } };
+
+      vi.spyOn(component.value, 'set');
+
+      inputEl.triggerEventHandler('change', mockEvent);
+
+      expect(component.value.set).toHaveBeenCalledTimes(1);
+      const normalizedFile = vi.mocked(component.value.set).mock.calls[0][0];
+      expect(normalizedFile).toBeInstanceOf(File);
+      expect((normalizedFile as File).name).toBe('leaf-cert.pem');
+      expect((normalizedFile as File).type).toBe('application/x-pem-file');
+    });
+
+    it('should keep empty MIME type for non-.pem files', () => {
+      const inputEl = fixture.debugElement.query(By.css('input[type="file"]'));
+      const txtFile = new File(['txt-content'], 'notes.txt', { type: '' });
+      const mockEvent = { target: { files: [txtFile] } };
+
+      vi.spyOn(component.value, 'set');
+
+      inputEl.triggerEventHandler('change', mockEvent);
+
+      expect(component.value.set).toHaveBeenCalledWith(txtFile);
     });
   });
 

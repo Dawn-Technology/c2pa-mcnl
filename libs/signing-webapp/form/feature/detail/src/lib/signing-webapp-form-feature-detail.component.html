@@ -114,6 +114,16 @@
     #footer
   >
     <div class="container mx-auto flex flex-col items-center justify-between">
+      @if (isDevelopmentMode) {
+        <button
+          type="button"
+          (click)="prefillDevelopmentData()"
+          [disabled]="isPrefillLoading"
+          class="mb-3 bg-slate-700 text-white py-2 px-5 disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
+        >
+          {{ isPrefillLoading ? 'Prefill laden...' : 'Prefill testdata (dev)' }}
+        </button>
+      }
       <button
         type="button"
         (click)="createAndSignManifest()"

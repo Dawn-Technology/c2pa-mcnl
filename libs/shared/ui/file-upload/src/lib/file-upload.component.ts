@@ -23,6 +23,12 @@ import {
   styleUrl: './file-upload.component.css',
 })
 export class FileUploadComponent implements FormValueControl<File | null> {
+  private static readonly PEM_MIME_TYPE = 'application/x-pem-file';
+  private static readonly MIME_EXTENSION_MAP: Record<string, string[]> = {
+    'application/x-pem-file': ['.pem'],
+    'application/x-x509-ca-cert': ['.crt', '.cer'],
+  };
+
   readonly value = model<File | null>(null);
   readonly errors = input<readonly WithOptionalField<ValidationError>[]>([]);
 
@@ -38,12 +44,27 @@ export class FileUploadComponent implements FormValueControl<File | null> {
 
   fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
-  acceptAttribute = computed(() => this.acceptedMimeTypes().join(','));
-  acceptAttributeHumanReadable = computed(() =>
-    this.acceptedMimeTypes()
-      .map((mime) => '.' + mime.split('/')[1])
-      .join(', '),
-  );
+  acceptAttribute = computed(() => {
+    const acceptedMimeTypes = this.acceptedMimeTypes();
+    const extensions = acceptedMimeTypes.flatMap(
+      (mime) => FileUploadComponent.MIME_EXTENSION_MAP[mime] || [],
+    );
+
+    return [...acceptedMimeTypes, ...extensions].join(',');
+  });
+  acceptAttributeHumanReadable = computed(() => {
+    const extensions = this.acceptedMimeTypes().flatMap((mime) => {
+      const mapped = FileUploadComponent.MIME_EXTENSION_MAP[mime];
+      if (mapped && mapped.length > 0) {
+        return mapped;
+      }
+
+      const subtype = mime.split('/')[1];
+      return subtype ? [`.${subtype}`] : [];
+    });
+
+    return [...new Set(extensions)].join(', ');
+  });
 
   errorMessages = computed(() => {
     const errors: string[] = [];
@@ -91,6 +112,19 @@ export class FileUploadComponent implements FormValueControl<File | null> {
   }
 
   private handleFile(file: File): void {
+    const hasEmptyMimeType = !file.type;
+    const isPemFile = file.name.toLowerCase().endsWith('.pem');
+
+    if (hasEmptyMimeType && isPemFile) {
+      this.value.set(
+        new File([file], file.name, {
+          type: FileUploadComponent.PEM_MIME_TYPE,
+          lastModified: file.lastModified,
+        }),
+      );
+      return;
+    }
+
     this.value.set(file);
   }
 
