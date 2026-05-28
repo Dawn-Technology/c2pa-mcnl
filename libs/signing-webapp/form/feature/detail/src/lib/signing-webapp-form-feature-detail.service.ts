@@ -17,6 +17,7 @@ import {
   ActionType,
   ClaimVersion,
   DataHashAssertion,
+  IdentityAssertion,
   IngredientAssertion,
   Manifest,
   ManifestStore,
@@ -27,6 +28,14 @@ import {
 import { CoseAlgorithmIdentifier, LocalSigner } from '@dockbite/c2pa-ts/cose';
 import { LocalTimestampProvider } from '@dockbite/c2pa-ts/rfc3161';
 import { SuperBox } from '@dockbite/c2pa-ts/jumbf';
+import {
+  createDidJwk,
+  getSignerPublicJwk,
+  IdentityClaimsAggregation,
+  NamedActorRole,
+  SignatureType,
+  VerifiedIdentityType,
+} from '@dockbite/c2pa-ts/cawg';
 import { generateThumbnail } from '@c2pa-mcnl/verify-webapp/shared/utils/helpers';
 import * as x509 from '@peculiar/x509';
 
@@ -78,6 +87,15 @@ export class SigningWebappFormFeatureDetailService {
 
     const dataHashAssertion = this.addDataHashAssertion(manifest);
 
+    await this.addIdentityAssertion(
+      asset,
+      dataHashAssertion,
+      manifestStore,
+      manifest,
+      signer,
+      timestampProvider,
+    );
+
     await this.signManifest(
       asset,
       dataHashAssertion,
@@ -86,6 +104,9 @@ export class SigningWebappFormFeatureDetailService {
       signer,
       timestampProvider,
     );
+
+    // write the JUMBF box to the asset
+    await asset.writeManifestJUMBF(manifestStore.getBytes());
 
     // export the modified file which now includes the manifest
     return asset.getDataRange();
@@ -264,6 +285,111 @@ export class SigningWebappFormFeatureDetailService {
     return dataHashAssertion;
   }
 
+  private async addIdentityAssertion(
+    asset: Asset,
+    dataHashAssertion: DataHashAssertion,
+    manifestStore: ManifestStore,
+    manifest: Manifest,
+    signer: LocalSigner,
+    timestampProvider: LocalTimestampProvider,
+  ): Promise<IdentityAssertion> {
+    // Setup veriables
+    const ica = new IdentityClaimsAggregation(signer);
+
+    // Create an ICA (identity claims aggregation) assertion with placeholder values
+    const identityAssertion = new IdentityAssertion();
+    // Set preliminary values with placeholder hash
+    identityAssertion.setSignerPayload(
+      [
+        {
+          url: `self#jumbf=c2pa.assertions/c2pa.hash.data`,
+          hash: new Uint8Array(32).fill(0x00),
+        },
+      ],
+      SignatureType.IdentityClaimsAggregation,
+      [NamedActorRole.Creator],
+    );
+    // Reserve enough space up-front for the real COSE_Sign1 ICA credential.
+    identityAssertion.setSignature(
+      new Uint8Array(4096).fill(0xaa),
+      new Uint8Array(256).fill(0x00),
+      undefined,
+      manifest,
+    );
+
+    // Add the ICA (identity claims aggregation) assertion to the manifest
+    manifest.addAssertion(identityAssertion);
+
+    // First signing pass populates claim assertion hashes used by hard-binding validation.
+    await this.signManifest(
+      asset,
+      dataHashAssertion,
+      manifestStore,
+      manifest,
+      signer,
+      timestampProvider,
+    );
+
+    if (!manifest.claim) {
+      throw new Error('Manifest claim is missing after signing');
+    }
+    const hardBindingRef = manifest.claim.assertions.find(
+      (ref) =>
+        ref.uri === `self#jumbf=c2pa.assertions/${dataHashAssertion.fullLabel}`,
+    );
+    if (!hardBindingRef) {
+      throw new Error(
+        'Hard binding reference not found in manifest claim assertions',
+      );
+    }
+
+    // Update the ICA (identity claims aggregation) assertion with the correct hash
+    identityAssertion.setSignerPayload(
+      [
+        {
+          url: hardBindingRef.uri,
+          hash: hardBindingRef.hash,
+        },
+      ],
+      SignatureType.IdentityClaimsAggregation,
+      [NamedActorRole.Creator],
+    );
+
+    const issuerPublicJwk: JsonWebKey | undefined =
+      await getSignerPublicJwk(signer);
+    const issuerDid: string | undefined = createDidJwk(issuerPublicJwk);
+    const icaCredential = IdentityClaimsAggregation.createIcaCredential(
+      issuerDid,
+      {
+        verifiedIdentities: [
+          {
+            type: VerifiedIdentityType.SocialMedia,
+            name: 'Sample Creator',
+            username: 'sample-creator',
+            uri: 'https://example.com/sample-creator',
+            provider: {
+              id: 'https://example.com',
+              name: 'Example Identity Provider',
+            },
+            verifiedAt: new Date().toISOString(),
+          },
+        ],
+      },
+      identityAssertion.signerPayload,
+      new Date(),
+    );
+    const icaSignature = await ica.createIcaSignature(icaCredential);
+
+    identityAssertion.setSignature(
+      icaSignature,
+      new Uint8Array(256).fill(0x00),
+      undefined,
+      manifest,
+    );
+
+    return identityAssertion;
+  }
+
   /**
    * Signs the manifest and writes the manifest JUMBF box back into the asset.
    */
@@ -283,9 +409,6 @@ export class SigningWebappFormFeatureDetailService {
 
     // create the signature
     await manifest.sign(signer, timestampProvider);
-
-    // write the JUMBF box to the asset
-    await asset.writeManifestJUMBF(manifestStore.getBytes());
   }
 
   /**
@@ -337,7 +460,7 @@ export class SigningWebappFormFeatureDetailService {
           },
         ],
         c2paAsset: {
-          sig_type: 'cawg.identity_claims_aggregation',
+          sig_type: SignatureType.IdentityClaimsAggregation,
           referenced_assertions: [
             { url: 'self#jumbf=c2pa.assertions/c2pa.hash.data', hash: '...' },
           ],
