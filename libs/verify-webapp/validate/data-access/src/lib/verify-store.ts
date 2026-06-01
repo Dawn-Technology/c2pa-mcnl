@@ -21,6 +21,7 @@ import {
   ValidationStatusCode,
 } from '@dockbite/c2pa-ts/manifest';
 import {
+  CawgValidationOptions,
   IdentityClaimsAggregationCredential,
   VerificationMethod,
   VerifiedIdentity,
@@ -60,6 +61,13 @@ export type ActiveManifestIdentityCard = {
   }>;
 };
 
+export type VerifiedManifestStore =
+  | (ManifestStore & {
+      manifests: VerifiedManifest[];
+    });
+  
+export type VerifiedManifest = Manifest & { validationResult?: ValidationResult }
+
 type VerifyStoreState = {
   isLoading: boolean;
 
@@ -67,11 +75,11 @@ type VerifyStoreState = {
   fileDataUrl: string | null;
 
   asset: Asset | null;
-  manifestStore: ManifestStore | null;
+  manifestStore: VerifiedManifestStore | null
   manifestStoreReadValidationError?: ValidationError;
   manifestThumbnailUrls: Map<string, string> | null; // label → blob URL
   manifestValidationResults: Map<string, ValidationResult> | null;
-  activeManifest: Manifest | null;
+  activeManifest: VerifiedManifest | null;
 
   error?: unknown;
 };
@@ -683,7 +691,7 @@ export const VerifyStore = signalStore(
 
         console.debug('active manifest:', activeManifest);
         console.debug(
-          'manifests validationr results:',
+          'manifests validation results:',
           manifestValidationResults,
         );
         patchState(store, () => ({
@@ -748,12 +756,11 @@ export const VerifyStore = signalStore(
       }
     },
 
-    async _validateManifests(manifestStore: ManifestStore, asset: Asset) {
+    async _validateManifests(manifestStore: VerifiedManifestStore, asset: Asset) {
       const validationResults: VerifyStoreState['manifestValidationResults'] =
         new Map();
 
       const activeManifest = manifestStore.getActiveManifest();
-      console.log(activeManifest);
       if (!activeManifest) {
         throw new ValidationError(
           ValidationStatusCode.ClaimCBORInvalid,
@@ -771,8 +778,13 @@ export const VerifyStore = signalStore(
             'The manifest is missing a label',
           );
         }
-
-        validationResults.set(label, await manifest.validate(asset));
+        const validationOptions: CawgValidationOptions = {
+          trustAnchors: [],
+        };
+        console.debug('validationOptions:',  validationOptions);
+        const result = await manifest.validate(asset, validationOptions)
+        manifest.validationResult = result;
+        validationResults.set(label, result);
       }
       return validationResults;
     },

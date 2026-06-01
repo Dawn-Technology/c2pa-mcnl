@@ -37,23 +37,12 @@
         <h1>todo: no thumbnail, show something else?</h1>
       }
 
-      <!-- TODO handle actual validation -->
-      @if (index === 1) {
-        <div class="absolute top-2 left-2">
-          <lib-verify-webapp-validate-ui-validation-badge
-            [valid]="true"
-            textValid="OpenAI"
-          />
-        </div>
-      }
-      @if (index === 2) {
-        <div class="absolute top-2 left-2">
-          <lib-verify-webapp-validate-ui-validation-badge [valid]="false" />
-        </div>
-      }
+      <div class="absolute top-2 left-2">
+        <lib-verify-webapp-validate-ui-validation-badge
+          [valid]="manifest.validationResult?.isValid ?? false"
+          textValid="Valide"
+        />
+      </div>
     </div>
-  } @empty {
-    <!-- TODO handle no manifests -->
-    <h1>TODO: No manifests</h1>
   }
 </div>

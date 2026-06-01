@@ -28,7 +28,7 @@ export class VerifyWebappValidateFeatureHomeComponent {
 
   constructor() {
     effect(() => {
-      if (this.store.hasManifests()) {
+      if (this.store.hasFile()) {
         this.router.navigate(['verify']);
       }
     });

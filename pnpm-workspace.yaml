@@ -9,3 +9,6 @@ onlyBuiltDependencies:
   - msgpackr-extract
   - nx
   - unrs-resolver
+
+overrides:
+  '@dockbite/c2pa-ts': link:../c2pa-ts
