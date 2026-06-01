@@ -56,6 +56,38 @@ interface CreateC2paManifestOptions {
 @Injectable()
 export class SigningWebappFormFeatureDetailService {
   /**
+   * Derives a did:web identifier from the current browser host.
+   * Ports are percent-encoded per did:web method-specific identifier rules.
+   */
+  private createDidWebFromCurrentHost(): string | undefined {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const host = window.location?.host?.trim();
+    if (!host) {
+      return undefined;
+    }
+
+    const didHost = host.toLowerCase().replace(/:/g, '%3A');
+    return `did:web:${didHost}`;
+  }
+
+  /**
+   * Selects the issuer DID for ICA credentials.
+   * Preference order: did:web (derived from host), then did:jwk fallback.
+   */
+  private async getIcaIssuerDid(signer: LocalSigner): Promise<string> {
+    const didWeb = this.createDidWebFromCurrentHost();
+    if (didWeb) {
+      return didWeb;
+    }
+
+    const issuerPublicJwk = await getSignerPublicJwk(signer);
+    return createDidJwk(issuerPublicJwk);
+  }
+
+  /**
    * Builds a C2PA manifest with the provided certificates and asset, embeds it into the asset's JUMBF box, and returns the modified asset data.
    * @param opts - An object containing the asset file, certificate files, and optional actions to include in the manifest
    * @returns A Uint8Array containing the modified asset data with the embedded C2PA manifest
@@ -355,9 +387,8 @@ export class SigningWebappFormFeatureDetailService {
       [NamedActorRole.Creator],
     );
 
-    const issuerPublicJwk: JsonWebKey | undefined =
-      await getSignerPublicJwk(signer);
-    const issuerDid: string | undefined = createDidJwk(issuerPublicJwk);
+    const issuerDid = await this.getIcaIssuerDid(signer);
+
     const icaCredential = IdentityClaimsAggregation.createIcaCredential(
       issuerDid,
       {
