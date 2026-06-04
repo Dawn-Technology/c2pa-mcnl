@@ -4,7 +4,7 @@ import { ActionType } from '@dockbite/c2pa-ts/manifest';
 export interface VerifiableCredentialIssuer {
   name: string;
   did: string;
-  site: string;
+  site?: string;
 }
 
 export interface FormData {

@@ -89,8 +89,13 @@ export const KEY_MAX_SIZE = 5 * 1024 * 1024;
 
 export const VC_ISSUERS: VerifiableCredentialIssuer[] = [
   {
+    name: 'JWK gebaseerde DID',
+    did: `did:jwk`,
+  },
+  {
     name: 'Lokale ontwikkeling',
-    did: `did:web:${window.location.host}`,
+    did:
+      `did:web:` + `${window.location.host}`.toLowerCase().replace(/:/g, '%3A'),
     site: 'https://verifieermij.nl',
   },
   {

@@ -6,6 +6,9 @@
  * individual certificates. The actual implementation is modularized in the ./lib directory.
  */
 
+// Use the polyfill core-js/full/reflect
+import 'core-js/full/reflect';
+
 import { setupCLI } from './lib/commands';
 import {
   generateCertificateChain,

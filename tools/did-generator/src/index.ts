@@ -6,6 +6,9 @@
  * modularized in the ./lib directory.
  */
 
+// Use the polyfill core-js/full/reflect
+import 'core-js/full/reflect';
+
 import { setupCLI } from './lib/commands';
 import { generateKeys } from './lib/key-generator';
 import { createDIDDocument } from './lib/did-generator';

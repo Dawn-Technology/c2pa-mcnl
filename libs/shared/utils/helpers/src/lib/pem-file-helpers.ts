@@ -1,5 +1,4 @@
-import * as x509 from '@peculiar/x509';
-
+import { X509Certificate } from '@peculiar/x509';
 export function extractBase64FromPem(pemText: string): string {
   const beginMatch = pemText.match(/-----BEGIN [^-]+-----/);
   const endMatch = pemText.match(/-----END [^-]+-----/);
@@ -43,15 +42,15 @@ export async function extractDerFromFile(
  * The function reads the file content as text, which should be in PEM format (base64-encoded DER with appropriate headers).
  * It then constructs an X.509 certificate object using the @peculiar/x509 library.
  *
- * @returns An instance of x509.X509Certificate representing the parsed certificate.
+ * @returns An instance of X509Certificate representing the parsed certificate.
  * @throws Error if the file content is not a valid PEM-encoded X.509 certificate.
  */
 export async function createX509CertFromFile(
   file: File,
-): Promise<x509.X509Certificate> {
+): Promise<X509Certificate> {
   try {
     const pem = await file.text();
-    return new x509.X509Certificate(pem);
+    return new X509Certificate(pem);
   } catch (err) {
     console.error(err);
     throw new Error(

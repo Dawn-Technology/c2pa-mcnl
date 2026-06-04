@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { form } from '@angular/forms/signals';
-import { pemKeyValidator } from './pem-key.validator';
+import { errorMessage, pemKeyValidator } from './pem-key.validator';
 import { Crypto } from '@peculiar/webcrypto';
 
 // Polyfill global crypto with WebCrypto instance
@@ -70,7 +70,7 @@ describe('pemKeyValidator', () => {
     const invalidFile = createTestFile(
       'invalid content',
       'key.pem',
-      'text/plain',
+      'application/json',
     );
     keyModel.set({ key: invalidFile });
     await flushAsync();
@@ -78,8 +78,7 @@ describe('pemKeyValidator', () => {
     expect(keyForm.key().errors()).toContainEqual(
       expect.objectContaining({
         kind: 'pemKey',
-        message:
-          'Must be a valid PKCS#8 PEM-encoded ECDSA private key using P-256 curve with signing capability',
+        message: errorMessage,
       }),
     );
   });
@@ -89,7 +88,7 @@ describe('pemKeyValidator', () => {
     const keyPair = await crypto.subtle.generateKey(
       {
         name: 'ECDSA',
-        namedCurve: 'P-384',
+        namedCurve: 'P-521',
       },
       true,
       ['sign'],
@@ -117,8 +116,7 @@ describe('pemKeyValidator', () => {
     expect(keyForm.key().errors()).toContainEqual(
       expect.objectContaining({
         kind: 'pemKey',
-        message:
-          'Must be a valid PKCS#8 PEM-encoded ECDSA private key using P-256 curve with signing capability',
+        message: errorMessage,
       }),
     );
   });
@@ -156,8 +154,7 @@ describe('pemKeyValidator', () => {
   //   expect(keyForm.key().errors()).toContainEqual(
   //     expect.objectContaining({
   //       kind: 'pemKey',
-  //       message:
-  //         'Must be a valid PKCS#8 PEM-encoded ECDSA private key using P-256 curve with signing capability',
+  //       message: errorMessage,
   //     }),
   //   );
   // });

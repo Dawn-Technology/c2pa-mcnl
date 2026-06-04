@@ -32,7 +32,14 @@ export function createDIDDocument(
       },
     ],
     authentication: [`${did}#key-1`],
-    assertionMethod: [`${did}#key-1`],
+    assertionMethod: [
+      {
+        id: `${did}#key-1`,
+        type: 'JsonWebKey2020',
+        controller: did,
+        publicKeyJwk: jwk,
+      },
+    ],
   };
 
   fs.writeFileSync(
