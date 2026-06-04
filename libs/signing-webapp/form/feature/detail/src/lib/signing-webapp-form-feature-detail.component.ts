@@ -1,4 +1,14 @@
-import { Component, computed, effect, inject, isDevMode } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  isDevMode,
+  OnDestroy,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { SigningWebappFormFeatureDetailService } from './signing-webapp-form-feature-detail.service';
 import { form as signalForm, FormField } from '@angular/forms/signals';
 import { SigningWebappFormUiUploadFileInputComponent } from '@c2pa-mcnl/signing-webapp/form/ui/upload-file-input';
@@ -39,8 +49,14 @@ interface DevPrefillFile {
   templateUrl: './signing-webapp-form-feature-detail.component.html',
   providers: [SigningWebappFormFeatureDetailService],
 })
-export class SigningWebappFormFeatureDetailComponent {
+export class SigningWebappFormFeatureDetailComponent
+  implements AfterViewInit, OnDestroy
+{
   private readonly service = inject(SigningWebappFormFeatureDetailService);
+
+  readonly footerHeight = signal(0);
+  private readonly footerEl = viewChild<ElementRef>('footer');
+  private resizeObserver?: ResizeObserver;
 
   private readonly devPrefillFiles = {
     leafCertificate: {
@@ -126,11 +142,18 @@ zGH8APsZpMMoeUQXGEYipO375Pds5j0kG4WiW0xyaQmfwI5yoikfs7/s
     );
   });
 
-  constructor() {
-    effect(() => {
-      console.debug('form changed: ', this.signingModel());
-      console.debug('form valid: ', this.signingForm().valid());
+  ngAfterViewInit(): void {
+    const el = this.footerEl()?.nativeElement;
+    if (!el) return;
+
+    this.resizeObserver = new ResizeObserver(() => {
+      this.footerHeight.set(el.offsetHeight);
     });
+    this.resizeObserver.observe(el);
+  }
+
+  ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
   }
 
   async createAndSignManifest() {

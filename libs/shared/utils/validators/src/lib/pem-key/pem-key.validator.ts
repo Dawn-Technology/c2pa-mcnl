@@ -1,7 +1,7 @@
 import { SchemaPath, validateAsync } from '@angular/forms/signals';
 import { resource } from '@angular/core';
 import { extractDerFromFile } from '@c2pa-mcnl/shared/utils/helpers';
-import * as asn1js from 'asn1js';
+import { Sequence, fromBER, ObjectIdentifier } from 'asn1js';
 
 export interface Pkcs8ValidationResult {
   validPkcs8: boolean;
@@ -76,7 +76,7 @@ export function inspectPkcs8(
   der: Uint8Array<ArrayBuffer>,
 ): Pkcs8ValidationResult {
   try {
-    const parsed = asn1js.fromBER(der);
+    const parsed = fromBER(der);
 
     if (parsed.offset === -1) {
       return {
@@ -88,7 +88,7 @@ export function inspectPkcs8(
 
     const root = parsed.result;
 
-    if (!(root instanceof asn1js.Sequence)) {
+    if (!(root instanceof Sequence)) {
       return {
         validPkcs8: false,
         signingCapable: false,
@@ -108,7 +108,7 @@ export function inspectPkcs8(
 
     const algorithmIdentifier = elements[1];
 
-    if (!(algorithmIdentifier instanceof asn1js.Sequence)) {
+    if (!(algorithmIdentifier instanceof Sequence)) {
       return {
         validPkcs8: false,
         signingCapable: false,
@@ -118,7 +118,7 @@ export function inspectPkcs8(
 
     const oidNode = algorithmIdentifier.valueBlock.value[0];
 
-    if (!(oidNode instanceof asn1js.ObjectIdentifier)) {
+    if (!(oidNode instanceof ObjectIdentifier)) {
       return {
         validPkcs8: false,
         signingCapable: false,
