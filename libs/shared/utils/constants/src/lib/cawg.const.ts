@@ -3,7 +3,8 @@ import {
   VerifiedIdentityType,
 } from '@dockbite/c2pa-ts/cawg';
 import { ValidationStatusCode } from '@dockbite/c2pa-ts/manifest';
-import { IdentityVerificationState } from '@c2pa-mcnl/shared/utils/helpers';
+
+export type IdentityVerificationState = 'verified' | 'warning' | 'invalid';
 
 export const readableIdentityRoleMap: Record<string, string> = {
   'cawg.creator': 'Maker',

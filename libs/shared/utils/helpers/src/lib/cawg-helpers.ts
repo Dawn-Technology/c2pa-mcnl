@@ -15,9 +15,8 @@ import {
   identityWarningCodes,
   readableIdentityClaimMethodMap,
   readableIdentityClaimTypeMap,
+  IdentityVerificationState,
 } from '@c2pa-mcnl/shared/utils/constants';
-
-export type IdentityVerificationState = 'verified' | 'warning' | 'invalid';
 
 export type ActiveManifestIdentityCard = {
   id: string;

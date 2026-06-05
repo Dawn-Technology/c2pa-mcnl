@@ -161,7 +161,7 @@ export async function verifySigningImport(
         return true;
 
       case 'EC':
-        for (const curve of ['P-256', 'P-384', 'P-512']) {
+        for (const curve of ['P-256', 'P-384', 'P-521']) {
           try {
             await crypto.subtle.importKey(
               'pkcs8',

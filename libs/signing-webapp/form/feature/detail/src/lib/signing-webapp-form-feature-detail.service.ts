@@ -317,7 +317,7 @@ export class SigningWebappFormFeatureDetailService {
     digitalIdentitySigner: LocalIdentitySigner,
     verifiableCredentialIssuer: string | undefined,
   ): Promise<IdentityAssertion> {
-    // Setup veriables
+    // Setup variables
     const ica = new IdentityClaimsAggregation(digitalIdentitySigner);
 
     // Create an ICA (identity claims aggregation) assertion with placeholder values

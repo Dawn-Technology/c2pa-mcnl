@@ -84,11 +84,11 @@ describe('pemKeyValidator', () => {
   });
 
   it('should return error for key with wrong curve', async () => {
-    // Generate a key with P-384 instead of P-256
+    // Generate a key with K-256 instead of supported curves
     const keyPair = await crypto.subtle.generateKey(
       {
         name: 'ECDSA',
-        namedCurve: 'P-521',
+        namedCurve: 'K-256', //
       },
       true,
       ['sign'],
