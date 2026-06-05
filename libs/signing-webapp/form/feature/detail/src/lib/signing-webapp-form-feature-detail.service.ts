@@ -21,17 +21,12 @@ import {
   ThumbnailAssertion,
   ThumbnailType,
 } from '@dockbite/c2pa-ts/manifest';
-import {
-  CoseAlgorithmIdentifier,
-  LocalSigner,
-  LocalIdentitySigner,
-} from '@dockbite/c2pa-ts/cose';
+import { CoseAlgorithmIdentifier, LocalSigner } from '@dockbite/c2pa-ts/cose';
 import { LocalTimestampProvider } from '@dockbite/c2pa-ts/rfc3161';
 import { SuperBox } from '@dockbite/c2pa-ts/jumbf';
 import {
-  IdentityClaimsAggregation,
+  LocalIdentitySigner,
   NamedActorRole,
-  SignatureType,
   VerifiedIdentityType,
 } from '@dockbite/c2pa-ts/cawg';
 import { generateThumbnail } from '@c2pa-mcnl/verify-webapp/shared/utils/helpers';
@@ -88,16 +83,13 @@ export class SigningWebappFormFeatureDetailService {
 
     const dataHashAssertion = this.addDataHashAssertion(manifest);
 
-    if (digitalIdentitySigner && opts.verifiableCredentialIssuer) {
+    if (digitalIdentitySigner) {
       await this.addIdentityAssertion(
         asset,
-        dataHashAssertion,
-        manifestStore,
         manifest,
         signer,
         timestampProvider,
         digitalIdentitySigner,
-        opts.verifiableCredentialIssuer,
       );
     }
 
@@ -153,9 +145,29 @@ export class SigningWebappFormFeatureDetailService {
         opts.verifiableCredentialPrivateKeyFile,
       );
 
+      let issuerDid = opts.verifiableCredentialIssuer;
+      if (!issuerDid || issuerDid.startsWith('did:jwk')) {
+        issuerDid = undefined;
+      }
+
       digitalIdentitySigner = new LocalIdentitySigner(
         digitalIdentityDer,
-        CoseAlgorithmIdentifier.Ed25519,
+        CoseAlgorithmIdentifier.ES256,
+        {
+          verifiedIdentity: {
+            type: VerifiedIdentityType.SocialMedia,
+            name: 'Sample Creator',
+            username: 'sample-creator',
+            uri: 'https://example.com/sample-creator',
+            provider: {
+              id: 'https://example.com',
+              name: 'Example Identity Provider',
+            },
+            verifiedAt: new Date().toISOString(),
+          },
+          roles: [NamedActorRole.Creator],
+          issuerDid: issuerDid,
+        },
       );
     }
 
@@ -309,131 +321,23 @@ export class SigningWebappFormFeatureDetailService {
 
   private async addIdentityAssertion(
     asset: Asset,
-    dataHashAssertion: DataHashAssertion,
-    manifestStore: ManifestStore,
     manifest: Manifest,
     signer: LocalSigner,
     timestampProvider: LocalTimestampProvider,
     digitalIdentitySigner: LocalIdentitySigner,
-    verifiableCredentialIssuer: string | undefined,
   ): Promise<IdentityAssertion> {
-    // Setup variables
-    const ica = new IdentityClaimsAggregation(digitalIdentitySigner);
-
-    // Create an ICA (identity claims aggregation) assertion with placeholder values
-    const identityAssertion = new IdentityAssertion();
-    // Set preliminary values with placeholder hash
-    identityAssertion.setSignerPayload(
-      [
-        {
-          url: `self#jumbf=c2pa.assertions/c2pa.hash.data`,
-          hash: new Uint8Array(32).fill(0x00),
-        },
-      ],
-      SignatureType.IdentityClaimsAggregation,
-      [NamedActorRole.Creator],
-    );
-    // Reserve enough space up-front for the real COSE_Sign1 ICA credential.
-    identityAssertion.setSignature(
-      new Uint8Array(4096).fill(0x00),
-      new Uint8Array(256).fill(0x00),
-      undefined,
+    const { identityAssertion } = await IdentityAssertion.create(
       manifest,
-    );
-
-    // Add the ICA (identity claims aggregation) assertion to the manifest
-    manifest.addAssertion(identityAssertion);
-
-    // First signing pass populates claim assertion hashes used by hard-binding validation.
-    await this.signManifest(
       asset,
-      dataHashAssertion,
-      manifestStore,
-      manifest,
       signer,
       timestampProvider,
-    );
-
-    if (!manifest.claim) {
-      throw new Error('Manifest claim is missing after signing');
-    }
-    const hardBindingRef = manifest.claim.assertions.find(
-      (ref) =>
-        ref.uri === `self#jumbf=c2pa.assertions/${dataHashAssertion.fullLabel}`,
-    );
-    if (!hardBindingRef) {
-      throw new Error(
-        'Hard binding reference not found in manifest claim assertions',
-      );
-    }
-
-    // Update the ICA (identity claims aggregation) assertion with the correct hash
-    identityAssertion.setSignerPayload(
-      [
-        {
-          url: hardBindingRef.uri,
-          hash: hardBindingRef.hash,
-        },
-      ],
-      SignatureType.IdentityClaimsAggregation,
-      [NamedActorRole.Creator],
-    );
-
-    // Generate the Verifiable Credential (VC) and embed it in the ICA assertion
-    const issuerDid = await this.getIssuerDid(
       digitalIdentitySigner,
-      verifiableCredentialIssuer,
     );
-    console.debug('Using issuer DID for VC generation:', issuerDid);
-    const icaCredential = IdentityClaimsAggregation.createIcaCredential(
-      issuerDid,
-      {
-        verifiedIdentities: [
-          {
-            type: VerifiedIdentityType.SocialMedia,
-            name: 'Sample Creator',
-            username: 'sample-creator',
-            uri: 'https://example.com/sample-creator',
-            provider: {
-              id: 'https://example.com',
-              name: 'Example Identity Provider',
-            },
-            verifiedAt: new Date().toISOString(),
-          },
-        ],
-      },
-      identityAssertion.signerPayload,
-      new Date(),
-    );
-    const icaSignature = await ica.createIcaSignature(icaCredential);
-
-    identityAssertion.setSignature(
-      icaSignature,
-      new Uint8Array(256).fill(0x00),
-      undefined,
-      manifest,
-    );
-
     return identityAssertion;
   }
 
-  private async getIssuerDid(
-    signer: LocalIdentitySigner,
-    verifiableCredentialIssuer: string | undefined,
-  ): Promise<string> {
-    if (
-      !verifiableCredentialIssuer ||
-      verifiableCredentialIssuer === 'did:jwk'
-    ) {
-      const publicJwk = await signer.getJwk();
-      return `did:jwk:${publicJwk}`;
-    }
-
-    return verifiableCredentialIssuer;
-  }
-
   /**
-   * Signs the manifest and writes the manifest JUMBF box back into the asset.
+   * Signs the manifest (ensures manifest space, updates the hard binding, and creates the signature).
    */
   private async signManifest(
     asset: Asset,

@@ -9,8 +9,9 @@
         <div>
           <h4 class="font-bold">CAWG identiteitsverificatie</h4>
           <p class="text-sm">
-            Deze sectie toont wie deze content heeft geclaimd en hoe die identiteit
-            is geverifieerd. Geverifieerde identiteiten staan bovenaan.
+            Deze sectie toont wie deze content heeft geclaimd en hoe die
+            identiteit is geverifieerd. Geverifieerde identiteiten staan
+            bovenaan.
           </p>
         </div>
 
@@ -29,7 +30,9 @@
                 <span
                   class="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold"
                   [class.bg-green-50]="isVerifiedState(identity.status.state)"
-                  [class.text-green-700]="isVerifiedState(identity.status.state)"
+                  [class.text-green-700]="
+                    isVerifiedState(identity.status.state)
+                  "
                   [class.bg-orange-50]="!isVerifiedState(identity.status.state)"
                   [class.text-orange-700]="
                     !isVerifiedState(identity.status.state)
@@ -99,7 +102,10 @@
                 </h6>
                 @if (identity.linkedIdentityClaims.length) {
                   <ul class="flex flex-col gap-2">
-                    @for (claim of identity.linkedIdentityClaims; track $index) {
+                    @for (
+                      claim of identity.linkedIdentityClaims;
+                      track $index
+                    ) {
                       <li class="text-sm">
                         <span class="font-semibold">{{ claim.type }}:</span>
                         <span>{{ claim.value }}</span>
@@ -141,7 +147,9 @@
         <ul class="flex flex-col gap-1">
           @for (assertions of store.getActionAssertions(); track $index) {
             @for (action of assertions.actions; track $index) {
-              <p class="text-sm">{{ ReadableActions[action?.action ?? ''] }}</p>
+              @if (action?.action) {
+                <li class="text-sm">{{ ReadableActions[action.action] }}</li>
+              }
             }
           }
         </ul>
@@ -161,9 +169,9 @@
       <div>
         <h4 class="font-bold">Gegevens over camera-opname</h4>
         <p class="text-sm">
-          Aanvullende gegevens afkomstig van de camera die is gebruikt om een foto
-          of video te maken. EXIF-gegevens kunnen worden bewerkt door de maker van
-          de content.
+          Aanvullende gegevens afkomstig van de camera die is gebruikt om een
+          foto of video te maken. EXIF-gegevens kunnen worden bewerkt door de
+          maker van de content.
         </p>
       </div>
 
@@ -202,7 +210,7 @@
           [subText]="store.fileDate()"
         />
       } @else {
-        <h1>todo: no file data url?</h1>
+        <h1>Geen preview beschikbaar voor dit bestand</h1>
       }
     </div>
   }
