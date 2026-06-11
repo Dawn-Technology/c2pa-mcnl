@@ -2,7 +2,6 @@ import {
   patchState,
   signalStore,
   withComputed,
-  withHooks,
   withMethods,
   withState,
 } from '@ngrx/signals';
@@ -39,6 +38,7 @@ import {
   readableIdentityRoleMap,
   identitySortOrder,
 } from '@c2pa-mcnl/shared/utils/constants';
+import { VERIFY_TRUST_LIST_URLS } from './trust-list-urls.token';
 
 export type VerifiedManifestStore = ManifestStore & {
   manifests: VerifiedManifest[];
@@ -251,218 +251,271 @@ export const VerifyStore = signalStore(
       }),
     }),
   ),
-  withMethods((store) => ({
-    async setFile(file: File | null) {
-      patchState(store, () => ({
-        isLoading: true,
-      }));
+  withMethods((store, trustListUrls = inject(VERIFY_TRUST_LIST_URLS)) => {
+    let trustAnchorsCache: string[] | null = null;
+    let trustAnchorsPromise: Promise<string[]> | null = null;
 
-      this._revokeCurrentFileDataUrl();
-      this._revokeCurrentManifestThumbnailUrls();
+    return {
+      async setFile(file: File | null) {
+        patchState(store, () => ({
+          isLoading: true,
+        }));
 
-      if (!file) {
-        console.debug('No file selected, resetting state');
-        return this._resetState();
-      }
+        this._revokeCurrentFileDataUrl();
+        this._revokeCurrentManifestThumbnailUrls();
 
-      const fileDataUrl = this._createFileDataUrl(file);
-
-      patchState(store, () => ({
-        fileDataUrl,
-        file,
-        manifestThumbnailUrls: null,
-      }));
-
-      try {
-        const asset = await createAsset(file);
-        const jumbfBytes = await asset.getManifestJUMBF();
-
-        /* no manifest found */
-        if (!jumbfBytes) {
-          return patchState(store, {
-            isLoading: false,
-            manifestStore: null,
-            activeManifest: null,
-          });
+        if (!file) {
+          console.debug('No file selected, resetting state');
+          return this._resetState();
         }
 
-        let manifestStore: ManifestStore;
-        let manifestValidationResults: VerifyStoreState['manifestValidationResults'];
-        try {
-          manifestStore = ManifestStore.read(SuperBox.fromBuffer(jumbfBytes));
+        const fileDataUrl = this._createFileDataUrl(file);
 
-          manifestValidationResults = await this._validateManifests(
-            manifestStore,
-            asset,
+        patchState(store, () => ({
+          fileDataUrl,
+          file,
+          manifestThumbnailUrls: null,
+        }));
+
+        try {
+          const asset = await createAsset(file);
+          const jumbfBytes = await asset.getManifestJUMBF();
+
+          /* no manifest found */
+          if (!jumbfBytes) {
+            return patchState(store, {
+              isLoading: false,
+              manifestStore: null,
+              activeManifest: null,
+            });
+          }
+
+          let manifestStore: ManifestStore;
+          let manifestValidationResults: VerifyStoreState['manifestValidationResults'];
+          try {
+            manifestStore = ManifestStore.read(SuperBox.fromBuffer(jumbfBytes));
+
+            manifestValidationResults = await this._validateManifests(
+              manifestStore,
+              asset,
+            );
+          } catch (error) {
+            if (error instanceof ValidationError) {
+              console.error('Manifest validation error:', error);
+              return patchState(store, () => ({
+                isLoading: false,
+                manifestStoreReadValidationError: error,
+              }));
+            } else {
+              console.error(
+                'Manifest validation unknown error.',
+                String(error),
+              );
+              return patchState(store, () => ({
+                isLoading: false,
+                error,
+              }));
+            }
+          }
+
+          const manifestThumbnailUrls = this._createManifestThumbnailUrls(
+            manifestStore.manifests,
           );
+
+          const activeManifest = manifestStore.getActiveManifest();
+
+          console.debug('active manifest:', activeManifest);
+          console.debug(
+            'manifests validation results:',
+            manifestValidationResults,
+          );
+          patchState(store, () => ({
+            isLoading: false,
+            asset,
+            manifestStore,
+            manifestThumbnailUrls,
+            manifestValidationResults,
+            activeManifest,
+          }));
         } catch (error) {
-          if (error instanceof ValidationError) {
-            console.error('Manifest validation error:', error);
-            return patchState(store, () => ({
-              isLoading: false,
-              manifestStoreReadValidationError: error,
-            }));
-          } else {
-            console.error('Manifest validation unknown error.', String(error));
-            return patchState(store, () => ({
-              isLoading: false,
-              error,
-            }));
+          const message =
+            error instanceof Error ? error.message : String(error);
+          console.error('An unexpected error occurred.', message);
+          patchState(store, () => ({
+            error,
+          }));
+        }
+      },
+
+      async setActiveManifest(label?: string) {
+        const asset = store.asset();
+        const manifestStore = store.manifestStore();
+
+        if (!asset || !manifestStore || !label) {
+          return;
+        }
+
+        patchState(store, () => ({
+          isLoading: true,
+        }));
+
+        const activeManifest = manifestStore.getManifestByLabel(label);
+
+        patchState(store, () => ({
+          isLoading: false,
+          activeManifest,
+        }));
+      },
+
+      getManifestsThumbnailDataUrl(label?: string) {
+        return label
+          ? (store?.manifestThumbnailUrls()?.get(label) ?? null)
+          : null;
+      },
+
+      isActiveManifest(label?: string) {
+        return store.activeManifest()?.label === label;
+      },
+
+      _createFileDataUrl(file: File) {
+        if (!isImageMimeType(file)) {
+          return null;
+        }
+
+        return URL.createObjectURL(file);
+      },
+
+      _revokeCurrentFileDataUrl() {
+        const fileDataUrl = store.fileDataUrl();
+        if (fileDataUrl) {
+          URL.revokeObjectURL(fileDataUrl);
+        }
+      },
+
+      _getTrustListUrls() {
+        return [
+          ...new Set(trustListUrls.map((url) => url.trim()).filter(Boolean)),
+        ];
+      },
+
+      async _getTrustAnchors() {
+        if (trustAnchorsCache) {
+          return trustAnchorsCache;
+        }
+
+        if (trustAnchorsPromise) {
+          return trustAnchorsPromise;
+        }
+
+        const urls = this._getTrustListUrls();
+
+        trustAnchorsPromise = Promise.allSettled(
+          urls.map(async (url) => {
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(
+                `Failed to fetch trust list from "${url}" (${response.status})`,
+              );
+            }
+
+            return response.text();
+          }),
+        )
+          .then((results) => {
+            const anchors = results.flatMap((result) =>
+              result.status === 'fulfilled' ? [result.value] : [],
+            );
+
+            return anchors;
+          })
+          .then((anchors) => {
+            trustAnchorsCache = anchors;
+            return anchors;
+          })
+          .finally(() => {
+            trustAnchorsPromise = null;
+          });
+
+        return trustAnchorsPromise;
+      },
+
+      async _validateManifests(
+        manifestStore: VerifiedManifestStore,
+        asset: Asset,
+      ) {
+        const validationResults: VerifyStoreState['manifestValidationResults'] =
+          new Map();
+
+        const activeManifest = manifestStore.getActiveManifest();
+        if (!activeManifest) {
+          throw new ValidationError(
+            ValidationStatusCode.ClaimCBORInvalid,
+            manifestStore.sourceBox,
+            'Active manifest is missing',
+          );
+        }
+
+        const trustAnchors = await this._getTrustAnchors();
+
+        for (const manifest of manifestStore.manifests) {
+          const label = manifest.label;
+          if (!label) {
+            throw new ValidationError(
+              ValidationStatusCode.GeneralError,
+              manifestStore.sourceBox,
+              'The manifest is missing a label',
+            );
+          }
+          const validationOptions: CawgValidationOptions = {
+            trustAnchors,
+          };
+          console.debug('validationOptions:', validationOptions);
+          const result = await manifest.validate(asset, validationOptions);
+          manifest.validationResult = result;
+          validationResults.set(label, result);
+        }
+        return validationResults;
+      },
+
+      _createManifestThumbnailUrls(
+        manifests: Manifest[] = [],
+        manifestThumbnailUrls = new Map<string, string>(),
+      ) {
+        for (const manifest of manifests) {
+          if (!manifest.label) {
+            continue;
+          }
+
+          const thumbnails =
+            manifest.assertions?.getThumbnailAssertions() as ThumbnailAssertion[];
+
+          const claimThumbnail = thumbnails?.find(
+            (thumbnail) => thumbnail.thumbnailType === ThumbnailType.Claim,
+          );
+
+          if (claimThumbnail?.content) {
+            const thumbnailDataUrl = URL.createObjectURL(
+              new Blob([new Uint8Array(claimThumbnail.content)], {
+                type: claimThumbnail.mimeType,
+              }),
+            );
+
+            manifestThumbnailUrls.set(manifest.label, thumbnailDataUrl);
           }
         }
 
-        const manifestThumbnailUrls = this._createManifestThumbnailUrls(
-          manifestStore.manifests,
-        );
+        return manifestThumbnailUrls;
+      },
 
-        const activeManifest = manifestStore.getActiveManifest();
-
-        console.debug('active manifest:', activeManifest);
-        console.debug(
-          'manifests validation results:',
-          manifestValidationResults,
-        );
-        patchState(store, () => ({
-          isLoading: false,
-          asset,
-          manifestStore,
-          manifestThumbnailUrls,
-          manifestValidationResults,
-          activeManifest,
-        }));
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        console.error('An unexpected error occurred.', message);
-        patchState(store, () => ({
-          error,
-        }));
-      }
-    },
-
-    async setActiveManifest(label?: string) {
-      const asset = store.asset();
-      const manifestStore = store.manifestStore();
-
-      if (!asset || !manifestStore || !label) {
-        return;
-      }
-
-      patchState(store, () => ({
-        isLoading: true,
-      }));
-
-      const activeManifest = manifestStore.getManifestByLabel(label);
-
-      patchState(store, () => ({
-        isLoading: false,
-        activeManifest,
-      }));
-    },
-
-    getManifestsThumbnailDataUrl(label?: string) {
-      return label
-        ? (store?.manifestThumbnailUrls()?.get(label) ?? null)
-        : null;
-    },
-
-    isActiveManifest(label?: string) {
-      return store.activeManifest()?.label === label;
-    },
-
-    _createFileDataUrl(file: File) {
-      if (!isImageMimeType(file)) {
-        return null;
-      }
-
-      return URL.createObjectURL(file);
-    },
-
-    _revokeCurrentFileDataUrl() {
-      const fileDataUrl = store.fileDataUrl();
-      if (fileDataUrl) {
-        URL.revokeObjectURL(fileDataUrl);
-      }
-    },
-
-    // TODO
-    _getTrustList() {
-      return '';
-    },
-
-    async _validateManifests(
-      manifestStore: VerifiedManifestStore,
-      asset: Asset,
-    ) {
-      const validationResults: VerifyStoreState['manifestValidationResults'] =
-        new Map();
-
-      const activeManifest = manifestStore.getActiveManifest();
-      if (!activeManifest) {
-        throw new ValidationError(
-          ValidationStatusCode.ClaimCBORInvalid,
-          manifestStore.sourceBox,
-          'Active manifest is missing',
-        );
-      }
-
-      for (const manifest of manifestStore.manifests) {
-        const label = manifest.label;
-        if (!label) {
-          throw new ValidationError(
-            ValidationStatusCode.GeneralError,
-            manifestStore.sourceBox,
-            'The manifest is missing a label',
-          );
+      _revokeCurrentManifestThumbnailUrls() {
+        for (const url of store.manifestThumbnailUrls()?.values() || []) {
+          URL.revokeObjectURL(url);
         }
-        const validationOptions: CawgValidationOptions = {
-          trustAnchors: [this._getTrustList()],
-        };
-        console.debug('validationOptions:', validationOptions);
-        const result = await manifest.validate(asset, validationOptions);
-        manifest.validationResult = result;
-        validationResults.set(label, result);
-      }
-      return validationResults;
-    },
+      },
 
-    _createManifestThumbnailUrls(
-      manifests: Manifest[] = [],
-      manifestThumbnailUrls = new Map<string, string>(),
-    ) {
-      for (const manifest of manifests) {
-        if (!manifest.label) {
-          continue;
-        }
-
-        const thumbnails =
-          manifest.assertions?.getThumbnailAssertions() as ThumbnailAssertion[];
-
-        const claimThumbnail = thumbnails?.find(
-          (thumbnail) => thumbnail.thumbnailType === ThumbnailType.Claim,
-        );
-
-        if (claimThumbnail?.content) {
-          const thumbnailDataUrl = URL.createObjectURL(
-            new Blob([new Uint8Array(claimThumbnail.content)], {
-              type: claimThumbnail.mimeType,
-            }),
-          );
-
-          manifestThumbnailUrls.set(manifest.label, thumbnailDataUrl);
-        }
-      }
-
-      return manifestThumbnailUrls;
-    },
-
-    _revokeCurrentManifestThumbnailUrls() {
-      for (const url of store.manifestThumbnailUrls()?.values() || []) {
-        URL.revokeObjectURL(url);
-      }
-    },
-
-    _resetState() {
-      patchState(store, initialState);
-    },
-  })),
+      _resetState() {
+        patchState(store, initialState);
+      },
+    };
+  }),
 );
