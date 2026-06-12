@@ -7,7 +7,10 @@ import {
 } from '@c2pa-mcnl/shared/utils/constants';
 import { VerifyStore } from '@c2pa-mcnl/verify-webapp/validate/data-access';
 import { Router } from '@angular/router';
-import { VerifyWebappSharedUiLoadingOverlayComponent } from '@c2pa-mcnl/verify-webapp/shared/ui/loading-overlay';
+import {
+  VerifyWebappSharedUiLoadingOverlayComponent,
+  WindowFileDropOverlayComponent,
+} from '@c2pa-mcnl/verify-webapp/shared/ui/loading-overlay';
 
 @Component({
   selector: 'lib-verify-webapp-home-feature-detail',
@@ -15,6 +18,7 @@ import { VerifyWebappSharedUiLoadingOverlayComponent } from '@c2pa-mcnl/verify-w
     NgOptimizedImage,
     FileUploadComponent,
     VerifyWebappSharedUiLoadingOverlayComponent,
+    WindowFileDropOverlayComponent,
   ],
   templateUrl: './verify-webapp-validate-feature-home.component.html',
   styleUrl: './verify-webapp-validate-feature-home.component.css',
