@@ -12,10 +12,34 @@ describe('VerifyWebappValidateUiValidationBadge', () => {
 
     fixture = TestBed.createComponent(VerifyWebappValidateUiValidationBadge);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('state', 'invalid');
     await fixture.whenStable();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should render valid state text', () => {
+    fixture.componentRef.setInput('state', 'valid');
+    fixture.componentRef.setInput('textValid', 'Geverifieerd');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Geverifieerd');
+  });
+
+  it('should render invalid state text', () => {
+    fixture.componentRef.setInput('state', 'invalid');
+    fixture.componentRef.setInput('textInvalid', 'Gemanipuleerd');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Gemanipuleerd');
+  });
+
+  it('should render untrusted state text', () => {
+    fixture.componentRef.setInput('state', 'untrusted');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Niet vertrouwd');
   });
 });
