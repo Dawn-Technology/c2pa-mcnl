@@ -9,6 +9,7 @@ on:
 permissions:
   actions: read
   contents: read
+  packages: read
 
 #env:
 #  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -32,6 +33,8 @@ jobs:
           cache: 'pnpm'
 
       - run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: nrwl/nx-set-shas@v4
 
