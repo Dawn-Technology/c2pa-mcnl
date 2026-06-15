@@ -78,6 +78,16 @@ export class FileUploadComponent implements FormValueControl<File | null> {
     return errors;
   });
   hasErrors = computed(() => !!this.errorMessages().length);
+  helperTextId = computed(() => `${this.fieldId()}-help`);
+  errorTextId = computed(() => `${this.fieldId()}-errors`);
+  describedBy = computed(() => {
+    const ids = [this.helperTextId()];
+    if (this.hasErrors()) {
+      ids.push(this.errorTextId());
+    }
+
+    return ids.join(' ');
+  });
 
   readonly formatFileSize = formatFileSize;
 

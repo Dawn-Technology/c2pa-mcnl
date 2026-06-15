@@ -8,14 +8,13 @@
     track $index;
     let index = $index
   ) {
-    <div
-      class="relative rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[165px] h-[150px]"
+    <button
+      type="button"
+      class="relative rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[165px] h-[150px] text-left"
       [ngClass]="{ 'border-2': store.isActiveManifest(manifest?.label) }"
+      [attr.aria-label]="manifestAriaLabel(manifest?.label, index)"
+      [attr.aria-pressed]="store.isActiveManifest(manifest?.label)"
       (click)="store.setActiveManifest(manifest?.label)"
-      (keydown.enter)="store.setActiveManifest(manifest?.label)"
-      (keydown.space)="store.setActiveManifest(manifest?.label)"
-      role="button"
-      tabindex="0"
     >
       @if (
         store.getManifestsThumbnailDataUrl(manifest?.label);
@@ -34,7 +33,7 @@
         />
       } @else {
         <!-- TODO handle no thumbnails -->
-        <h1>Geen thumbnails beschikbaar</h1>
+        <p class="p-2 text-xs">Geen thumbnails beschikbaar</p>
       }
 
       <div class="absolute top-2 left-2">
@@ -43,6 +42,6 @@
           textValid="Geverifieerd"
         />
       </div>
-    </div>
+    </button>
   }
 </div>

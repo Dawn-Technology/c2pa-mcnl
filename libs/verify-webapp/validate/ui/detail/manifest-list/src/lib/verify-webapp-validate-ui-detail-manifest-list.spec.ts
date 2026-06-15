@@ -18,4 +18,10 @@ describe('VerifyWebappValidateUiDetailManifestList', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should build a fallback aria label for manifests without label', () => {
+    expect(component.manifestAriaLabel(undefined, 0)).toBe(
+      'Selecteer manifest 1',
+    );
+  });
 });

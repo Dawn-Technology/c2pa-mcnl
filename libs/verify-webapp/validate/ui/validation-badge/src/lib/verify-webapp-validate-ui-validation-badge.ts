@@ -9,4 +9,8 @@ export class VerifyWebappValidateUiValidationBadge {
   valid = input.required<boolean>();
   textValid = input<string>('');
   textInvalid = input('Niet herkenbaar');
+
+  statusLabel(): string {
+    return this.valid() ? this.textValid() : this.textInvalid();
+  }
 }

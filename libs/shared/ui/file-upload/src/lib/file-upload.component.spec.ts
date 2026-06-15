@@ -72,6 +72,28 @@ describe('FileUploadComponent', () => {
     expect(component.acceptAttributeHumanReadable()).toBe('.pem');
   });
 
+  it('should expose helper text in aria-describedby on hidden input', () => {
+    const inputEl: HTMLInputElement =
+      fixture.nativeElement.querySelector('input[type="file"]');
+
+    expect(inputEl.getAttribute('aria-describedby')).toContain('-help');
+    expect(inputEl.getAttribute('aria-invalid')).toBe('false');
+  });
+
+  it('should include error region id in aria-describedby when errors exist', () => {
+    fixture.componentRef.setInput('errors', [
+      { message: 'Bestand is ongeldig' },
+    ]);
+    fixture.detectChanges();
+
+    const inputEl: HTMLInputElement =
+      fixture.nativeElement.querySelector('input[type="file"]');
+    expect(inputEl.getAttribute('aria-describedby')).toContain('-errors');
+
+    const alertRegion = fixture.nativeElement.querySelector('[role="alert"]');
+    expect(alertRegion).not.toBeNull();
+  });
+
   describe('Drag and Drop interactions', () => {
     let dropZone: any;
 

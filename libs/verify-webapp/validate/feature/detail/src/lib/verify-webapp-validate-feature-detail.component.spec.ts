@@ -20,4 +20,21 @@ describe('VerifyWebappValidateFeatureDetailComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render a main landmark with an accessible page heading', () => {
+    fixture.detectChanges();
+
+    const main: HTMLElement | null =
+      fixture.nativeElement.querySelector('main');
+    const pageHeading: HTMLElement | null =
+      fixture.nativeElement.querySelector('main h1.sr-only');
+
+    expect(main).not.toBeNull();
+    expect(main?.getAttribute('aria-label')).toBe(
+      'Bestandsverificatie details',
+    );
+    expect(pageHeading?.textContent?.trim()).toBe(
+      'Details van contentverificatie',
+    );
+  });
 });

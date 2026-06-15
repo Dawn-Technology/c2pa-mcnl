@@ -18,4 +18,20 @@ describe('VerifyWebappValidateUiValidationBadge', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should return valid status label when valid is true', () => {
+    fixture.componentRef.setInput('valid', true);
+    fixture.componentRef.setInput('textValid', 'Geverifieerd');
+    fixture.detectChanges();
+
+    expect(component.statusLabel()).toBe('Geverifieerd');
+  });
+
+  it('should return invalid status label when valid is false', () => {
+    fixture.componentRef.setInput('valid', false);
+    fixture.componentRef.setInput('textInvalid', 'Niet herkenbaar');
+    fixture.detectChanges();
+
+    expect(component.statusLabel()).toBe('Niet herkenbaar');
+  });
 });

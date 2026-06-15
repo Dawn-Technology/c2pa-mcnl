@@ -5,13 +5,15 @@ import { VerifyWebappValidateUiValidationBadge } from '@c2pa-mcnl/verify-webapp/
 
 @Component({
   selector: 'lib-verify-webapp-validate-ui-detail-manifest-list',
-  imports: [
-    NgClass,
-    VerifyWebappValidateUiValidationBadge,
-  ],
+  imports: [NgClass, VerifyWebappValidateUiValidationBadge],
   templateUrl: './verify-webapp-validate-ui-detail-manifest-list.html',
   styleUrl: './verify-webapp-validate-ui-detail-manifest-list.css',
 })
 export class VerifyWebappValidateUiDetailManifestList {
   readonly store = inject(VerifyStore);
+
+  manifestAriaLabel(label: string | undefined, index: number): string {
+    const manifestLabel = label?.trim() || `manifest ${index + 1}`;
+    return `Selecteer ${manifestLabel}`;
+  }
 }

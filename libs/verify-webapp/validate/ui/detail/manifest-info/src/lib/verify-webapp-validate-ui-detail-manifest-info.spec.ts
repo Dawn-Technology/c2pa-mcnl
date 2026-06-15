@@ -18,4 +18,9 @@ describe('VerifyWebappValidateUiDetailManifestInfo', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should only treat verified state as verified', () => {
+    expect(component.isVerifiedState('verified')).toBe(true);
+    expect(component.isVerifiedState('invalid')).toBe(false);
+  });
 });
