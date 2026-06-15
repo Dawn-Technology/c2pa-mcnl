@@ -90,7 +90,11 @@ Learn more:
 - [Enterprise Angular Monorepo Patterns](https://go.nx.dev/angular-patterns-ebook)
 
 ## Install
-The project uses [PNPM](https://pnpm.io/installation) as the package manager. To install the dependencies, run the following command in the root directory:
+
+### Prequisites
+- [Node.js](https://nodejs.org/en/download/) 
+- [PNPM](https://pnpm.io/installation)
+- [Nx](https://nx.dev/docs/getting-started/installation)
 
 ```bash
 pnpm install
@@ -100,6 +104,8 @@ pnpm install
 For detailed information about the individual applications and tools, please refer to their respective README files as linked in the [Structure](#structure) section above.
 
 ### Running the development server for the signing web application:
+
+_Prefix commands with `pnpm` if Nx is not installed globally._
 
 ```bash
 nx serve signing-webapp
