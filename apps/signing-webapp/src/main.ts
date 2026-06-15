@@ -2,7 +2,8 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { App } from './app/app';
 
-// Use the polyfill core-js/full/reflect
-import 'core-js/full/reflect';
+// polyfill for x509
+// See: https://github.com/PeculiarVentures/x509#%EF%B8%8F-reflect-polyfill-required
+import 'reflect-metadata';
 
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));
