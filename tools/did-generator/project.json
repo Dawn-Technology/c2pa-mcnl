@@ -13,9 +13,9 @@
         "outputPath": "dist/tools/did-generator",
         "main": "tools/did-generator/src/index.ts",
         "tsConfig": "tools/did-generator/tsconfig.lib.json",
-        "outputFileName": "index.cjs",
+        "outputFileName": "index.js",
         "platform": "node",
-        "format": ["cjs"],
+        "format": ["esm"],
         "bundle": true,
         "assets": []
       }
@@ -24,35 +24,35 @@
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
-        "command": "node dist/tools/did-generator/index.cjs --help"
+        "command": "node dist/tools/did-generator/index.js --help"
       }
     },
     "generate": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
-        "command": "node dist/tools/did-generator/index.cjs generate"
+        "command": "node dist/tools/did-generator/index.js generate"
       }
     },
     "keys": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
-        "command": "node dist/tools/did-generator/index.cjs keys"
+        "command": "node dist/tools/did-generator/index.js keys"
       }
     },
     "did": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
-        "command": "node dist/tools/did-generator/index.cjs did"
+        "command": "node dist/tools/did-generator/index.js did"
       }
     },
     "credential": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
-        "command": "node dist/tools/did-generator/index.cjs credential"
+        "command": "node dist/tools/did-generator/index.js credential"
       }
     }
   }

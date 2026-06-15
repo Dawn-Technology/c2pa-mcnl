@@ -6,8 +6,9 @@
  * individual certificates. The actual implementation is modularized in the ./lib directory.
  */
 
-// Use the polyfill core-js/full/reflect
-import 'core-js/full/reflect';
+// polyfill for x509
+// See: https://github.com/PeculiarVentures/x509#%EF%B8%8F-reflect-polyfill-required
+import 'reflect-metadata';
 
 import { setupCLI } from './lib/commands';
 import {
@@ -20,10 +21,8 @@ import {
 } from './lib/cert-generator';
 
 // Run the CLI when executed directly
-if (require.main === module) {
-  const program = setupCLI();
-  program.parse(process.argv);
-}
+const program = setupCLI();
+program.parse(process.argv);
 
 // Export core functions for programmatic use
 export {

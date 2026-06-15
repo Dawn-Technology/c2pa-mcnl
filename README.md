@@ -25,6 +25,8 @@ The project is developed as an [open-source initiative](#license), allowing for 
 ### Independent Trust List
 An independently hosted trust list will be created to manage trusted issuers and signers for C2PA manifests. This trust list will be separate from the official C2PA Conformance Program, ensuring independence and flexibility from big tech organizations for Dutch media corporations regarding the entities included in the list.
 
+https://github.com/Dawn-Technology/c2pa-mcnl-trust-list
+
 ### C2PA implementation using JavaScript/TypeScript
 The project utilizes JavaScript/TypeScript for the C2PA implementation, leveraging existing libraries and tools to facilitate development and integration.
 
@@ -116,9 +118,9 @@ pnpm install
 ## Usage
 For detailed information about the individual applications and tools, please refer to their respective README files as linked in the [Structure](#structure) section above.
 
+_Prefix commands with `pnpm` if Nx is not installed globally._
 ### Running the development server for the signing web application:
 
-_Prefix commands with `pnpm` if Nx is not installed globally._
 
 ```bash
 nx serve signing-webapp
