@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { VerifyWebappValidateUiDetailFileHandler } from './verify-webapp-validate-ui-detail-file-handler';
 import { VerifyStore } from '@c2pa-mcnl/verify-webapp/validate/data-access';
 import { signal } from '@angular/core';
+import { vi } from 'vitest';
 
 const createVerifyStoreStub = () => ({
   fileDataUrl: signal<string | null>(null),
