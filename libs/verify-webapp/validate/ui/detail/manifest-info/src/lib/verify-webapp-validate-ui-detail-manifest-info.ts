@@ -11,6 +11,10 @@ import { VerifyWebappValidateUiFileCard } from '@c2pa-mcnl/verify-webapp/validat
 export class VerifyWebappValidateUiDetailManifestInfo {
   readonly store = inject(VerifyStore);
 
+  isVerifiedState(state: string): boolean {
+    return state === 'verified';
+  }
+
   public ReadableActions: Record<string, string> = {
     'c2pa.addedText':
       '(zichtbare) Tekstuele inhoud is toegevoegd aan het asset, bijvoorbeeld op een tekstlaag of als bijschrift',

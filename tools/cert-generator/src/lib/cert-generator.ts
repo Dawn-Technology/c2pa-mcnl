@@ -55,6 +55,7 @@ export async function generateRootCertificate(
 ): Promise<RootCertificateResult> {
   const keys = await crypto.subtle.generateKey(
     {
+      // name: 'Ed25519',
       name: 'ECDSA',
       namedCurve: 'P-256',
     },
@@ -70,6 +71,7 @@ export async function generateRootCertificate(
       name: subjectName,
       keys,
       signingAlgorithm: {
+        // name: 'Ed25519',
         name: 'ECDSA',
         hash: 'SHA-256',
       },
@@ -111,6 +113,7 @@ export async function generateIntermediateCertificate(
 ): Promise<IntermediateCertificateResult> {
   const keys = await crypto.subtle.generateKey(
     {
+      // name: 'Ed25519',
       name: 'ECDSA',
       namedCurve: 'P-256',
     },
@@ -128,6 +131,7 @@ export async function generateIntermediateCertificate(
       signingKey: rootPrivateKey,
       publicKey: keys.publicKey,
       signingAlgorithm: {
+        // name: 'Ed25519',
         name: 'ECDSA',
         hash: 'SHA-256',
       },
@@ -178,6 +182,7 @@ export async function generateLeafCertificate(
 ): Promise<LeafCertificateResult> {
   const keys = await crypto.subtle.generateKey(
     {
+      // name: 'Ed25519',
       name: 'ECDSA',
       namedCurve: 'P-256',
     },
@@ -195,6 +200,7 @@ export async function generateLeafCertificate(
       signingKey: intermediatePrivateKey,
       publicKey: keys.publicKey,
       signingAlgorithm: {
+        // name: 'Ed25519',
         name: 'ECDSA',
         hash: 'SHA-256',
       },
@@ -308,6 +314,7 @@ export async function importPrivateKeyFromPem(pem: string): Promise<CryptoKey> {
     'pkcs8',
     der,
     {
+      // name: 'Ed25519',
       name: 'ECDSA',
       namedCurve: 'P-256',
     },

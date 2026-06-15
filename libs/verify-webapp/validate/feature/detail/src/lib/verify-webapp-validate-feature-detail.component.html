@@ -1,11 +1,16 @@
-<lib-verify-webapp-shared-ui-loading-overlay [shown]="store.isLoading()" />
-
-<div
-  class="grid grid-cols-[347px_220px_1fr] lg:h-[calc(100vh-var(--header-height))]"
+<lib-verify-webapp-window-file-drop-overlay
+  [enabled]="!store.isLoading()"
+  (fileDropped)="store.setFile($event)"
 >
-  <lib-verify-webapp-validate-ui-detail-file-handler />
+  <lib-verify-webapp-shared-ui-loading-overlay [shown]="store.isLoading()" />
 
-  <lib-verify-webapp-validate-ui-detail-manifest-list />
+  <div
+    class="grid grid-cols-[347px_220px_1fr] lg:h-[calc(100vh-var(--header-height))]"
+  >
+    <lib-verify-webapp-validate-ui-detail-file-handler />
 
-  <lib-verify-webapp-validate-ui-detail-manifest-info />
-</div>
+    <lib-verify-webapp-validate-ui-detail-manifest-list />
+
+    <lib-verify-webapp-validate-ui-detail-manifest-info />
+  </div>
+</lib-verify-webapp-window-file-drop-overlay>

@@ -1,15 +1,11 @@
 import { Injectable } from '@angular/core';
 import {
   createX509CertFromFile,
-  extractBase64FromPem,
   extractDerFromFile,
-  generateCoseSign1,
   getImageXmpIdentifiers,
   isImageMimeType,
 } from '@c2pa-mcnl/shared/utils/helpers';
-import { addYears } from 'date-fns';
 
-import { VerifiableCredentialIssuer } from './form.model';
 import { Asset, createAsset } from '@dockbite/c2pa-ts/asset';
 import {
   Action,
@@ -17,6 +13,7 @@ import {
   ActionType,
   ClaimVersion,
   DataHashAssertion,
+  IdentityAssertion,
   IngredientAssertion,
   Manifest,
   ManifestStore,
@@ -27,8 +24,13 @@ import {
 import { CoseAlgorithmIdentifier, LocalSigner } from '@dockbite/c2pa-ts/cose';
 import { LocalTimestampProvider } from '@dockbite/c2pa-ts/rfc3161';
 import { SuperBox } from '@dockbite/c2pa-ts/jumbf';
+import {
+  LocalIdentitySigner,
+  NamedActorRole,
+  VerifiedIdentityType,
+} from '@dockbite/c2pa-ts/cawg';
 import { generateThumbnail } from '@c2pa-mcnl/verify-webapp/shared/utils/helpers';
-import * as x509 from '@peculiar/x509';
+import { X509Certificate } from '@peculiar/x509';
 
 /**
  * @property assetFile - The image file to which the C2PA manifest will be added
@@ -41,7 +43,9 @@ interface CreateC2paManifestOptions {
   leafCertificateFile: File;
   leafCertificateKeyFile: File;
   intermediateCertificate?: File | null;
+  verifiableCredentialPrivateKeyFile?: File | null;
   actions?: ActionType[];
+  verifiableCredentialIssuer?: string;
 }
 
 @Injectable()
@@ -54,7 +58,8 @@ export class SigningWebappFormFeatureDetailService {
   async createC2paManifest(
     opts: CreateC2paManifestOptions,
   ): Promise<Uint8Array> {
-    const { signer, timestampProvider } = await this.createSigners(opts);
+    const { signer, timestampProvider, digitalIdentitySigner } =
+      await this.createSigners(opts);
 
     const { manifestStore, manifest, previousManifest, asset } =
       await this.buildManifest(opts.assetFile, signer);
@@ -78,6 +83,16 @@ export class SigningWebappFormFeatureDetailService {
 
     const dataHashAssertion = this.addDataHashAssertion(manifest);
 
+    if (digitalIdentitySigner) {
+      await this.addIdentityAssertion(
+        asset,
+        manifest,
+        signer,
+        timestampProvider,
+        digitalIdentitySigner,
+      );
+    }
+
     await this.signManifest(
       asset,
       dataHashAssertion,
@@ -86,6 +101,9 @@ export class SigningWebappFormFeatureDetailService {
       signer,
       timestampProvider,
     );
+
+    // write the JUMBF box to the asset
+    await asset.writeManifestJUMBF(manifestStore.getBytes());
 
     // export the modified file which now includes the manifest
     return asset.getDataRange();
@@ -101,7 +119,7 @@ export class SigningWebappFormFeatureDetailService {
     );
     const leafKeyDer = await extractDerFromFile(opts.leafCertificateKeyFile);
 
-    const certChain: x509.X509Certificate[] = [];
+    const certChain: X509Certificate[] = [];
     if (opts.intermediateCertificate) {
       certChain.push(
         await createX509CertFromFile(opts.intermediateCertificate),
@@ -110,6 +128,7 @@ export class SigningWebappFormFeatureDetailService {
 
     const signer = new LocalSigner(
       leafKeyDer,
+      // CoseAlgorithmIdentifier.Ed25519,
       CoseAlgorithmIdentifier.ES256,
       leafCertificate,
       certChain,
@@ -120,7 +139,43 @@ export class SigningWebappFormFeatureDetailService {
       leafKeyDer,
     );
 
-    return { signer, timestampProvider };
+    let digitalIdentitySigner;
+    if (opts.verifiableCredentialPrivateKeyFile) {
+      const digitalIdentityDer = await extractDerFromFile(
+        opts.verifiableCredentialPrivateKeyFile,
+      );
+
+      let issuerDid = opts.verifiableCredentialIssuer;
+      if (!issuerDid || issuerDid.startsWith('did:jwk')) {
+        issuerDid = undefined;
+      }
+
+      digitalIdentitySigner = new LocalIdentitySigner(
+        digitalIdentityDer,
+        CoseAlgorithmIdentifier.ES256,
+        {
+          verifiedIdentity: {
+            type: VerifiedIdentityType.SocialMedia,
+            name: 'Sample Creator',
+            username: 'sample-creator',
+            uri: 'https://example.com/sample-creator',
+            provider: {
+              id: 'https://example.com',
+              name: 'Example Identity Provider',
+            },
+            verifiedAt: new Date().toISOString(),
+          },
+          roles: [NamedActorRole.Creator],
+          issuerDid: issuerDid,
+        },
+      );
+    }
+
+    return {
+      signer,
+      timestampProvider,
+      digitalIdentitySigner: digitalIdentitySigner,
+    };
   }
 
   /**
@@ -264,8 +319,25 @@ export class SigningWebappFormFeatureDetailService {
     return dataHashAssertion;
   }
 
+  private async addIdentityAssertion(
+    asset: Asset,
+    manifest: Manifest,
+    signer: LocalSigner,
+    timestampProvider: LocalTimestampProvider,
+    digitalIdentitySigner: LocalIdentitySigner,
+  ): Promise<IdentityAssertion> {
+    const { identityAssertion } = await IdentityAssertion.create(
+      manifest,
+      asset,
+      signer,
+      timestampProvider,
+      digitalIdentitySigner,
+    );
+    return identityAssertion;
+  }
+
   /**
-   * Signs the manifest and writes the manifest JUMBF box back into the asset.
+   * Signs the manifest (ensures manifest space, updates the hard binding, and creates the signature).
    */
   private async signManifest(
     asset: Asset,
@@ -283,81 +355,5 @@ export class SigningWebappFormFeatureDetailService {
 
     // create the signature
     await manifest.sign(signer, timestampProvider);
-
-    // write the JUMBF box to the asset
-    await asset.writeManifestJUMBF(manifestStore.getBytes());
-  }
-
-  /**
-   * Generates a Verifiable Credential (VC) in COSE_Sign1 format.
-   *
-   * Creates an Identity Claims Aggregation Credential (ICAC) following the CAWG specification,
-   * signs it using ECDSA P-256, and encodes it as a CBOR COSE_Sign1 structure.
-   *
-   * @param verifiableCredentialIssuer - The issuer information including DID, name, and site
-   * @param verifiableCredentialPrivateKey - The private key file in PEM format (PKCS#8) for signing
-   * @returns An object containing the VC JSON and the COSE_Sign1 encoded VC as a Uint8Array
-   */
-  async generateVerifiableCredential(
-    verifiableCredentialIssuer: VerifiableCredentialIssuer,
-    verifiableCredentialPrivateKey: File,
-    // TODO ADD ASSET HASH
-  ): Promise<{ vcJson: object; coseSign1: Uint8Array }> {
-    const pemText = await verifiableCredentialPrivateKey.text();
-    const base64 = extractBase64FromPem(pemText);
-    const derBytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-
-    const privateKey = await crypto.subtle.importKey(
-      'pkcs8',
-      derBytes,
-      { name: 'ECDSA', namedCurve: 'P-256' },
-      false,
-      ['sign'],
-    );
-
-    const vcJson = {
-      '@context': [
-        'https://www.w3.org/ns/credentials/v2',
-        'https://cawg.io/identity/1.1/ica/context/',
-      ],
-      type: ['VerifiableCredential', 'IdentityClaimsAggregationCredential'],
-      issuer: verifiableCredentialIssuer.did,
-      issuanceDate: new Date().toISOString(),
-      expirationDate: addYears(new Date(), 1).toISOString(),
-      credentialSubject: {
-        id: `${verifiableCredentialIssuer.did}:user:${crypto.randomUUID()}`,
-        verifiedIdentities: [
-          {
-            type: 'cawg.affiliation',
-            provider: {
-              id: verifiableCredentialIssuer.site,
-              name: verifiableCredentialIssuer.name,
-            },
-            verifiedAt: new Date().toISOString(),
-          },
-        ],
-        c2paAsset: {
-          sig_type: 'cawg.identity_claims_aggregation',
-          referenced_assertions: [
-            { url: 'self#jumbf=c2pa.assertions/c2pa.hash.data', hash: '...' },
-          ],
-        },
-      },
-    };
-
-    const vcPayload = new TextEncoder().encode(JSON.stringify(vcJson));
-    const coseSign1 = await generateCoseSign1(
-      vcPayload,
-      privateKey,
-      verifiableCredentialIssuer.did,
-    );
-
-    console.debug('Generated VC JSON:', vcJson);
-    console.log('Generated VC (COSE_Sign1):', coseSign1);
-
-    return {
-      vcJson,
-      coseSign1,
-    };
   }
 }

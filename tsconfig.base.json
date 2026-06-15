@@ -16,23 +16,45 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@c2pa-mcnl/shared/ui/file-upload": ["libs/shared/ui/file-upload/src/index.ts"],
+      "@c2pa-mcnl/shared/ui/file-upload": [
+        "libs/shared/ui/file-upload/src/index.ts"
+      ],
       "@c2pa-mcnl/tools/did-generator": ["tools/did-generator/src/index.ts"],
       "@c2pa-mcnl/tools/cert-generator": ["tools/cert-generator/src/index.ts"],
-      "@c2pa-mcnl/signing-webapp/form/feature/detail": ["libs/signing-webapp/form/feature/detail/src/index.ts"],
+      "@c2pa-mcnl/signing-webapp/form/feature/detail": [
+        "libs/signing-webapp/form/feature/detail/src/index.ts"
+      ],
       "@c2pa-mcnl/signing-webapp/form/ui/upload-file-input": [
         "libs/signing-webapp/form/ui/upload-file-input/src/index.ts"
       ],
-      "@c2pa-mcnl/shared/utils/validators": ["libs/shared/utils/validators/src/index.ts"],
-      "@c2pa-mcnl/shared/utils/helpers": ["libs/shared/utils/helpers/src/index.ts"],
-      "@c2pa-mcnl/shared/utils/constants": ["libs/shared/utils/constants/src/index.ts"],
+      "@c2pa-mcnl/shared/utils/validators": [
+        "libs/shared/utils/validators/src/index.ts"
+      ],
+      "@c2pa-mcnl/shared/utils/helpers": [
+        "libs/shared/utils/helpers/src/index.ts"
+      ],
+      "@c2pa-mcnl/shared/utils/constants": [
+        "libs/shared/utils/constants/src/index.ts"
+      ],
       "@c2pa-mcnl/shared/utils/cli": ["libs/shared/utils/cli/src/index.ts"],
-      "@c2pa-mcnl/signing-webapp/form/ui/form-group": ["libs/signing-webapp/form/ui/form-group/src/index.ts"],
-      "@c2pa-mcnl/verify-webapp/shared/ui/layout-header": ["libs/verify-webapp/shared/ui/layout-header/src/index.ts"],
-      "@c2pa-mcnl/verify-webapp/validate/feature/detail": ["libs/verify-webapp/validate/feature/detail/src/index.ts"],
-      "@c2pa-mcnl/verify-webapp/validate/feature/shell": ["libs/verify-webapp/validate/feature/shell/src/index.ts"],
-      "@c2pa-mcnl/verify-webapp/validate/feature/home": ["libs/verify-webapp/validate/feature/home/src/index.ts"],
-      "@c2pa-mcnl/verify-webapp/validate/data-access": ["libs/verify-webapp/validate/data-access/src/index.ts"],
+      "@c2pa-mcnl/signing-webapp/form/ui/form-group": [
+        "libs/signing-webapp/form/ui/form-group/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/shared/ui/layout-header": [
+        "libs/verify-webapp/shared/ui/layout-header/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/feature/detail": [
+        "libs/verify-webapp/validate/feature/detail/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/feature/shell": [
+        "libs/verify-webapp/validate/feature/shell/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/feature/home": [
+        "libs/verify-webapp/validate/feature/home/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/data-access": [
+        "libs/verify-webapp/validate/data-access/src/index.ts"
+      ],
       "@c2pa-mcnl/verify-webapp/shared/ui/loading-overlay": [
         "libs/verify-webapp/shared/ui/loading-overlay/src/index.ts"
       ],
@@ -45,11 +67,15 @@
       "@c2pa-mcnl/verify-webapp/validate/ui/detail/manifest-info": [
         "libs/verify-webapp/validate/ui/detail/manifest-info/src/index.ts"
       ],
-      "@c2pa-mcnl/verify-webapp/validate/ui/file-card": ["libs/verify-webapp/validate/ui/file-card/src/index.ts"],
+      "@c2pa-mcnl/verify-webapp/validate/ui/file-card": [
+        "libs/verify-webapp/validate/ui/file-card/src/index.ts"
+      ],
       "@c2pa-mcnl/verify-webapp/validate/ui/validation-badge": [
         "libs/verify-webapp/validate/ui/validation-badge/src/index.ts"
       ],
-      "@c2pa-mcnl/verify-webapp/shared/utils/helpers": ["libs/signing-webapp/shared/utils/helpers/src/index.ts"]
+      "@c2pa-mcnl/verify-webapp/shared/utils/helpers": [
+        "libs/signing-webapp/shared/utils/helpers/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

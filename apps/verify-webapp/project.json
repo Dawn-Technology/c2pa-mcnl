@@ -53,7 +53,10 @@
           "buildTarget": "verify-webapp:build:production"
         },
         "development": {
-          "buildTarget": "verify-webapp:build:development"
+          "buildTarget": "verify-webapp:build:development",
+          "prebundle": {
+            "exclude": ["exifr"]
+          }
         }
       },
       "defaultConfiguration": "development"

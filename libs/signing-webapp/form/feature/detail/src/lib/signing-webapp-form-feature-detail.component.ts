@@ -1,4 +1,14 @@
-import { Component, computed, effect, inject, isDevMode } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  isDevMode,
+  OnDestroy,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { SigningWebappFormFeatureDetailService } from './signing-webapp-form-feature-detail.service';
 import { form as signalForm, FormField } from '@angular/forms/signals';
 import { SigningWebappFormUiUploadFileInputComponent } from '@c2pa-mcnl/signing-webapp/form/ui/upload-file-input';
@@ -39,8 +49,14 @@ interface DevPrefillFile {
   templateUrl: './signing-webapp-form-feature-detail.component.html',
   providers: [SigningWebappFormFeatureDetailService],
 })
-export class SigningWebappFormFeatureDetailComponent {
+export class SigningWebappFormFeatureDetailComponent
+  implements AfterViewInit, OnDestroy
+{
   private readonly service = inject(SigningWebappFormFeatureDetailService);
+
+  readonly footerHeight = signal(0);
+  private readonly footerEl = viewChild<ElementRef>('footer');
+  private resizeObserver?: ResizeObserver;
 
   private readonly devPrefillFiles = {
     leafCertificate: {
@@ -126,13 +142,18 @@ zGH8APsZpMMoeUQXGEYipO375Pds5j0kG4WiW0xyaQmfwI5yoikfs7/s
     );
   });
 
-  constructor() {
-    effect(() => this.generateVerifiableCredential());
+  ngAfterViewInit(): void {
+    const el = this.footerEl()?.nativeElement;
+    if (!el) return;
 
-    effect(() => {
-      console.debug('form changed: ', this.signingModel());
-      console.debug('form valid: ', this.signingForm().valid());
+    this.resizeObserver = new ResizeObserver(() => {
+      this.footerHeight.set(el.offsetHeight);
     });
+    this.resizeObserver.observe(el);
+  }
+
+  ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
   }
 
   async createAndSignManifest() {
@@ -148,7 +169,9 @@ zGH8APsZpMMoeUQXGEYipO375Pds5j0kG4WiW0xyaQmfwI5yoikfs7/s
       leafCertificateFile: model.leafCertificate,
       leafCertificateKeyFile: model.leafPrivateKey,
       intermediateCertificate: model.intermediateCertificate,
+      verifiableCredentialPrivateKeyFile: model.verifiableCredentialPrivateKey,
       actions: model.actionsToBeAdded,
+      verifiableCredentialIssuer: model.verifiableCredentialIssuer,
     });
 
     const blob = new Blob([new Uint8Array(file)], {
@@ -202,8 +225,6 @@ zGH8APsZpMMoeUQXGEYipO375Pds5j0kG4WiW0xyaQmfwI5yoikfs7/s
         verifiableCredentialIssuer: defaultIssuerDid,
         actionsToBeAdded: this.actionOptions.map((option) => option.value),
       }));
-
-      this.generateVerifiableCredential(true);
     } catch (error) {
       console.error('Failed to prefill development form data', error);
     } finally {
@@ -224,27 +245,6 @@ zGH8APsZpMMoeUQXGEYipO375Pds5j0kG4WiW0xyaQmfwI5yoikfs7/s
       return { ...model, actionsToBeAdded: updated };
     });
   }
-
-  private generateVerifiableCredential(force = false): void {
-    if (force || this.canVcBeGenerated()) {
-      const vcIssuer = this.verifiableCredentialIssuers.find(
-        (i) => i.did === this.signingModel().verifiableCredentialIssuer,
-      );
-      const vcKey = this.signingModel().verifiableCredentialPrivateKey;
-
-      if (!vcIssuer || !vcKey) {
-        console.error('VC Issuer or Private Key is missing or invalid');
-        return;
-      }
-
-      void this.service
-        .generateVerifiableCredential(vcIssuer, vcKey)
-        .catch((error) => {
-          console.error('Failed to generate verifiable credential', error);
-        });
-    }
-  }
-
   private createPrefillFile(prefillFile: DevPrefillFile): File {
     return new File([prefillFile.content], prefillFile.fileName, {
       type: prefillFile.mimeType,

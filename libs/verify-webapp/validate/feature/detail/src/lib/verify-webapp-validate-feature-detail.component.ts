@@ -1,7 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { VerifyStore } from '@c2pa-mcnl/verify-webapp/validate/data-access';
 import { Router } from '@angular/router';
-import { VerifyWebappSharedUiLoadingOverlayComponent } from '@c2pa-mcnl/verify-webapp/shared/ui/loading-overlay';
+import {
+  VerifyWebappSharedUiLoadingOverlayComponent,
+  WindowFileDropOverlayComponent,
+} from '@c2pa-mcnl/verify-webapp/shared/ui/loading-overlay';
 import { VerifyWebappValidateUiDetailFileHandler } from '@c2pa-mcnl/verify-webapp/validate/ui/detail/file-handler';
 import { VerifyWebappValidateUiDetailManifestList } from '@c2pa-mcnl/verify-webapp/validate/ui/detail/manifest-list';
 import { VerifyWebappValidateUiDetailManifestInfo } from '@c2pa-mcnl/verify-webapp/validate/ui/detail/manifest-info';
@@ -10,6 +13,7 @@ import { VerifyWebappValidateUiDetailManifestInfo } from '@c2pa-mcnl/verify-weba
   selector: 'lib-verify-webapp-validate-feature-detail',
   imports: [
     VerifyWebappSharedUiLoadingOverlayComponent,
+    WindowFileDropOverlayComponent,
     VerifyWebappValidateUiDetailFileHandler,
     VerifyWebappValidateUiDetailManifestList,
     VerifyWebappValidateUiDetailManifestInfo,

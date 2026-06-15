@@ -2,7 +2,6 @@ import {
   patchState,
   signalStore,
   withComputed,
-  withHooks,
   withMethods,
   withState,
 } from '@ngrx/signals';
@@ -19,10 +18,37 @@ import {
   ValidationResult,
   ValidationStatusCode,
 } from '@dockbite/c2pa-ts/manifest';
+import { CawgValidationOptions } from '@dockbite/c2pa-ts/cawg';
 import { SuperBox } from '@dockbite/c2pa-ts/jumbf';
 import { Asset, createAsset } from '@dockbite/c2pa-ts/asset';
 import { formatDate } from '@angular/common';
-import { isImageMimeType } from '@c2pa-mcnl/shared/utils/helpers';
+import {
+  ActiveManifestIdentityCard,
+  isImageMimeType,
+  issuerForIdentity,
+  linkedIdentityClaimsForAssertion,
+  readableReferencedAssertion,
+  shortIssuer,
+  statusForIdentity,
+  toDisplayValue,
+  toHexSnippet,
+} from '@c2pa-mcnl/shared/utils/helpers';
+import {
+  readableVerificationMethodMap,
+  readableIdentityRoleMap,
+  identitySortOrder,
+} from '@c2pa-mcnl/shared/utils/constants';
+import { VERIFY_TRUST_LIST_URLS } from './trust-list-urls.token';
+import { VERIFY_TIMESTAMP_TRUST_LIST_URLS } from './timestamp-trust-list-urls.token';
+import { VERIFY_TRUSTED_ICA_ISSUERS } from './trusted-ica-issuers.token';
+
+export type VerifiedManifestStore = ManifestStore & {
+  manifests: VerifiedManifest[];
+};
+
+export type VerifiedManifest = Manifest & {
+  validationResult?: ValidationResult;
+};
 
 type VerifyStoreState = {
   isLoading: boolean;
@@ -31,39 +57,14 @@ type VerifyStoreState = {
   fileDataUrl: string | null;
 
   asset: Asset | null;
-  manifestStore: ManifestStore | null;
+  manifestStore: VerifiedManifestStore | null;
   manifestStoreReadValidationError?: ValidationError;
   manifestThumbnailUrls: Map<string, string> | null; // label → blob URL
   manifestValidationResults: Map<string, ValidationResult> | null;
-  activeManifest: Manifest | null;
+  activeManifest: VerifiedManifest | null;
 
   error?: unknown;
 };
-
-function toDisplayValue(value: unknown): string {
-  if (typeof value === 'string' || typeof value === 'number') {
-    return String(value);
-  }
-
-  if (Array.isArray(value)) {
-    const firstDisplayable = value.find(
-      (item) => typeof item === 'string' || typeof item === 'number',
-    );
-
-    return firstDisplayable !== undefined ? String(firstDisplayable) : '—';
-  }
-
-  if (value && typeof value === 'object') {
-    const objectValues = Object.values(value);
-    const firstDisplayable = objectValues.find(
-      (item) => typeof item === 'string' || typeof item === 'number',
-    );
-
-    return firstDisplayable !== undefined ? String(firstDisplayable) : '—';
-  }
-
-  return '—';
-}
 
 const initialState: VerifyStoreState = {
   isLoading: false,
@@ -81,7 +82,7 @@ export const VerifyStore = signalStore(
   withState(initialState),
   withComputed(
     (
-      { file, manifestStore, activeManifest },
+      { file, manifestStore, activeManifest, manifestValidationResults },
       localeId = inject(LOCALE_ID),
     ) => ({
       hasFile: computed(() => !!file()),
@@ -97,9 +98,81 @@ export const VerifyStore = signalStore(
       manifestsReversed: computed(() =>
         [...(manifestStore()?.manifests ?? [])].reverse(),
       ),
+      activeManifestValidationResult: computed(() => {
+        const label = activeManifest()?.label;
+        if (!label) {
+          return null;
+        }
+
+        return manifestValidationResults()?.get(label) ?? null;
+      }),
 
       getActionAssertions: computed(
         () => activeManifest()?.assertions?.getActionAssertions() ?? [],
+      ),
+      activeManifestIdentityCards: computed<ActiveManifestIdentityCard[]>(
+        () => {
+          const identities =
+            activeManifest()?.assertions?.getIdentityAssertions() ?? [];
+
+          const activeManifestLabel = activeManifest()?.label;
+          const validationResult = activeManifestLabel
+            ? (manifestValidationResults()?.get(activeManifestLabel) ?? null)
+            : null;
+
+          const cards = identities.map((assertion, index) => {
+            const issuer = issuerForIdentity(assertion);
+
+            return {
+              id: `${assertion.fullLabel ?? assertion.label ?? 'identity'}-${index}`,
+              assertionLabel:
+                assertion.fullLabel ?? assertion.label ?? 'cawg.identity',
+              issuer,
+              shortIssuer: shortIssuer(issuer),
+              verificationMethod:
+                readableVerificationMethodMap[
+                  assertion.signerPayload.sig_type
+                ] ?? assertion.signerPayload.sig_type,
+              roles: (assertion.signerPayload.role ?? []).map(
+                (role) => readableIdentityRoleMap[String(role)] ?? String(role),
+              ),
+              status: statusForIdentity(assertion, validationResult),
+              linkedAssertions:
+                assertion.signerPayload.referenced_assertions.map(
+                  (reference) => ({
+                    url: reference.url,
+                    label: readableReferencedAssertion(reference.url),
+                    hash: toHexSnippet(reference.hash),
+                  }),
+                ),
+              linkedIdentityClaims:
+                [] as ActiveManifestIdentityCard['linkedIdentityClaims'],
+            };
+          });
+
+          for (const card of cards) {
+            const assertion = identities.find(
+              (identityAssertion, index) =>
+                `${identityAssertion.fullLabel ?? identityAssertion.label ?? 'identity'}-${index}` ===
+                card.id,
+            );
+
+            if (!assertion) {
+              continue;
+            }
+
+            card.linkedIdentityClaims = linkedIdentityClaimsForAssertion(
+              assertion,
+              card.status.state,
+            );
+          }
+
+          return cards.sort(
+            (a, b) =>
+              identitySortOrder[a.status.state] -
+              identitySortOrder[b.status.state],
+          );
+        },
       ),
       activeManifestIssuer: computed(() => {
         const claim = activeManifest()?.claim;
@@ -180,211 +253,390 @@ export const VerifyStore = signalStore(
       }),
     }),
   ),
-  withMethods((store) => ({
-    async setFile(file: File | null) {
-      patchState(store, () => ({
-        isLoading: true,
-      }));
+  withMethods(
+    (
+      store,
+      trustListUrls = inject(VERIFY_TRUST_LIST_URLS),
+      timestampTrustListUrls = inject(VERIFY_TIMESTAMP_TRUST_LIST_URLS),
+      trustedIcaIssuersUrls = inject(VERIFY_TRUSTED_ICA_ISSUERS),
+    ) => {
+      let signerTrustAnchorsCache: string[] | null = null;
+      let signerTrustAnchorsPromise: Promise<string[]> | null = null;
+      let timestampTrustAnchorsCache: string[] | null = null;
+      let timestampTrustAnchorsPromise: Promise<string[]> | null = null;
+      let trustedIcaIssuersCache: string[] | null = null;
+      let trustedIcaIssuersPromise: Promise<string[]> | null = null;
 
-      this._revokeCurrentFileDataUrl();
-      this._revokeCurrentManifestThumbnailUrls();
+      return {
+        async setFile(file: File | null) {
+          patchState(store, () => ({
+            isLoading: true,
+          }));
 
-      if (!file) {
-        console.debug('No file selected, resetting state');
-        return this._resetState();
-      }
+          this._revokeCurrentFileDataUrl();
+          this._revokeCurrentManifestThumbnailUrls();
 
-      const fileDataUrl = this._createFileDataUrl(file);
+          if (!file) {
+            console.debug('No file selected, resetting state');
+            return this._resetState();
+          }
 
-      patchState(store, () => ({
-        fileDataUrl,
-        file,
-        manifestThumbnailUrls: null,
-      }));
+          const fileDataUrl = this._createFileDataUrl(file);
 
-      try {
-        const asset = await createAsset(file);
-        const jumbfBytes = await asset.getManifestJUMBF();
+          patchState(store, () => ({
+            fileDataUrl,
+            file,
+            manifestThumbnailUrls: null,
+          }));
 
-        /* no manifest found */
-        if (!jumbfBytes) {
-          return patchState(store, {
-            isLoading: false,
-            manifestStore: null,
-            activeManifest: null,
-          });
-        }
+          try {
+            const asset = await createAsset(file);
+            const jumbfBytes = await asset.getManifestJUMBF();
 
-        let manifestStore: ManifestStore;
-        let manifestValidationResults: VerifyStoreState['manifestValidationResults'];
-        try {
-          manifestStore = ManifestStore.read(SuperBox.fromBuffer(jumbfBytes));
+            /* no manifest found */
+            if (!jumbfBytes) {
+              return patchState(store, {
+                isLoading: false,
+                manifestStore: null,
+                activeManifest: null,
+              });
+            }
 
-          manifestValidationResults = await this._validateManifests(
-            manifestStore,
-            asset,
-          );
-        } catch (error) {
-          if (error instanceof ValidationError) {
-            console.error('Manifest validation error:', error);
-            return patchState(store, () => ({
+            let manifestStore: ManifestStore;
+            let manifestValidationResults: VerifyStoreState['manifestValidationResults'];
+            try {
+              manifestStore = ManifestStore.read(
+                SuperBox.fromBuffer(jumbfBytes),
+              );
+
+              manifestValidationResults = await this._validateManifests(
+                manifestStore,
+                asset,
+              );
+            } catch (error) {
+              if (error instanceof ValidationError) {
+                console.error('Manifest validation error:', error);
+                return patchState(store, () => ({
+                  isLoading: false,
+                  manifestStoreReadValidationError: error,
+                }));
+              } else {
+                console.error(
+                  'Manifest validation unknown error.',
+                  String(error),
+                );
+                return patchState(store, () => ({
+                  isLoading: false,
+                  error,
+                }));
+              }
+            }
+
+            const manifestThumbnailUrls = this._createManifestThumbnailUrls(
+              manifestStore.manifests,
+            );
+
+            const activeManifest = manifestStore.getActiveManifest();
+
+            console.debug('active manifest:', activeManifest);
+            console.debug(
+              'manifests validation results:',
+              manifestValidationResults,
+            );
+            patchState(store, () => ({
               isLoading: false,
-              manifestStoreReadValidationError: error,
+              asset,
+              manifestStore,
+              manifestThumbnailUrls,
+              manifestValidationResults,
+              activeManifest,
             }));
-          } else {
-            console.error('Manifest validation unknown error.', String(error));
-            return patchState(store, () => ({
-              isLoading: false,
+          } catch (error) {
+            const message =
+              error instanceof Error ? error.message : String(error);
+            console.error('An unexpected error occurred.', message);
+            patchState(store, () => ({
               error,
             }));
           }
-        }
+        },
 
-        const manifestThumbnailUrls = this._createManifestThumbnailUrls(
-          manifestStore.manifests,
-        );
+        async setActiveManifest(label?: string) {
+          const asset = store.asset();
+          const manifestStore = store.manifestStore();
 
-        const activeManifest = manifestStore.getActiveManifest();
+          if (!asset || !manifestStore || !label) {
+            return;
+          }
 
-        console.debug('active manifest:', activeManifest);
-        console.debug(
-          'manifests validationr results:',
-          manifestValidationResults,
-        );
-        patchState(store, () => ({
-          isLoading: false,
-          asset,
-          manifestStore,
-          manifestThumbnailUrls,
-          manifestValidationResults,
-          activeManifest,
-        }));
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        console.error('An unexpected error occurred.', message);
-        patchState(store, () => ({
-          error,
-        }));
-      }
-    },
+          patchState(store, () => ({
+            isLoading: true,
+          }));
 
-    async setActiveManifest(label?: string) {
-      const asset = store.asset();
-      const manifestStore = store.manifestStore();
+          const activeManifest = manifestStore.getManifestByLabel(label);
 
-      if (!asset || !manifestStore || !label) {
-        return;
-      }
+          patchState(store, () => ({
+            isLoading: false,
+            activeManifest,
+          }));
+        },
 
-      patchState(store, () => ({
-        isLoading: true,
-      }));
+        getManifestsThumbnailDataUrl(label?: string) {
+          return label
+            ? (store?.manifestThumbnailUrls()?.get(label) ?? null)
+            : null;
+        },
 
-      const activeManifest = manifestStore.getManifestByLabel(label);
+        isActiveManifest(label?: string) {
+          return store.activeManifest()?.label === label;
+        },
 
-      patchState(store, () => ({
-        isLoading: false,
-        activeManifest,
-      }));
-    },
+        _createFileDataUrl(file: File) {
+          if (!isImageMimeType(file)) {
+            return null;
+          }
 
-    getManifestsThumbnailDataUrl(label?: string) {
-      return label
-        ? (store?.manifestThumbnailUrls()?.get(label) ?? null)
-        : null;
-    },
+          return URL.createObjectURL(file);
+        },
 
-    isActiveManifest(label?: string) {
-      return store.activeManifest()?.label === label;
-    },
+        _revokeCurrentFileDataUrl() {
+          const fileDataUrl = store.fileDataUrl();
+          if (fileDataUrl) {
+            URL.revokeObjectURL(fileDataUrl);
+          }
+        },
 
-    _createFileDataUrl(file: File) {
-      if (!isImageMimeType(file)) {
-        return null;
-      }
+        _normalizeUrls(urls: readonly string[]) {
+          return [...new Set(urls.map((url) => url.trim()).filter(Boolean))];
+        },
 
-      return URL.createObjectURL(file);
-    },
+        _getSignerTrustListUrls() {
+          return this._normalizeUrls(trustListUrls);
+        },
 
-    _revokeCurrentFileDataUrl() {
-      const fileDataUrl = store.fileDataUrl();
-      if (fileDataUrl) {
-        URL.revokeObjectURL(fileDataUrl);
-      }
-    },
+        _getTimestampTrustListUrls() {
+          return this._normalizeUrls(timestampTrustListUrls);
+        },
 
-    async _validateManifests(manifestStore: ManifestStore, asset: Asset) {
-      const validationResults: VerifyStoreState['manifestValidationResults'] =
-        new Map();
+        async _getTrustedIcaIssuers() {
+          if (trustedIcaIssuersCache) {
+            return trustedIcaIssuersCache;
+          }
 
-      const activeManifest = manifestStore.getActiveManifest();
-      console.log(activeManifest);
-      if (!activeManifest) {
-        throw new ValidationError(
-          ValidationStatusCode.ClaimCBORInvalid,
-          manifestStore.sourceBox,
-          'Active manifest is missing',
-        );
-      }
+          if (trustedIcaIssuersPromise) {
+            return trustedIcaIssuersPromise;
+          }
 
-      for (const manifest of manifestStore.manifests) {
-        const label = manifest.label;
-        if (!label) {
-          throw new ValidationError(
-            ValidationStatusCode.GeneralError,
-            manifestStore.sourceBox,
-            'The manifest is missing a label',
-          );
-        }
+          const urls = this._normalizeUrls(trustedIcaIssuersUrls);
+          if (!urls.length) {
+            return [];
+          }
 
-        validationResults.set(label, await manifest.validate(asset));
-      }
-      return validationResults;
-    },
+          trustedIcaIssuersPromise = this._fetchTrustAnchors(
+            urls,
+            'trusted ICA issuers',
+          )
+            .then((trustedIcaIssuers) => {
+              const flatMap = trustedIcaIssuers.flatMap((issuers) =>
+                issuers
+                  .split('\n')
+                  .map((issuer) => issuer.trim())
+                  .filter(Boolean),
+              );
+              trustedIcaIssuersCache = flatMap;
+              return flatMap;
+            })
+            .finally(() => {
+              trustedIcaIssuersPromise = null;
+            });
 
-    _createManifestThumbnailUrls(
-      manifests: Manifest[] = [],
-      manifestThumbnailUrls = new Map<string, string>(),
-    ) {
-      for (const manifest of manifests) {
-        if (!manifest.label) {
-          continue;
-        }
+          return trustedIcaIssuersPromise;
+        },
 
-        const thumbnails =
-          manifest.assertions?.getThumbnailAssertions() as ThumbnailAssertion[];
+        async _fetchTrustAnchors(urls: string[], trustListName: string) {
+          if (!urls.length) {
+            throw new Error(`No URLs configured for ${trustListName}`);
+          }
 
-        const claimThumbnail = thumbnails?.find(
-          (thumbnail) => thumbnail.thumbnailType === ThumbnailType.Claim,
-        );
+          const results = await Promise.allSettled(
+            urls.map(async (url) => {
+              const response = await fetch(url);
+              if (!response.ok) {
+                throw new Error(
+                  `Failed to fetch trust list from "${url}" (${response.status})`,
+                );
+              }
 
-        if (claimThumbnail?.content) {
-          const thumbnailDataUrl = URL.createObjectURL(
-            new Blob([new Uint8Array(claimThumbnail.content)], {
-              type: claimThumbnail.mimeType,
+              return response.text();
             }),
           );
 
-          manifestThumbnailUrls.set(manifest.label, thumbnailDataUrl);
-        }
-      }
+          const anchors = results.flatMap((result) =>
+            result.status === 'fulfilled' ? [result.value] : [],
+          );
 
-      return manifestThumbnailUrls;
-    },
+          if (!anchors.length) {
+            const failureMessages = results
+              .flatMap((result) =>
+                result.status === 'rejected' ? [String(result.reason)] : [],
+              )
+              .join('; ');
+            throw new Error(
+              `No trust anchors resolved for ${trustListName}${
+                failureMessages ? `: ${failureMessages}` : ''
+              }`,
+            );
+          }
 
-    _revokeCurrentManifestThumbnailUrls() {
-      for (const url of store.manifestThumbnailUrls()?.values() || []) {
-        URL.revokeObjectURL(url);
-      }
-    },
+          return anchors;
+        },
 
-    _resetState() {
-      patchState(store, initialState);
+        async _getTrustAnchors() {
+          if (signerTrustAnchorsCache) {
+            return signerTrustAnchorsCache;
+          }
+
+          if (signerTrustAnchorsPromise) {
+            return signerTrustAnchorsPromise;
+          }
+
+          const urls = this._getSignerTrustListUrls();
+          signerTrustAnchorsPromise = this._fetchTrustAnchors(
+            urls,
+            'signing trust lists',
+          )
+            .then((anchors) => {
+              signerTrustAnchorsCache = anchors;
+              return anchors;
+            })
+            .finally(() => {
+              signerTrustAnchorsPromise = null;
+            });
+
+          return signerTrustAnchorsPromise;
+        },
+
+        async _getTimestampTrustAnchors() {
+          if (timestampTrustAnchorsCache) {
+            return timestampTrustAnchorsCache;
+          }
+
+          if (timestampTrustAnchorsPromise) {
+            return timestampTrustAnchorsPromise;
+          }
+
+          const urls = this._getTimestampTrustListUrls();
+          if (!urls.length) {
+            return [];
+          }
+
+          timestampTrustAnchorsPromise = this._fetchTrustAnchors(
+            urls,
+            'timestamp trust lists',
+          )
+            .then((anchors) => {
+              timestampTrustAnchorsCache = anchors;
+              return anchors;
+            })
+            .finally(() => {
+              timestampTrustAnchorsPromise = null;
+            });
+
+          return timestampTrustAnchorsPromise;
+        },
+
+        async _validateManifests(
+          manifestStore: VerifiedManifestStore,
+          asset: Asset,
+        ) {
+          const validationResults: VerifyStoreState['manifestValidationResults'] =
+            new Map();
+
+          const activeManifest = manifestStore.getActiveManifest();
+          if (!activeManifest) {
+            throw new ValidationError(
+              ValidationStatusCode.ClaimCBORInvalid,
+              manifestStore.sourceBox,
+              'Active manifest is missing',
+            );
+          }
+
+          const trustAnchors = await this._getTrustAnchors();
+          const timestampTrustAnchors = await this._getTimestampTrustAnchors();
+          const trustedIssuers = await this._getTrustedIcaIssuers();
+
+          const cawgOptions: Record<string, unknown> = {};
+          if (timestampTrustAnchors.length) {
+            cawgOptions['timestampTrustAnchors'] = timestampTrustAnchors;
+          }
+          if (trustedIssuers.length) {
+            cawgOptions['trustedIcaIssuers'] = trustedIssuers;
+          }
+
+          for (const manifest of manifestStore.manifests) {
+            const label = manifest.label;
+            if (!label) {
+              throw new ValidationError(
+                ValidationStatusCode.GeneralError,
+                manifestStore.sourceBox,
+                'The manifest is missing a label',
+              );
+            }
+            const validationOptions: CawgValidationOptions = {
+              trustAnchors,
+              timestampTrustAnchors,
+              cawg: {
+                trustedIcaIssuers: trustedIssuers,
+              },
+            };
+            console.debug('validationOptions:', validationOptions);
+            const result = await manifest.validate(asset, validationOptions);
+            manifest.validationResult = result;
+            validationResults.set(label, result);
+          }
+          return validationResults;
+        },
+
+        _createManifestThumbnailUrls(
+          manifests: Manifest[] = [],
+          manifestThumbnailUrls = new Map<string, string>(),
+        ) {
+          for (const manifest of manifests) {
+            if (!manifest.label) {
+              continue;
+            }
+
+            const thumbnails =
+              manifest.assertions?.getThumbnailAssertions() as ThumbnailAssertion[];
+
+            const claimThumbnail = thumbnails?.find(
+              (thumbnail) => thumbnail.thumbnailType === ThumbnailType.Claim,
+            );
+
+            if (claimThumbnail?.content) {
+              const thumbnailDataUrl = URL.createObjectURL(
+                new Blob([new Uint8Array(claimThumbnail.content)], {
+                  type: claimThumbnail.mimeType,
+                }),
+              );
+
+              manifestThumbnailUrls.set(manifest.label, thumbnailDataUrl);
+            }
+          }
+
+          return manifestThumbnailUrls;
+        },
+
+        _revokeCurrentManifestThumbnailUrls() {
+          for (const url of store.manifestThumbnailUrls()?.values() || []) {
+            URL.revokeObjectURL(url);
+          }
+        },
+
+        _resetState() {
+          patchState(store, initialState);
+        },
+      };
     },
-  })),
-  withHooks({
-    onInit() {
-      console.debug('VerifyStore initialized');
-    },
-  }),
+  ),
 );

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { form } from '@angular/forms/signals';
-import { pemKeyValidator } from './pem-key.validator';
+import { errorMessage, pemKeyValidator } from './pem-key.validator';
 import { Crypto } from '@peculiar/webcrypto';
 
 // Polyfill global crypto with WebCrypto instance
@@ -70,7 +70,7 @@ describe('pemKeyValidator', () => {
     const invalidFile = createTestFile(
       'invalid content',
       'key.pem',
-      'text/plain',
+      'application/json',
     );
     keyModel.set({ key: invalidFile });
     await flushAsync();
@@ -78,18 +78,17 @@ describe('pemKeyValidator', () => {
     expect(keyForm.key().errors()).toContainEqual(
       expect.objectContaining({
         kind: 'pemKey',
-        message:
-          'Must be a valid PKCS#8 PEM-encoded ECDSA private key using P-256 curve with signing capability',
+        message: errorMessage,
       }),
     );
   });
 
   it('should return error for key with wrong curve', async () => {
-    // Generate a key with P-384 instead of P-256
+    // Generate a key with K-256 instead of supported curves
     const keyPair = await crypto.subtle.generateKey(
       {
         name: 'ECDSA',
-        namedCurve: 'P-384',
+        namedCurve: 'K-256', //
       },
       true,
       ['sign'],
@@ -117,8 +116,7 @@ describe('pemKeyValidator', () => {
     expect(keyForm.key().errors()).toContainEqual(
       expect.objectContaining({
         kind: 'pemKey',
-        message:
-          'Must be a valid PKCS#8 PEM-encoded ECDSA private key using P-256 curve with signing capability',
+        message: errorMessage,
       }),
     );
   });
@@ -156,8 +154,7 @@ describe('pemKeyValidator', () => {
   //   expect(keyForm.key().errors()).toContainEqual(
   //     expect.objectContaining({
   //       kind: 'pemKey',
-  //       message:
-  //         'Must be a valid PKCS#8 PEM-encoded ECDSA private key using P-256 curve with signing capability',
+  //       message: errorMessage,
   //     }),
   //   );
   // });
