@@ -30,8 +30,8 @@ importers:
         specifier: 21.1.6
         version: 21.1.6(@angular/common@21.1.6(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2))(@angular/platform-browser@21.1.6(@angular/common@21.1.6(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2)))(rxjs@7.8.2)
       '@dawn-technology/c2pa-ts':
-        specifier: ^0.15.0
-        version: 0.15.0(encoding@0.1.13)(typescript@5.9.3)
+        specifier: ^0.15.1
+        version: 0.15.1(encoding@0.1.13)(typescript@5.9.3)
       '@ngrx/signals':
         specifier: ^21.0.1
         version: 21.0.1(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2))(rxjs@7.8.2)
@@ -1204,8 +1204,8 @@ packages:
     resolution: {integrity: sha512-QxULHAm7cNu72w97JUNCBFODFaXpbDg+dP8b/oWFAZ2MTRppA3U00Y2L1HqaS4J6yBqxwa/Y3nMBaxVKbB/NsA==}
     engines: {node: '>=20.19.0'}
 
-  '@dawn-technology/c2pa-ts@0.15.0':
-    resolution: {integrity: sha512-DiFICuKM8ZQlUEH2qzO+KCe3drciAWMzCL5VWlIEg+XMoEo9HV5kXu+irDmqLwyYkt1TiQ+f/TH1VATAzkGb2Q==, tarball: https://npm.pkg.github.com/download/@dawn-technology/c2pa-ts/0.15.0/4cc8c3c46aa16c29c28950ac5bbeee7049c1c87e}
+  '@dawn-technology/c2pa-ts@0.15.1':
+    resolution: {integrity: sha512-EVFdHTFGpgIZdCHuRakz3qFg4ePzI4oEcbTsw/Gww3Olcr3rJcttBWXYNgdfAGEa3PjYnYPwv8iSSTUqXh6tAQ==, tarball: https://npm.pkg.github.com/download/@dawn-technology/c2pa-ts/0.15.1/86af7555ec9e0b851a9ec695201eba26131e3cb9}
 
   '@emnapi/core@1.8.1':
     resolution: {integrity: sha512-AvT9QFpxK0Zd8J0jopedNm+w/2fIzvtPKPjqyw9jwvBaReTTqPBk9Hixaz7KbjimP+QNz605/XnjFcDAL2pqBg==}
@@ -9418,7 +9418,7 @@ snapshots:
 
   '@csstools/css-tokenizer@4.0.0': {}
 
-  '@dawn-technology/c2pa-ts@0.15.0(encoding@0.1.13)(typescript@5.9.3)':
+  '@dawn-technology/c2pa-ts@0.15.1(encoding@0.1.13)(typescript@5.9.3)':
     dependencies:
       '@noble/hashes': 2.0.1
       '@peculiar/x509': 2.0.0
