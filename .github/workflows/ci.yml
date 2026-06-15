@@ -31,6 +31,8 @@ jobs:
         with:
           node-version: 24
           cache: 'pnpm'
+          registry-url: https://npm.pkg.github.com
+          scope: '@dawn-technology'
 
       - run: pnpm install --frozen-lockfile
         env:
