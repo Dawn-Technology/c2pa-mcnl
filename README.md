@@ -90,7 +90,24 @@ Learn more:
 - [Enterprise Angular Monorepo Patterns](https://go.nx.dev/angular-patterns-ebook)
 
 ## Install
-The project uses [PNPM](https://pnpm.io/installation) as the package manager. To install the dependencies, run the following command in the root directory:
+
+### Prequisites
+- [Node.js](https://nodejs.org/en/download/) 
+- [PNPM](https://pnpm.io/installation)
+- [Nx](https://nx.dev/docs/getting-started/installation)
+
+We're using GitHub Packages for the [c2pa-ts](https://github.com/Dawn-Technology/c2pa-ts) repository as the package registry. To install the dependency, you need to authenticate with GitHub Packages. You can do this by creating a personal access token (PAT) on GitHub and configuring your npm client to use it.
+
+See the [GitHub documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#installing-a-package) for detailed instructions on how to authenticate with GitHub Packages.
+
+Create the PAT and add the following to your `~/.npmrc` file:
+
+```
+@dawn-technology:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=TOKEN
+```
+
+Then the following command will install all dependencies:
 
 ```bash
 pnpm install
@@ -100,6 +117,8 @@ pnpm install
 For detailed information about the individual applications and tools, please refer to their respective README files as linked in the [Structure](#structure) section above.
 
 ### Running the development server for the signing web application:
+
+_Prefix commands with `pnpm` if Nx is not installed globally._
 
 ```bash
 nx serve signing-webapp
