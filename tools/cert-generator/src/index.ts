@@ -8,7 +8,7 @@
 
 // polyfill for x509
 // See: https://github.com/PeculiarVentures/x509#%EF%B8%8F-reflect-polyfill-required
-import 'reflect-metadata';
+import '@abraham/reflection';
 
 import { setupCLI } from './lib/commands';
 import {
@@ -18,7 +18,7 @@ import {
   generateRootCertificate,
   importCertificateFromPem,
   importPrivateKeyFromPem,
-} from './lib/cert-generator';
+} from './lib/cert-generator'; // Run the CLI when executed directly
 
 // Run the CLI when executed directly
 const program = setupCLI();

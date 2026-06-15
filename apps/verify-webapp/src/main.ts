@@ -4,6 +4,6 @@ import { App } from './app/app';
 
 // polyfill for x509
 // See: https://github.com/PeculiarVentures/x509#%EF%B8%8F-reflect-polyfill-required
-import 'reflect-metadata';
+import '@abraham/reflection';
 
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));
