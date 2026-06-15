@@ -22,7 +22,7 @@ import {
   KEY_MIME_TYPES,
   VC_ISSUERS,
 } from './form.options';
-import { ActionType } from '@dockbite/c2pa-ts/manifest';
+import { ActionType } from '@dawn-technology/c2pa-ts/manifest';
 import { NgStyle } from '@angular/common';
 import { SigningWebappFormUiFormGroup } from '@c2pa-mcnl/signing-webapp/form/ui/form-group';
 import {

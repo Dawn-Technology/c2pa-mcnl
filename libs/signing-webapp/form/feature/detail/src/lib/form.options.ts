@@ -11,7 +11,7 @@ import {
   MIME_TYPES,
 } from '@c2pa-mcnl/shared/utils/constants';
 import { FormData, VerifiableCredentialIssuer } from './form.model';
-import { ActionType } from '@dockbite/c2pa-ts/manifest';
+import { ActionType } from '@dawn-technology/c2pa-ts/manifest';
 
 export interface ActionOption {
   label: string;

@@ -14,7 +14,7 @@
     "@angular/forms": "21.1.6",
     "@angular/platform-browser": "21.1.6",
     "@angular/router": "21.1.6",
-    "@dockbite/c2pa-ts": "link:../c2pa-ts",
+    "@dawn-technology/c2pa-ts": "^0.15.0",
     "@ngrx/signals": "^21.0.1",
     "@nx/cypress": "22.6.0",
     "@nx/jest": "22.6.0",
@@ -76,6 +76,18 @@
     "typescript-eslint": "^8.40.0",
     "vite": "^7.3.1",
     "vitest": "^4.0.8"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@swc/core",
+      "esbuild",
+      "less",
+      "lmdb",
+      "msgpackr-extract",
+      "nx",
+      "unrs-resolver"
+    ]
   },
   "packageManager": "pnpm@10.28.2"
 }

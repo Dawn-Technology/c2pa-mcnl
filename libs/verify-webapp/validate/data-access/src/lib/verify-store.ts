@@ -17,10 +17,10 @@ import {
   ValidationError,
   ValidationResult,
   ValidationStatusCode,
-} from '@dockbite/c2pa-ts/manifest';
-import { CawgValidationOptions } from '@dockbite/c2pa-ts/cawg';
-import { SuperBox } from '@dockbite/c2pa-ts/jumbf';
-import { Asset, createAsset } from '@dockbite/c2pa-ts/asset';
+} from '@dawn-technology/c2pa-ts/manifest';
+import { CawgValidationOptions } from '@dawn-technology/c2pa-ts/cawg';
+import { SuperBox } from '@dawn-technology/c2pa-ts/jumbf';
+import { Asset, createAsset } from '@dawn-technology/c2pa-ts/asset';
 import { formatDate } from '@angular/common';
 import {
   ActiveManifestIdentityCard,
@@ -34,9 +34,9 @@ import {
   toHexSnippet,
 } from '@c2pa-mcnl/shared/utils/helpers';
 import {
-  readableVerificationMethodMap,
-  readableIdentityRoleMap,
   identitySortOrder,
+  readableIdentityRoleMap,
+  readableVerificationMethodMap,
 } from '@c2pa-mcnl/shared/utils/constants';
 import { VERIFY_TRUST_LIST_URLS } from './trust-list-urls.token';
 import { VERIFY_TIMESTAMP_TRUST_LIST_URLS } from './timestamp-trust-list-urls.token';

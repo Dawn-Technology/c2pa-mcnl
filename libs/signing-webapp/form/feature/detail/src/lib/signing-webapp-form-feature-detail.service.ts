@@ -6,7 +6,7 @@ import {
   isImageMimeType,
 } from '@c2pa-mcnl/shared/utils/helpers';
 
-import { Asset, createAsset } from '@dockbite/c2pa-ts/asset';
+import { Asset, createAsset } from '@dawn-technology/c2pa-ts/asset';
 import {
   Action,
   ActionAssertion,
@@ -20,15 +20,18 @@ import {
   RelationshipType,
   ThumbnailAssertion,
   ThumbnailType,
-} from '@dockbite/c2pa-ts/manifest';
-import { CoseAlgorithmIdentifier, LocalSigner } from '@dockbite/c2pa-ts/cose';
-import { LocalTimestampProvider } from '@dockbite/c2pa-ts/rfc3161';
-import { SuperBox } from '@dockbite/c2pa-ts/jumbf';
+} from '@dawn-technology/c2pa-ts/manifest';
+import {
+  CoseAlgorithmIdentifier,
+  LocalSigner,
+} from '@dawn-technology/c2pa-ts/cose';
+import { LocalTimestampProvider } from '@dawn-technology/c2pa-ts/rfc3161';
+import { SuperBox } from '@dawn-technology/c2pa-ts/jumbf';
 import {
   LocalIdentitySigner,
   NamedActorRole,
   VerifiedIdentityType,
-} from '@dockbite/c2pa-ts/cawg';
+} from '@dawn-technology/c2pa-ts/cawg';
 import { generateThumbnail } from '@c2pa-mcnl/verify-webapp/shared/utils/helpers';
 import { X509Certificate } from '@peculiar/x509';
 

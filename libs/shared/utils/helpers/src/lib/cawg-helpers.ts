@@ -2,20 +2,20 @@ import {
   IdentityAssertion,
   ValidationResult,
   ValidationStatusCode,
-} from '@dockbite/c2pa-ts/manifest';
-import { CBORBox } from '@dockbite/c2pa-ts/jumbf';
+} from '@dawn-technology/c2pa-ts/manifest';
+import { CBORBox } from '@dawn-technology/c2pa-ts/jumbf';
 import {
   IdentityClaimsAggregationCredential,
   VerifiedIdentity,
-} from '@dockbite/c2pa-ts/cawg';
+} from '@dawn-technology/c2pa-ts/cawg';
 import {
-  readableReferencedAssertionMap,
   identityInvalidCodes,
   identityTrustedCodes,
+  IdentityVerificationState,
   identityWarningCodes,
   readableIdentityClaimMethodMap,
   readableIdentityClaimTypeMap,
-  IdentityVerificationState,
+  readableReferencedAssertionMap,
 } from '@c2pa-mcnl/shared/utils/constants';
 
 export type ActiveManifestIdentityCard = {

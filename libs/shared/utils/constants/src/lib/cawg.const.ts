@@ -1,8 +1,8 @@
 import {
   VerificationMethod,
   VerifiedIdentityType,
-} from '@dockbite/c2pa-ts/cawg';
-import { ValidationStatusCode } from '@dockbite/c2pa-ts/manifest';
+} from '@dawn-technology/c2pa-ts/cawg';
+import { ValidationStatusCode } from '@dawn-technology/c2pa-ts/manifest';
 
 export type IdentityVerificationState = 'verified' | 'warning' | 'invalid';
 
