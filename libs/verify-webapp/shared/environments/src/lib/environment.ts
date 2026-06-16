@@ -6,6 +6,7 @@ export const environment = {
     'https://verify.contentauthenticity.org/trust/anchors.pem',
   ] as readonly string[],
   timestampTrustListUrls: [
+    '/trust-list/local-dev.txt',
     'https://raw.githubusercontent.com/Dawn-Technology/c2pa-mcnl-trust-list/refs/heads/main/trust-list/C2PA-TSA-TRUST-LIST.pem',
     'https://raw.githubusercontent.com/c2pa-org/conformance-public/refs/heads/main/trust-list/C2PA-TSA-TRUST-LIST.pem',
     'https://verify.contentauthenticity.org/trust/anchors.pem',

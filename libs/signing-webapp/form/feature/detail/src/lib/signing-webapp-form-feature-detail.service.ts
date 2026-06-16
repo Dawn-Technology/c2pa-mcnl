@@ -28,6 +28,7 @@ import {
 import { LocalTimestampProvider } from '@dawn-technology/c2pa-ts/rfc3161';
 import { SuperBox } from '@dawn-technology/c2pa-ts/jumbf';
 import {
+  bytesToBase64,
   LocalIdentitySigner,
   NamedActorRole,
   VerifiedIdentityType,
@@ -140,6 +141,7 @@ export class SigningWebappFormFeatureDetailService {
     const timestampProvider = new LocalTimestampProvider(
       leafCertificate,
       leafKeyDer,
+      certChain,
     );
 
     let digitalIdentitySigner;
