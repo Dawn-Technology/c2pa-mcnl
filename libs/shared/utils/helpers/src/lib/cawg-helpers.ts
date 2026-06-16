@@ -45,6 +45,38 @@ export type ActiveManifestIdentityCard = {
   }>;
 };
 
+export type ManifestValidationState = 'valid' | 'invalid' | 'untrusted';
+
+const untrustedManifestStatusCodes = new Set<ValidationStatusCode>([
+  ValidationStatusCode.SigningCredentialUntrusted,
+  ValidationStatusCode.TimeStampUntrusted,
+]);
+
+export function getManifestValidationState(
+  validationResult: ValidationResult | null | undefined,
+): ManifestValidationState {
+  if (!validationResult) {
+    return 'invalid';
+  } else if (!validationResult.isValid) {
+    const hasUntrustedStatusCode = validationResult.statusEntries.every(
+      (entry) => {
+        const code = entry.code as ValidationStatusCode;
+        if (untrustedManifestStatusCodes.has(code)) {
+          return true;
+        }
+        return entry.success;
+      },
+    );
+
+    if (validationResult.statusEntries.length >= 1 && hasUntrustedStatusCode) {
+      return 'untrusted';
+    }
+    return 'invalid';
+  }
+
+  return 'valid';
+}
+
 export function shortIssuer(value: string): string {
   const issuer = value.trim();
   if (!issuer || issuer === '—') {
