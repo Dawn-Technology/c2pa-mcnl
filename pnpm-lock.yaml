@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@abraham/reflection':
+        specifier: ^0.13.0
+        version: 0.13.0
       '@angular-devkit/architect':
         specifier: ^0.2102.12
         version: 0.2102.13(chokidar@5.0.0)
@@ -150,9 +153,6 @@ importers:
       autoprefixer:
         specifier: ^10.4.0
         version: 10.4.24(postcss@8.5.6)
-      core-js:
-        specifier: ^3.49.0
-        version: 3.49.0
       did-jwt:
         specifier: ^8.0.0
         version: 8.0.18
@@ -212,6 +212,9 @@ importers:
         version: 4.0.18(@types/node@20.19.9)(@vitest/ui@4.0.18)(jiti@1.21.7)(jsdom@27.4.0(@noble/hashes@2.0.1))(less@4.5.1)(sass-embedded@1.97.3)(sass@1.97.3)(terser@5.46.0)(yaml@2.9.0)
 
 packages:
+
+  '@abraham/reflection@0.13.0':
+    resolution: {integrity: sha512-sQYhhraGPPRP6zoqpqpSaoYL+XY5KNmQCcoB3IuQh1z1aWmkHXcxwyTxRkTJ60L2aUjrbiqIqoYkrB/1c7kjQA==}
 
   '@acemir/cssom@0.9.31':
     resolution: {integrity: sha512-ZnR3GSaH+/vJ0YlHau21FjfLYjMpYVIzTD8M8vIEQvIGxeOXyXdzCI140rrCY862p/C/BbzWsjc1dgnM9mkoTA==}
@@ -4386,9 +4389,6 @@ packages:
   core-js-compat@3.48.0:
     resolution: {integrity: sha512-OM4cAF3D6VtH/WkLtWvyNC56EZVXsZdU3iqaMG2B4WvYrlqU831pc4UtG5yp0sE9z8Y02wVN7PjW5Zf9Gt0f1Q==}
 
-  core-js@3.49.0:
-    resolution: {integrity: sha512-es1U2+YTtzpwkxVLwAFdSpaIMyQaq0PBgm3YD1W3Qpsn1NAmO3KSgZfu+oGSWVu6NvLHoHCV/aYcsE5wiB7ALg==}
-
   core-util-is@1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
 
@@ -8225,6 +8225,8 @@ packages:
     resolution: {integrity: sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g==}
 
 snapshots:
+
+  '@abraham/reflection@0.13.0': {}
 
   '@acemir/cssom@0.9.31': {}
 
@@ -13099,8 +13101,6 @@ snapshots:
   core-js-compat@3.48.0:
     dependencies:
       browserslist: 4.28.1
-
-  core-js@3.49.0: {}
 
   core-util-is@1.0.3: {}
 
