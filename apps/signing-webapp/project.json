@@ -53,7 +53,8 @@
           "buildTarget": "signing-webapp:build:production"
         },
         "development": {
-          "buildTarget": "signing-webapp:build:development"
+          "buildTarget": "signing-webapp:build:development",
+          "port": 4400
         }
       },
       "defaultConfiguration": "development"
