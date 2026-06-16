@@ -68,7 +68,7 @@ export function getManifestValidationState(
       },
     );
 
-    if (hasUntrustedStatusCode) {
+    if (validationResult.statusEntries.length >= 1 && hasUntrustedStatusCode) {
       return 'untrusted';
     }
     return 'invalid';

@@ -1,4 +1,5 @@
-// Use the polyfill core-js/full/reflect
+// polyfill for x509
+// See: https://github.com/PeculiarVentures/x509#%EF%B8%8F-reflect-polyfill-required
 import '@abraham/reflection';
 
 import { describe, expect, it } from 'vitest';
@@ -24,6 +25,13 @@ function makeValidationResult(
 describe('getManifestValidationState', () => {
   it('returns invalid when validationResult is null', () => {
     expect(getManifestValidationState(null)).toBe<ManifestValidationState>(
+      'invalid',
+    );
+  });
+
+  it('returns invalid when isValid is false and statusEntries is empty', () => {
+    const result = makeValidationResult(false, []);
+    expect(getManifestValidationState(result)).toBe<ManifestValidationState>(
       'invalid',
     );
   });
