@@ -4,7 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    registries: "*"
+    registries:
+      - npm-github
     allow:
       - dependency-type: "all"
 
