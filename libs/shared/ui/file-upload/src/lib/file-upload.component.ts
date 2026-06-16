@@ -94,6 +94,14 @@ export class FileUploadComponent implements FormValueControl<File | null> {
 
   readonly formatFileSize = formatFileSize;
 
+  helperTextId(): string {
+    return `-helper`;
+  }
+
+  errorTextId(): string {
+    return `-errors`;
+  }
+
   onDragOver(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
