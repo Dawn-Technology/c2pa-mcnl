@@ -35,6 +35,10 @@ export async function fetchFileFromUrl(
     throw new Error(`Invalid URL: ${url}`);
   }
 
+  if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+    throw new Error(`Unsupported URL protocol: ${parsedUrl.protocol}`);
+  }
+
   let response: Response;
   try {
     response = await fetch(url);

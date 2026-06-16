@@ -175,6 +175,12 @@ describe('fetchFileFromUrl', () => {
     );
   });
 
+  it('throws on non-http(s) URLs', async () => {
+    await expect(fetchFileFromUrl('data:text/plain,hi', MAX)).rejects.toThrow(
+      'Unsupported URL protocol',
+    );
+  });
+
   it('throws a CORS-friendly message on network failure', async () => {
     fetchSpy.mockRejectedValue(new TypeError('Failed to fetch'));
 
