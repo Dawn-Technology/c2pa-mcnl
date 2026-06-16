@@ -1,5 +1,5 @@
 // Use the polyfill core-js/full/reflect
-import 'core-js/full/reflect';
+import '@abraham/reflection';
 
 import { describe, expect, it } from 'vitest';
 import {
