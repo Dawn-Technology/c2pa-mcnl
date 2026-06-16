@@ -1,5 +1,8 @@
 <div
   class="flex items-center gap-1.5 rounded-xl shadow- drop-shadow-xl bg-white px-2 py-1"
+  role="status"
+  aria-live="polite"
+  [attr.aria-label]="statusLabel()"
 >
   @if (state() === 'valid') {
     <img src="logo.svg" alt="Logo" class="h-4 w-4" />

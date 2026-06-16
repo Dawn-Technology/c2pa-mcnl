@@ -18,4 +18,13 @@ describe('VerifyWebappValidateUiFileCard', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should return descriptive alt text when file name exists', () => {
+    fixture.componentRef.setInput('fileName', 'beeld.jpg');
+    expect(component.imageAltText()).toBe('Voorbeeld van beeld.jpg');
+  });
+
+  it('should return fallback alt text when file name is missing', () => {
+    expect(component.imageAltText()).toBe('Voorbeeldbestand');
+  });
 });

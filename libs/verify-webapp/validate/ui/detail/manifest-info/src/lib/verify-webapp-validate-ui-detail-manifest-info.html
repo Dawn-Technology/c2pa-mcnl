@@ -1,13 +1,13 @@
 <div class="bg-white p-12 flex flex-col gap-6 h-full">
   @if (store.hasManifests()) {
     <div>
-      <h3 class="font-extrabold">{{ store.file()?.name }}</h3>
+      <h2 class="font-extrabold">{{ store.file()?.name }}</h2>
       <p class="text-sm">Uitgegeven door {{ store.activeManifestIssuer() }}</p>
     </div>
     @if (store.activeManifestIdentityCards().length) {
       <div class="flex flex-col gap-4">
         <div>
-          <h4 class="font-bold">CAWG identiteitsverificatie</h4>
+          <h3 class="font-bold">CAWG identiteitsverificatie</h3>
           <p class="text-sm">
             Deze sectie toont wie deze content heeft geclaimd en hoe die
             identiteit is geverifieerd. Geverifieerde identiteiten staan
@@ -24,9 +24,9 @@
               class="identity-card border border-gray-200 rounded-xl p-4 flex flex-col gap-3"
             >
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <h5 class="text-sm font-bold">
+                <h4 class="text-sm font-bold">
                   {{ identity.roles.join(', ') || 'Named actor' }}
-                </h5>
+                </h4>
                 <span
                   class="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold"
                   [class.bg-green-50]="isVerifiedState(identity.status.state)"
@@ -37,7 +37,14 @@
                   [class.text-orange-700]="
                     !isVerifiedState(identity.status.state)
                   "
+                  [attr.aria-label]="'Status: ' + identity.status.label"
                 >
+                  @if (isVerifiedState(identity.status.state)) {
+                    <span aria-hidden="true">✓</span>
+                  } @else {
+                    <span aria-hidden="true">!</span>
+                  }
+                  <span class="sr-only">Status:</span>
                   {{ identity.status.label }}
                 </span>
               </div>
@@ -45,40 +52,40 @@
               <p class="text-xs text-gray-600">{{ identity.status.detail }}</p>
 
               <div>
-                <h6
+                <h5
                   class="text-xs font-bold uppercase tracking-wide text-gray-500"
                 >
                   Assertion label
-                </h6>
+                </h5>
                 <p class="text-sm break-all">{{ identity.assertionLabel }}</p>
               </div>
 
               <div>
-                <h6
+                <h5
                   class="text-xs font-bold uppercase tracking-wide text-gray-500"
                 >
                   Verified by
-                </h6>
+                </h5>
                 <p class="text-sm break-all" [title]="identity.issuer">
                   {{ identity.shortIssuer }}
                 </p>
               </div>
 
               <div>
-                <h6
+                <h5
                   class="text-xs font-bold uppercase tracking-wide text-gray-500"
                 >
                   Verificatiemethode
-                </h6>
+                </h5>
                 <p class="text-sm">{{ identity.verificationMethod }}</p>
               </div>
 
               <div>
-                <h6
+                <h5
                   class="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1"
                 >
                   Gekoppelde assertions
-                </h6>
+                </h5>
                 <ul class="flex flex-col gap-1">
                   @for (
                     linkedAssertion of identity.linkedAssertions;
@@ -95,11 +102,11 @@
               </div>
 
               <div>
-                <h6
+                <h5
                   class="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1"
                 >
                   Linked identity claims
-                </h6>
+                </h5>
                 @if (identity.linkedIdentityClaims.length) {
                   <ul class="flex flex-col gap-2">
                     @for (
@@ -130,7 +137,7 @@
 
     <div class="flex flex-col gap-4">
       <div>
-        <h4 class="font-bold">Het proces</h4>
+        <h3 class="font-bold">Het proces</h3>
         <p class="text-sm">
           De app of het apparaat dat is gebruikt om deze content te produceren,
           heeft de volgende informatie vastgelegd:
@@ -138,12 +145,12 @@
       </div>
 
       <div>
-        <h5 class="text-sm font-bold">Gebruikte app of apparaat</h5>
+        <h4 class="text-sm font-bold">Gebruikte app of apparaat</h4>
         <p class="text-sm">{{ store.activeManifestSoftwareAgent() }}</p>
       </div>
 
       <div>
-        <h5 class="text-sm font-bold">Bewerkingen</h5>
+        <h4 class="text-sm font-bold">Bewerkingen</h4>
         <ul class="flex flex-col gap-1">
           @for (assertions of store.getActionAssertions(); track $index) {
             @for (action of assertions.actions; track $index) {
@@ -156,7 +163,7 @@
       </div>
 
       <div>
-        <h5 class="text-sm font-bold mb-2">Bestandsdelen</h5>
+        <h4 class="text-sm font-bold mb-2">Bestandsdelen</h4>
         <lib-verify-webapp-validate-ui-file-card
           [fileUrl]="store.fileDataUrl() ?? ''"
           [fileName]="store.file()?.name!"
@@ -167,7 +174,7 @@
 
     <div class="flex flex-col gap-4">
       <div>
-        <h4 class="font-bold">Gegevens over camera-opname</h4>
+        <h3 class="font-bold">Gegevens over camera-opname</h3>
         <p class="text-sm">
           Aanvullende gegevens afkomstig van de camera die is gebruikt om een
           foto of video te maken. EXIF-gegevens kunnen worden bewerkt door de
@@ -176,14 +183,14 @@
       </div>
 
       <div>
-        <h5 class="text-sm font-bold">Info</h5>
+        <h4 class="text-sm font-bold">Info</h4>
         <p class="text-sm">{{ store.activeManifestCameraInfo() }}</p>
       </div>
     </div>
 
     <div class="flex flex-col gap-4">
       <div>
-        <h4 class="font-bold">Over deze Content Credential</h4>
+        <h3 class="font-bold">Over deze Content Credential</h3>
         <p class="text-sm">
           De app of het apparaat dat is gebruikt om deze content te produceren,
           heeft de volgende informatie vastgelegd:
@@ -191,18 +198,18 @@
       </div>
 
       <div>
-        <h5 class="text-sm font-bold">Uitgegeven door</h5>
+        <h4 class="text-sm font-bold">Uitgegeven door</h4>
         <p class="text-sm">{{ store.activeManifestIssuer() }}</p>
       </div>
 
       <div>
-        <h5 class="text-sm font-bold">Uitgegeven op</h5>
+        <h4 class="text-sm font-bold">Uitgegeven op</h4>
         <p class="text-sm">{{ store.activeManifestIssuedOn() }}</p>
       </div>
     </div>
   } @else {
     <div>
-      <h1 class="font-extrabold mb-3">Geen Content Credentials gevonden</h1>
+      <h2 class="font-extrabold mb-3">Geen Content Credentials gevonden</h2>
       @if (store.fileDataUrl(); as fileDataUrl) {
         <lib-verify-webapp-validate-ui-file-card
           [fileUrl]="fileDataUrl"
@@ -210,7 +217,7 @@
           [subText]="store.fileDate()"
         />
       } @else {
-        <h1>Geen preview beschikbaar voor dit bestand</h1>
+        <p>Geen preview beschikbaar voor dit bestand</p>
       }
     </div>
   }

@@ -12,4 +12,18 @@ export class VerifyWebappValidateUiValidationBadge {
   textValid = input<string>('');
   textInvalid = input('Gemanipuleerd');
   textUntrusted = input('Niet vertrouwd');
+
+  statusLabel(): string {
+    const state = this.state();
+
+    if (state === 'invalid') {
+      return this.textInvalid();
+    }
+
+    if (state === 'untrusted') {
+      return this.textUntrusted();
+    }
+
+    return this.textValid();
+  }
 }

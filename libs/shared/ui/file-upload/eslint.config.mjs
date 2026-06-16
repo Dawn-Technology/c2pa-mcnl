@@ -28,7 +28,12 @@ export default [
   },
   {
     files: ['**/*.html'],
-    // Override or add rules here
-    rules: {},
+    rules: {
+      '@angular-eslint/template/alt-text': 'error',
+      '@angular-eslint/template/elements-content': 'error',
+      '@angular-eslint/template/interactive-supports-focus': 'error',
+      '@angular-eslint/template/no-positive-tabindex': 'error',
+      '@angular-eslint/template/valid-aria': 'error',
+    },
   },
 ];

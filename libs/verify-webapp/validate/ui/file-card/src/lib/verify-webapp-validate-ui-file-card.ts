@@ -10,4 +10,9 @@ export class VerifyWebappValidateUiFileCard {
   fileUrl = input.required<string>();
   fileName = input<string>();
   subText = input<string>();
+
+  imageAltText(): string {
+    const name = this.fileName()?.trim();
+    return name ? `Voorbeeld van ${name}` : 'Voorbeeldbestand';
+  }
 }

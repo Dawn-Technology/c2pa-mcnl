@@ -78,8 +78,29 @@ export class FileUploadComponent implements FormValueControl<File | null> {
     return errors;
   });
   hasErrors = computed(() => !!this.errorMessages().length);
+  describedBy = computed(() => {
+    const ids: string[] = [];
+
+    if (!this.buttonOnly() && !this.value()) {
+      ids.push(this.helperTextId());
+    }
+
+    if (this.hasErrors()) {
+      ids.push(this.errorTextId());
+    }
+
+    return ids.length ? ids.join(' ') : null;
+  });
 
   readonly formatFileSize = formatFileSize;
+
+  helperTextId(): string {
+    return `-helper`;
+  }
+
+  errorTextId(): string {
+    return `-errors`;
+  }
 
   onDragOver(event: DragEvent): void {
     event.preventDefault();

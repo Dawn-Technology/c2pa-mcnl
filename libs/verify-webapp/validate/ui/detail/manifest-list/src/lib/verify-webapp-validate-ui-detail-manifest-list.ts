@@ -17,6 +17,11 @@ import { ValidationResult } from '@dawn-technology/c2pa-ts/manifest';
 export class VerifyWebappValidateUiDetailManifestList {
   readonly store = inject(VerifyStore);
 
+  manifestAriaLabel(label: string | undefined, index: number): string {
+    const manifestLabel = label?.trim() || `manifest ${index + 1}`;
+    return `Selecteer ${manifestLabel}`;
+  }
+
   manifestValidationState(
     validationResult: ValidationResult | null | undefined,
   ): ManifestValidationState {

@@ -79,5 +79,13 @@ describe('VerifyWebappSharedUiLoadingOverlayComponent', () => {
         fixture.nativeElement.querySelector('.overlay');
       expect(overlay.classList.contains('overlay')).toBe(true);
     });
+
+    it('should expose screen reader status attributes when visible', () => {
+      const overlay: HTMLElement =
+        fixture.nativeElement.querySelector('.overlay');
+      expect(overlay.getAttribute('role')).toBe('status');
+      expect(overlay.getAttribute('aria-live')).toBe('polite');
+      expect(overlay.getAttribute('aria-label')).toBe('Bezig met laden');
+    });
   });
 });

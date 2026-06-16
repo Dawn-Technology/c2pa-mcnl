@@ -1,5 +1,12 @@
 @if (shown()) {
-  <div class="overlay">
+  <div
+    class="overlay"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    aria-label="Bezig met laden"
+  >
     <div class="spinner"></div>
+    <span class="sr-only">Bezig met laden</span>
   </div>
 }
