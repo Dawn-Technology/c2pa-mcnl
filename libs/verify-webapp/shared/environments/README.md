@@ -21,7 +21,7 @@ The Angular build system swaps `environment.ts` for `environment.prod.ts` via `f
 
 ## Local development trust list
 
-The development environment prepends `/trust-list/local-dev.txt` to `trustListUrls`. This means you can verify against a custom certificate chain without modifying any source code:
+The development environment prepends `/trust-list/local-dev.txt` to `trustListUrls` and `timestampTrustListUrls`. This means you can verify against a custom certificate chain without modifying any source code:
 
 1. Place your PEM file at `apps/verify-webapp/public/trust-list/local-dev.txt`
 2. Run `pnpm nx serve verify-webapp`
