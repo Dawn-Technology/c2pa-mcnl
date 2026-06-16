@@ -12,6 +12,7 @@ describe('VerifyWebappValidateUiValidationBadge', () => {
 
     fixture = TestBed.createComponent(VerifyWebappValidateUiValidationBadge);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('state', 'invalid');
     await fixture.whenStable();
   });
 
@@ -19,19 +20,26 @@ describe('VerifyWebappValidateUiValidationBadge', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should return valid status label when valid is true', () => {
-    fixture.componentRef.setInput('valid', true);
+  it('should render valid state text', () => {
+    fixture.componentRef.setInput('state', 'valid');
     fixture.componentRef.setInput('textValid', 'Geverifieerd');
     fixture.detectChanges();
 
-    expect(component.statusLabel()).toBe('Geverifieerd');
+    expect(fixture.nativeElement.textContent).toContain('Geverifieerd');
   });
 
-  it('should return invalid status label when valid is false', () => {
-    fixture.componentRef.setInput('valid', false);
-    fixture.componentRef.setInput('textInvalid', 'Niet herkenbaar');
+  it('should render invalid state text', () => {
+    fixture.componentRef.setInput('state', 'invalid');
+    fixture.componentRef.setInput('textInvalid', 'Gemanipuleerd');
     fixture.detectChanges();
 
-    expect(component.statusLabel()).toBe('Niet herkenbaar');
+    expect(fixture.nativeElement.textContent).toContain('Gemanipuleerd');
+  });
+
+  it('should render untrusted state text', () => {
+    fixture.componentRef.setInput('state', 'untrusted');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Niet vertrouwd');
   });
 });
