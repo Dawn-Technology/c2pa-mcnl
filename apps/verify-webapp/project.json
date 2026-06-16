@@ -35,7 +35,13 @@
               "maximumError": "8kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "libs/verify-webapp/shared/environments/src/lib/environment.ts",
+              "with": "libs/verify-webapp/shared/environments/src/lib/environment.prod.ts"
+            }
+          ]
         },
         "development": {
           "optimization": false,

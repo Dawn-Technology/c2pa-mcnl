@@ -140,6 +140,7 @@ export class SigningWebappFormFeatureDetailService {
     const timestampProvider = new LocalTimestampProvider(
       leafCertificate,
       leafKeyDer,
+      certChain,
     );
 
     let digitalIdentitySigner;
