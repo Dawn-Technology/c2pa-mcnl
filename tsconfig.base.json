@@ -55,6 +55,9 @@
       "@c2pa-mcnl/verify-webapp/validate/data-access": [
         "libs/verify-webapp/validate/data-access/src/index.ts"
       ],
+      "@c2pa-mcnl/verify-webapp/environments": [
+        "apps/verify-webapp/src/environments/environment.ts"
+      ],
       "@c2pa-mcnl/verify-webapp/shared/ui/loading-overlay": [
         "libs/verify-webapp/shared/ui/loading-overlay/src/index.ts"
       ],
@@ -75,6 +78,9 @@
       ],
       "@c2pa-mcnl/verify-webapp/shared/utils/helpers": [
         "libs/signing-webapp/shared/utils/helpers/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/shared/environments": [
+        "./libs/verify-webapp/shared/environments/src/index.ts"
       ]
     }
   },
