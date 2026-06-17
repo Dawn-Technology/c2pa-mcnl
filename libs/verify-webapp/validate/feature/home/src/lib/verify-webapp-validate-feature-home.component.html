@@ -1,6 +1,6 @@
 <lib-verify-webapp-window-file-drop-overlay
   [enabled]="!store.isLoading()"
-  (fileDropped)="store.setFile($event)"
+  (fileDropped)="openFile($event)"
 >
   <lib-verify-webapp-shared-ui-loading-overlay [shown]="store.isLoading()" />
 
@@ -34,7 +34,7 @@
           <lib-shared-ui-file-upload
             [acceptedMimeTypes]="uploadMimeTypes"
             [maxFileSizeBytes]="uploadMaxSize"
-            (valueChange)="store.setFile($event)"
+            (valueChange)="openFile($event)"
           />
         </div>
       </div>

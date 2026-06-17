@@ -1,8 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { provideRouter, Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  convertToParamMap,
+  ParamMap,
+  provideRouter,
+} from '@angular/router';
 import { signal } from '@angular/core';
 import { vi } from 'vitest';
+import { BehaviorSubject } from 'rxjs';
 import { VerifyWebappValidateFeatureHomeComponent } from './verify-webapp-validate-feature-home.component';
 import { VerifyStore } from '@c2pa-mcnl/verify-webapp/validate/data-access';
 import {
@@ -10,19 +16,35 @@ import {
   ASSET_MIME_TYPES,
 } from '@c2pa-mcnl/shared/utils/constants';
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function makeActivatedRoute(params: Record<string, string> = {}) {
+  const subject = new BehaviorSubject<ParamMap>(convertToParamMap(params));
+  return {
+    route: {
+      queryParamMap: subject.asObservable(),
+    } as unknown as ActivatedRoute,
+    push: (p: Record<string, string>) => subject.next(convertToParamMap(p)),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Suite
+// ---------------------------------------------------------------------------
+
 describe('VerifyWebappValidateFeatureHomeComponent', () => {
   let component: VerifyWebappValidateFeatureHomeComponent;
   let fixture: ComponentFixture<VerifyWebappValidateFeatureHomeComponent>;
-  let router: Router;
 
-  // Controllable signals for the mock store
   const isLoadingSignal = signal(false);
   const hasFile = signal(false);
   const setFileSpy = vi.fn();
 
   const mockStore = {
     isLoading: isLoadingSignal,
-    hasFile: hasFile,
+    hasFile,
     setFile: setFileSpy,
   };
 
@@ -30,17 +52,18 @@ describe('VerifyWebappValidateFeatureHomeComponent', () => {
     isLoadingSignal.set(false);
     hasFile.set(false);
     setFileSpy.mockReset();
+    vi.restoreAllMocks();
+
+    const stub = makeActivatedRoute();
 
     await TestBed.configureTestingModule({
       imports: [VerifyWebappValidateFeatureHomeComponent],
       providers: [
         provideRouter([]),
         { provide: VerifyStore, useValue: mockStore },
+        { provide: ActivatedRoute, useValue: stub.route },
       ],
     }).compileComponents();
-
-    router = TestBed.inject(Router);
-    vi.spyOn(router, 'navigate');
 
     fixture = TestBed.createComponent(VerifyWebappValidateFeatureHomeComponent);
     component = fixture.componentInstance;
@@ -51,6 +74,10 @@ describe('VerifyWebappValidateFeatureHomeComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  // -----------------------------------------------------------------------
+  // Rendering
+  // -----------------------------------------------------------------------
 
   describe('Rendering', () => {
     it('should render the main heading', () => {
@@ -105,6 +132,10 @@ describe('VerifyWebappValidateFeatureHomeComponent', () => {
     });
   });
 
+  // -----------------------------------------------------------------------
+  // Loading overlay
+  // -----------------------------------------------------------------------
+
   describe('Loading overlay', () => {
     it('should have the loading overlay hidden by default', () => {
       const overlay = fixture.debugElement.query(
@@ -123,6 +154,10 @@ describe('VerifyWebappValidateFeatureHomeComponent', () => {
       expect(overlay.componentInstance.shown()).toBe(true);
     });
   });
+
+  // -----------------------------------------------------------------------
+  // File upload (manual)
+  // -----------------------------------------------------------------------
 
   describe('File upload', () => {
     it('should call store.setFile when a file is selected', () => {
@@ -149,18 +184,23 @@ describe('VerifyWebappValidateFeatureHomeComponent', () => {
     });
   });
 
-  describe('Navigation', () => {
-    it('should not navigate when there is no C2PA result', () => {
-      TestBed.flushEffects();
-      expect(router.navigate).not.toHaveBeenCalled();
+  // -----------------------------------------------------------------------
+  // Component behavior
+  // -----------------------------------------------------------------------
+
+  describe('Component behavior', () => {
+    it('should have uploadMimeTypes property', () => {
+      expect(component.uploadMimeTypes).toEqual(ASSET_MIME_TYPES);
     });
 
-    it('should navigate to /verify when the store has a C2PA result', async () => {
-      hasFile.set(true);
-      fixture.detectChanges();
-      TestBed.flushEffects();
+    it('should have uploadMaxSize property', () => {
+      expect(component.uploadMaxSize).toBe(ASSET_MAX_SIZE);
+    });
 
-      expect(router.navigate).toHaveBeenCalledWith(['verify']);
+    it('should have openFile method that calls store.setFile', () => {
+      const mockFile = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
+      component.openFile(mockFile);
+      expect(setFileSpy).toHaveBeenCalledWith(mockFile);
     });
   });
 });

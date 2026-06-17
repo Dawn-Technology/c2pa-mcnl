@@ -328,11 +328,6 @@ export const VerifyStore = signalStore(
 
           const activeManifest = manifestStore.getActiveManifest();
 
-          console.debug('active manifest:', activeManifest);
-          console.debug(
-            'manifests validation results:',
-            manifestValidationResults,
-          );
           patchState(store, () => ({
             isLoading: false,
             asset,
@@ -345,9 +340,14 @@ export const VerifyStore = signalStore(
           const message =
             error instanceof Error ? error.message : String(error);
           console.error('An unexpected error occurred.', message);
+
           patchState(store, () => ({
             error,
+            isLoading: false,
+            file: null,
           }));
+
+          this._resetState();
         }
       },
 
@@ -579,7 +579,7 @@ export const VerifyStore = signalStore(
               trustedIcaIssuers: trustedIssuers,
             },
           };
-          console.debug('validationOptions:', validationOptions);
+
           const result = await manifest.validate(asset, validationOptions);
           manifest.validationResult = result;
           validationResults.set(label, result);
