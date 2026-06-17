@@ -1,17 +1,18 @@
 export const environment = {
   trustListUrls: [
-    '/trust-list/local-dev.txt',
+    '/trust-list/chain.txt',
     'https://raw.githubusercontent.com/Dawn-Technology/c2pa-mcnl-trust-list/refs/heads/main/trust-list/C2PA-TRUST-LIST.pem',
     'https://raw.githubusercontent.com/c2pa-org/conformance-public/refs/heads/main/trust-list/C2PA-TRUST-LIST.pem',
     'https://verify.contentauthenticity.org/trust/anchors.pem',
   ] as readonly string[],
   timestampTrustListUrls: [
-    '/trust-list/local-dev.txt',
+    '/trust-list/chain.txt',
     'https://raw.githubusercontent.com/Dawn-Technology/c2pa-mcnl-trust-list/refs/heads/main/trust-list/C2PA-TSA-TRUST-LIST.pem',
     'https://raw.githubusercontent.com/c2pa-org/conformance-public/refs/heads/main/trust-list/C2PA-TSA-TRUST-LIST.pem',
     'https://verify.contentauthenticity.org/trust/anchors.pem',
   ] as readonly string[],
   trustedIcaIssuers: [
+    '/trust-list/did.txt',
     'https://raw.githubusercontent.com/Dawn-Technology/c2pa-mcnl-trust-list/refs/heads/main/trust-list/ICA-ISSUERS-TRUST-LIST.txt',
   ] as readonly string[],
 };

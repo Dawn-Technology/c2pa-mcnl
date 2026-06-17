@@ -18,14 +18,3 @@ The Angular build system swaps `environment.ts` for `environment.prod.ts` via `f
 | `trustListUrls`          | PEM trust anchors used to verify the C2PA manifest signature          |
 | `timestampTrustListUrls` | PEM trust anchors used to verify the embedded RFC 3161 timestamp      |
 | `trustedIcaIssuers`      | Allowed issuer identifiers for CAWG identity assertions (ICA issuers) |
-
-## Local development trust list
-
-The development environment prepends `/trust-list/local-dev.txt` to `trustListUrls` and `timestampTrustListUrls`. This means you can verify against a custom certificate chain without modifying any source code:
-
-1. Place your PEM file at `apps/verify-webapp/public/trust-list/local-dev.txt`
-2. Run `pnpm nx serve verify-webapp`
-
-The local PEM is served as a static asset by the dev server and is automatically included alongside all remote trust-list entries. If the file does not exist the request will 404 and the URL is silently skipped — remote trust-lists continue to work normally.
-
-> **Note:** `local-dev.txt` is only present in the development environment. Production builds only use the remote trust-list URLs defined in `environment.prod.ts`.
