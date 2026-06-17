@@ -1,6 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { VerifyStore } from '@c2pa-mcnl/verify-webapp/validate/data-access';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   VerifyWebappSharedUiLoadingOverlayComponent,
   WindowFileDropOverlayComponent,
@@ -8,6 +8,12 @@ import {
 import { VerifyWebappValidateUiDetailFileHandler } from '@c2pa-mcnl/verify-webapp/validate/ui/detail/file-handler';
 import { VerifyWebappValidateUiDetailManifestList } from '@c2pa-mcnl/verify-webapp/validate/ui/detail/manifest-list';
 import { VerifyWebappValidateUiDetailManifestInfo } from '@c2pa-mcnl/verify-webapp/validate/ui/detail/manifest-info';
+import { fetchFileFromUrl } from '@c2pa-mcnl/shared/utils/helpers';
+import {
+  ASSET_MAX_SIZE,
+  ASSET_MIME_TYPES,
+} from '@c2pa-mcnl/shared/utils/constants';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'lib-verify-webapp-validate-feature-detail',
@@ -21,14 +27,57 @@ import { VerifyWebappValidateUiDetailManifestInfo } from '@c2pa-mcnl/verify-weba
   templateUrl: './verify-webapp-validate-feature-detail.component.html',
   styleUrl: './verify-webapp-validate-feature-detail.component.css',
 })
-export class VerifyWebappValidateFeatureDetailComponent implements OnInit {
-  private readonly router = inject(Router);
+export class VerifyWebappValidateFeatureDetailComponent {
+  private readonly activatedRoute = inject(ActivatedRoute);
   readonly store = inject(VerifyStore);
 
-  ngOnInit() {
-    if (!this.store.hasFile()) {
-      console.debug('No file found in store, redirecting to home');
-      this.router.navigate(['/']);
-    }
+  /**
+   * Reactive signal derived from the URL query params.
+   * Re-runs the ?o effect whenever the URL changes (e.g. back/forward navigation).
+   */
+  private readonly queryParams = toSignal(this.activatedRoute.queryParamMap);
+
+  constructor() {
+    // Reactively handle the ?o=<url> query parameter using signals.
+    effect(async () => {
+      const params = this.queryParams();
+      const fileUrl =
+        params?.get('o') ??
+        params?.get('open') ??
+        params?.get('s') ??
+        params?.get('source');
+
+      if (!fileUrl) {
+        return;
+      }
+
+      try {
+        const file = await fetchFileFromUrl(fileUrl, ASSET_MAX_SIZE);
+
+        const isAllowedMimeType = ASSET_MIME_TYPES.some((allowed) => {
+          const norm = allowed.toLowerCase();
+          const type = file.type.toLowerCase();
+          if (type === norm) return true;
+          if (norm.endsWith('/*'))
+            return type.startsWith(norm.slice(0, -2) + '/');
+          return false;
+        });
+
+        if (!isAllowedMimeType) {
+          console.warn(
+            `File type "${file.type || 'unknown'}" is not supported. ` +
+              `Supported types: ${ASSET_MIME_TYPES.join(', ')}`,
+          );
+          return;
+        }
+
+        // Delegates to the store — reuses the existing loading state and navigation effect.
+        this.store.setFile(file);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error('Failed to load file from URL:', message);
+        // Non-fatal: the manual upload UI remains available as a fallback.
+      }
+    });
   }
 }

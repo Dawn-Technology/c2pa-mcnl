@@ -5,7 +5,6 @@ import {
   convertToParamMap,
   ParamMap,
   provideRouter,
-  Router,
 } from '@angular/router';
 import { signal } from '@angular/core';
 import { vi } from 'vitest';
@@ -16,7 +15,6 @@ import {
   ASSET_MAX_SIZE,
   ASSET_MIME_TYPES,
 } from '@c2pa-mcnl/shared/utils/constants';
-import * as helpers from '@c2pa-mcnl/shared/utils/helpers';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -32,25 +30,6 @@ function makeActivatedRoute(params: Record<string, string> = {}) {
   };
 }
 
-async function buildFixture(activatedRoute: ActivatedRoute, mockStore: object) {
-  TestBed.resetTestingModule();
-  await TestBed.configureTestingModule({
-    imports: [VerifyWebappValidateFeatureHomeComponent],
-    providers: [
-      provideRouter([]),
-      { provide: VerifyStore, useValue: mockStore },
-      { provide: ActivatedRoute, useValue: activatedRoute },
-    ],
-  })
-    .overrideComponent(VerifyWebappValidateFeatureHomeComponent, {})
-    .compileComponents();
-
-  const f = TestBed.createComponent(VerifyWebappValidateFeatureHomeComponent);
-  f.detectChanges();
-  await f.whenStable();
-  return f;
-}
-
 // ---------------------------------------------------------------------------
 // Suite
 // ---------------------------------------------------------------------------
@@ -58,7 +37,6 @@ async function buildFixture(activatedRoute: ActivatedRoute, mockStore: object) {
 describe('VerifyWebappValidateFeatureHomeComponent', () => {
   let component: VerifyWebappValidateFeatureHomeComponent;
   let fixture: ComponentFixture<VerifyWebappValidateFeatureHomeComponent>;
-  let router: Router;
 
   const isLoadingSignal = signal(false);
   const hasFile = signal(false);
@@ -86,9 +64,6 @@ describe('VerifyWebappValidateFeatureHomeComponent', () => {
         { provide: ActivatedRoute, useValue: stub.route },
       ],
     }).compileComponents();
-
-    router = TestBed.inject(Router);
-    vi.spyOn(router, 'navigate');
 
     fixture = TestBed.createComponent(VerifyWebappValidateFeatureHomeComponent);
     component = fixture.componentInstance;
@@ -210,101 +185,21 @@ describe('VerifyWebappValidateFeatureHomeComponent', () => {
   });
 
   // -----------------------------------------------------------------------
-  // Navigation
+  // Component behavior
   // -----------------------------------------------------------------------
 
-  describe('Navigation', () => {
-    it('should not navigate when there is no file in the store', () => {
-      TestBed.flushEffects();
-      expect(router.navigate).not.toHaveBeenCalled();
+  describe('Component behavior', () => {
+    it('should have uploadMimeTypes property', () => {
+      expect(component.uploadMimeTypes).toEqual(ASSET_MIME_TYPES);
     });
 
-    it('should navigate to /verify when the store has a file', async () => {
-      hasFile.set(true);
-      fixture.detectChanges();
-      TestBed.flushEffects();
-
-      expect(router.navigate).toHaveBeenCalledWith(['verify']);
-    });
-  });
-
-  // -----------------------------------------------------------------------
-  // URL parameter (?o=)
-  // -----------------------------------------------------------------------
-
-  describe('URL parameter (?o=)', () => {
-    it('should not call fetchFileFromUrl when no ?o param is present', async () => {
-      const fetchSpy = vi.spyOn(helpers, 'fetchFileFromUrl');
-      await fixture.whenStable();
-      expect(fetchSpy).not.toHaveBeenCalled();
+    it('should have uploadMaxSize property', () => {
+      expect(component.uploadMaxSize).toBe(ASSET_MAX_SIZE);
     });
 
-    it('should call store.setFile with the fetched file for a supported MIME type', async () => {
-      const mockFile = new File(['data'], 'image.jpg', { type: 'image/jpeg' });
-      const fetchSpy = vi
-        .spyOn(helpers, 'fetchFileFromUrl')
-        .mockResolvedValue(mockFile);
-      const stub = makeActivatedRoute({ o: 'https://example.com/image.jpg' });
-
-      await buildFixture(stub.route, mockStore);
-
-      expect(fetchSpy).toHaveBeenCalledWith(
-        'https://example.com/image.jpg',
-        ASSET_MAX_SIZE,
-      );
-      expect(setFileSpy).toHaveBeenCalledWith(mockFile);
-    });
-
-    it('should warn and not call setFile for an unsupported MIME type', async () => {
-      const mockFile = new File(['data'], 'doc.pdf', {
-        type: 'application/pdf',
-      });
-      vi.spyOn(helpers, 'fetchFileFromUrl').mockResolvedValue(mockFile);
-      const warnSpy = vi
-        .spyOn(console, 'warn')
-        .mockImplementation(() => undefined);
-      const stub = makeActivatedRoute({ o: 'https://example.com/doc.pdf' });
-
-      await buildFixture(stub.route, mockStore);
-
-      expect(setFileSpy).not.toHaveBeenCalled();
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('not supported'),
-      );
-    });
-
-    it('should log an error and not call setFile when the fetch fails', async () => {
-      vi.spyOn(helpers, 'fetchFileFromUrl').mockRejectedValue(
-        new Error('CORS error'),
-      );
-      const errorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined);
-      const stub = makeActivatedRoute({ o: 'https://example.com/image.jpg' });
-
-      await buildFixture(stub.route, mockStore);
-
-      expect(setFileSpy).not.toHaveBeenCalled();
-      expect(errorSpy).toHaveBeenCalledWith(
-        'Failed to load file from URL:',
-        'CORS error',
-      );
-    });
-
-    it.each([
-      ['image/jpeg', 'photo.jpg'],
-      ['image/png', 'photo.png'],
-      ['image/heic', 'photo.heic'],
-      ['image/heif', 'photo.heif'],
-      ['video/mp4', 'clip.mp4'],
-      ['audio/mpeg', 'track.mp3'],
-    ])('should accept MIME type %s', async (mimeType, filename) => {
-      const mockFile = new File(['data'], filename, { type: mimeType });
-      vi.spyOn(helpers, 'fetchFileFromUrl').mockResolvedValue(mockFile);
-      const stub = makeActivatedRoute({ o: `https://example.com/${filename}` });
-
-      await buildFixture(stub.route, mockStore);
-
+    it('should have openFile method that calls store.setFile', () => {
+      const mockFile = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
+      component.openFile(mockFile);
       expect(setFileSpy).toHaveBeenCalledWith(mockFile);
     });
   });
