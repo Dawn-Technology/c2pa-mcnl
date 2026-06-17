@@ -188,28 +188,6 @@ nx affected -t test lint
 
 > **Affected** means Nx will only run the target for projects that are impacted by your current changes (compared to the main branch), saving time by avoiding unnecessary work across the entire monorepo.
 
-## Accessibility (WCAG 2.1 AA)
-
-The verify-webapp libraries aim to meet WCAG 2.1 AA as baseline quality.
-
-### Verify-webapp accessibility checklist
-
-- Use semantic HTML first: prefer native elements like `button`, `main`, `header`, `ul/li`, and proper heading hierarchy.
-- Ensure all interactive controls are keyboard operable with visible focus states.
-- Provide accessible names for controls (`aria-label`, visible label text, or equivalent semantic text).
-- Do not rely on color alone to communicate status; always include text and/or icon cues.
-- Announce asynchronous/loading states with live regions where appropriate.
-- Link form errors and helper text to inputs via `aria-describedby` and expose invalid state with `aria-invalid`.
-- Respect user motion settings (`prefers-reduced-motion`) for non-essential animations.
-- Keep decorative graphics hidden from assistive tech (`alt=""` or `aria-hidden="true"` where appropriate).
-
-### Verification workflow
-
-- Run `nx lint <project-name>` on touched verify-webapp/shared UI projects.
-- Run `nx test <project-name>` for touched projects with accessibility-related changes.
-- Perform manual keyboard smoke checks for upload and detail flows.
-- Perform a screen reader smoke check for loading, status badges, and form error announcements.
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
