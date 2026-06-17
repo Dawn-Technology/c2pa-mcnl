@@ -324,7 +324,7 @@ export function setupCLI() {
   // Keys only command
   program
     .command('keys')
-    .description('Generate only cryptographic keys (ES256)')
+    .description('Generate only cryptographic keys (Ed25519)')
     .option('-o, --output <directory>', 'Output directory for generated files')
     .option('--no-interactive', 'Run in non-interactive mode')
     .action(keysCommand);

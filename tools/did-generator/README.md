@@ -1,6 +1,6 @@
 # DID Generator & Verifiable Credentials Issuer CLI
 
-CLI tool for generating DIDs (Decentralized Identifiers), cryptographic keys, and issuing verifiable credentials using did-jwt-vc.
+CLI tool for generating DIDs (Decentralized Identifiers), Ed25519 cryptographic keys, and issuing verifiable credentials using did-jwt-vc.
 
 ## CLI Usage
 
@@ -32,7 +32,7 @@ nx run did-generator:generate -- \
 
 ### Generate Keys Only
 
-Generate only cryptographic keys (ES256):
+Generate only cryptographic keys (Ed25519):
 
 ```bash
 nx run did-generator:keys
@@ -108,12 +108,14 @@ The generated DID document follows the did:web method specification:
 {
   "@context": ["https://www.w3.org/ns/did/v1"],
   "id": "did:web:example.com",
-  "verificationMethod": [{
-    "id": "did:web:example.com#key-1",
-    "type": "JsonWebKey2020",
-    "controller": "did:web:example.com",
-    "publicKeyJwk": {}
-  }],
+  "verificationMethod": [
+    {
+      "id": "did:web:example.com#key-1",
+      "type": "JsonWebKey2020",
+      "controller": "did:web:example.com",
+      "publicKeyJwk": {}
+    }
+  ],
   "authentication": ["did:web:example.com#key-1"],
   "assertionMethod": ["did:web:example.com#key-1"]
 }
@@ -147,11 +149,7 @@ The issued employment credentials follow the W3C Verifiable Credentials specific
 You can also use the DID generator as a library:
 
 ```typescript
-import {
-  generateKeys,
-  createDIDDocument,
-  issueCredential
-} from '@c2pa-mcnl/did-generator';
+import { generateKeys, createDIDDocument, issueCredential } from '@c2pa-mcnl/did-generator';
 
 // Generate keys
 const { jwk, privateKeyHex } = generateKeys('./output');
@@ -163,7 +161,7 @@ const { did, didDocument } = createDIDDocument('example.com', jwk, './output');
 const credentialData = {
   employeeName: 'John Doe',
   employeeRole: 'Developer',
-  company: 'My Company'
+  company: 'My Company',
 };
 await issueCredential(did, credentialData, privateKeyHex, './output');
 ```
@@ -247,6 +245,7 @@ https://{your-domain}/.well-known/did.json
 ```
 
 Example for `did:web:example.com`:
+
 1. Generate the DID: `nx run did-generator:did -- --domain example.com --key-file ./public-key.jwk`
 2. Copy `did.json` to your web server at `/.well-known/did.json`
 3. Ensure it's accessible via HTTPS at `https://example.com/.well-known/did.json`

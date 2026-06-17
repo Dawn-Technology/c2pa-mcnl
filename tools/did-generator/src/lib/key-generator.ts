@@ -30,7 +30,7 @@ export function generateKeys(outputDir: string) {
     JSON.stringify(jwk, null, 2),
   );
 
-  // Extract raw private key for ES256Signer
+  // Extract raw private key bytes for EdDSASigner
   const privateKeyObject = crypto.createPrivateKey(privateKey);
   const privateKeyJwk = privateKeyObject.export({ format: 'jwk' });
 
@@ -38,7 +38,7 @@ export function generateKeys(outputDir: string) {
     throw new Error('Failed to extract private key from JWK');
   }
 
-  // For ES256, the 'd' parameter in JWK is the private key (base64url encoded)
+  // For Ed25519 JWK, 'd' contains the private key bytes (base64url encoded)
   const privateKeyBytes = Buffer.from(privateKeyJwk.d, 'base64url');
   const privateKeyHex = privateKeyBytes.toString('hex');
 

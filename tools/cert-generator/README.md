@@ -1,6 +1,6 @@
 # Certificate Generator CLI
 
-CLI tool for generating X.509 certificate chains using ECDSA P-256 keys.
+CLI tool for generating X.509 certificate chains using Ed25519 keys.
 
 ## CLI Usage
 
@@ -19,6 +19,7 @@ nx run cert-generator:chain -- --country NL --state "Zuid-Holland" --organizatio
 ```
 
 > **Note**: When using `--common-name` with the chain command, it will be used as the base name:
+>
 > - Root: "My Root CA"
 > - Intermediate: "My Root CA - Intermediate"
 > - Leaf: "My Root CA - Leaf"
@@ -102,44 +103,37 @@ nx run cert-generator:leaf -- \
 ## Certificate Properties
 
 ### Root Certificate
+
 - Self-signed
 - Basic Constraints: CA=true, pathLen=3
 - Key Usage: digitalSignature, keyCertSign, cRLSign
-- Algorithm: ECDSA with P-256 curve, SHA-256 hash
+- Algorithm: Ed25519
 
 ### Intermediate Certificate
+
 - Signed by root certificate
 - Basic Constraints: CA=true, pathLen=2
 - Key Usage: digitalSignature, keyCertSign
 - Extended Key Usage: emailProtection
-- Algorithm: ECDSA with P-256 curve, SHA-256 hash
+- Algorithm: Ed25519
 
 ### Leaf Certificate
+
 - Signed by intermediate certificate
 - Basic Constraints: CA=false
 - Key Usage: digitalSignature
 - Extended Key Usage: emailProtection
-- Algorithm: ECDSA with P-256 curve, SHA-256 hash
+- Algorithm: Ed25519
 
 ## Programmatic Usage
 
 You can also use the certificate generator as a library:
 
 ```typescript
-import {
-  generateCertificateChain,
-  generateRootCertificate,
-  generateIntermediateCertificate,
-  generateLeafCertificate,
-  type CertificateSubject
-} from '@c2pa-mcnl/cert-generator';
+import { generateCertificateChain, generateRootCertificate, generateIntermediateCertificate, generateLeafCertificate, type CertificateSubject } from '@c2pa-mcnl/cert-generator';
 
 // Generate complete chain
-const chain = await generateCertificateChain(
-  { commonName: 'Root CA', country: 'NL', organization: 'My Company' },
-  { commonName: 'Intermediate CA', country: 'NL', organization: 'My Company' },
-  { commonName: 'My Service', country: 'NL', organization: 'My Company' }
-);
+const chain = await generateCertificateChain({ commonName: 'Root CA', country: 'NL', organization: 'My Company' }, { commonName: 'Intermediate CA', country: 'NL', organization: 'My Company' }, { commonName: 'My Service', country: 'NL', organization: 'My Company' });
 
 // Access certificates and keys
 console.log(chain.root.certificatePem);
