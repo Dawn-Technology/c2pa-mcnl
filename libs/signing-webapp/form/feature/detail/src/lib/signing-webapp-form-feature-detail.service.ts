@@ -131,8 +131,7 @@ export class SigningWebappFormFeatureDetailService {
 
     const signer = new LocalSigner(
       leafKeyDer,
-      // CoseAlgorithmIdentifier.Ed25519,
-      CoseAlgorithmIdentifier.ES256,
+      CoseAlgorithmIdentifier.Ed25519,
       leafCertificate,
       certChain,
     );
@@ -156,20 +155,18 @@ export class SigningWebappFormFeatureDetailService {
 
       digitalIdentitySigner = new LocalIdentitySigner(
         digitalIdentityDer,
-        CoseAlgorithmIdentifier.ES256,
+        CoseAlgorithmIdentifier.Ed25519,
         {
           verifiedIdentity: {
-            type: VerifiedIdentityType.SocialMedia,
-            name: 'Sample Creator',
-            username: 'sample-creator',
-            uri: 'https://example.com/sample-creator',
+            type: VerifiedIdentityType.Affiliation,
+            name: 'Sample Identity',
             provider: {
-              id: 'https://example.com',
-              name: 'Example Identity Provider',
+              id: `${window.location.origin}/.well-known/did.json`,
+              name: 'C2PA MCNL - Signeer tool',
             },
             verifiedAt: new Date().toISOString(),
           },
-          roles: [NamedActorRole.Creator],
+          roles: [NamedActorRole.Publisher],
           issuerDid: issuerDid,
         },
       );

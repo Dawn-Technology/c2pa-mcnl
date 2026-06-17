@@ -55,9 +55,7 @@ export async function generateRootCertificate(
 ): Promise<RootCertificateResult> {
   const keys = await crypto.subtle.generateKey(
     {
-      // name: 'Ed25519',
-      name: 'ECDSA',
-      namedCurve: 'P-256',
+      name: 'Ed25519',
     },
     true,
     ['sign', 'verify'],
@@ -71,8 +69,7 @@ export async function generateRootCertificate(
       name: subjectName,
       keys,
       signingAlgorithm: {
-        // name: 'Ed25519',
-        name: 'ECDSA',
+        name: 'Ed25519',
         hash: 'SHA-256',
       },
       extensions: [
@@ -113,9 +110,7 @@ export async function generateIntermediateCertificate(
 ): Promise<IntermediateCertificateResult> {
   const keys = await crypto.subtle.generateKey(
     {
-      // name: 'Ed25519',
-      name: 'ECDSA',
-      namedCurve: 'P-256',
+      name: 'Ed25519',
     },
     true,
     ['sign', 'verify'],
@@ -131,8 +126,7 @@ export async function generateIntermediateCertificate(
       signingKey: rootPrivateKey,
       publicKey: keys.publicKey,
       signingAlgorithm: {
-        // name: 'Ed25519',
-        name: 'ECDSA',
+        name: 'Ed25519',
         hash: 'SHA-256',
       },
       extensions: [
@@ -182,9 +176,7 @@ export async function generateLeafCertificate(
 ): Promise<LeafCertificateResult> {
   const keys = await crypto.subtle.generateKey(
     {
-      // name: 'Ed25519',
-      name: 'ECDSA',
-      namedCurve: 'P-256',
+      name: 'Ed25519',
     },
     true,
     ['sign'],
@@ -200,8 +192,7 @@ export async function generateLeafCertificate(
       signingKey: intermediatePrivateKey,
       publicKey: keys.publicKey,
       signingAlgorithm: {
-        // name: 'Ed25519',
-        name: 'ECDSA',
+        name: 'Ed25519',
         hash: 'SHA-256',
       },
       extensions: [
@@ -314,9 +305,7 @@ export async function importPrivateKeyFromPem(pem: string): Promise<CryptoKey> {
     'pkcs8',
     der,
     {
-      // name: 'Ed25519',
-      name: 'ECDSA',
-      namedCurve: 'P-256',
+      name: 'Ed25519',
     },
     true,
     ['sign'],

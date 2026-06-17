@@ -303,6 +303,9 @@ export const VerifyStore = signalStore(
               manifestStore,
               asset,
             );
+
+            console.log(manifestValidationResults);
+            console.log(manifestStore.manifests);
           } catch (error) {
             if (error instanceof ValidationError) {
               console.error('Manifest validation error:', error);

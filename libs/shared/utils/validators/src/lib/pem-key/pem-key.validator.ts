@@ -1,13 +1,12 @@
 import { SchemaPath, validateAsync } from '@angular/forms/signals';
 import { resource } from '@angular/core';
 import { extractDerFromFile } from '@c2pa-mcnl/shared/utils/helpers';
-import { Sequence, fromBER, ObjectIdentifier } from 'asn1js';
+import { fromBER, ObjectIdentifier, Sequence } from 'asn1js';
 
 export interface Pkcs8ValidationResult {
   validPkcs8: boolean;
   algorithmOid?: string;
   algorithm?: string;
-  signingCapable: boolean;
   error?: string;
 }
 
@@ -81,7 +80,6 @@ export function inspectPkcs8(
     if (parsed.offset === -1) {
       return {
         validPkcs8: false,
-        signingCapable: false,
         error: 'Invalid DER encoding',
       };
     }
@@ -91,7 +89,6 @@ export function inspectPkcs8(
     if (!(root instanceof Sequence)) {
       return {
         validPkcs8: false,
-        signingCapable: false,
         error: 'Root element is not a SEQUENCE',
       };
     }
@@ -101,7 +98,6 @@ export function inspectPkcs8(
     if (elements.length < 3) {
       return {
         validPkcs8: false,
-        signingCapable: false,
         error: 'Not a valid PKCS#8 structure',
       };
     }
@@ -111,7 +107,6 @@ export function inspectPkcs8(
     if (!(algorithmIdentifier instanceof Sequence)) {
       return {
         validPkcs8: false,
-        signingCapable: false,
         error: 'Missing AlgorithmIdentifier',
       };
     }
@@ -121,7 +116,6 @@ export function inspectPkcs8(
     if (!(oidNode instanceof ObjectIdentifier)) {
       return {
         validPkcs8: false,
-        signingCapable: false,
         error: 'Missing algorithm OID',
       };
     }
@@ -133,12 +127,10 @@ export function inspectPkcs8(
       validPkcs8: true,
       algorithmOid: oid,
       algorithm,
-      signingCapable: Boolean(algorithm),
     };
   } catch (error) {
     return {
       validPkcs8: false,
-      signingCapable: false,
       error: error instanceof Error ? error.message : String(error),
     };
   }

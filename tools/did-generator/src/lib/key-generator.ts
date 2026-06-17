@@ -7,11 +7,7 @@ export function generateKeys(outputDir: string) {
   header('Step 1: Generating Keys');
 
   // log('Generating Ed25519 key pair...', 'yellow');
-  // const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519', {
-
-  log('Generating ES256 (P-256) key pair...', 'yellow');
-  const { publicKey, privateKey } = crypto.generateKeyPairSync('ec', {
-    namedCurve: 'P-256',
+  const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519', {
     publicKeyEncoding: {
       type: 'spki',
       format: 'pem',

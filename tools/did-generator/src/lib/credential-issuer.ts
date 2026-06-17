@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { EdDSASigner, ES256Signer } from 'did-jwt';
+import { EdDSASigner } from 'did-jwt';
 import { createVerifiableCredentialJwt } from 'did-jwt-vc';
 import { log } from '@c2pa-mcnl/shared/utils/cli';
 import { collectCredentialData } from './credential-data-collector'; // Issue Employment Credential using did-jwt-vc
@@ -41,13 +41,9 @@ export async function issueCredential(
 
   log('Signing credential with did-jwt-vc...', 'yellow');
 
-  // // Create signer from private key - EdDSASigner expects Uint8Array, not hex string
-  // const privateKeyBytes = Buffer.from(privateKeyHex, 'hex');
-  // const signer = EdDSASigner(privateKeyBytes);
-
-  // Create signer from private key - ES256Signer expects Uint8Array, not hex string
+  // Create signer from private key - EdDSASigner expects Uint8Array, not hex string
   const privateKeyBytes = Buffer.from(privateKeyHex, 'hex');
-  const signer = ES256Signer(privateKeyBytes);
+  const signer = EdDSASigner(privateKeyBytes);
 
   // Create issuer object
   const issuer = {
