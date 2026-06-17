@@ -7,7 +7,7 @@ import {
   ASSET_MIME_TYPES,
 } from '@c2pa-mcnl/shared/utils/constants';
 import { VerifyStore } from '@c2pa-mcnl/verify-webapp/validate/data-access';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   VerifyWebappSharedUiLoadingOverlayComponent,
   WindowFileDropOverlayComponent,
@@ -49,7 +49,13 @@ export class VerifyWebappValidateFeatureHomeComponent {
 
     // Reactively handle the ?o=<url> query parameter using signals.
     effect(async () => {
-      const fileUrl = this.queryParams()?.get('o');
+      const params = this.queryParams();
+      const fileUrl =
+        params?.get('o') ??
+        params?.get('open') ??
+        params?.get('s') ??
+        params?.get('source');
+
       if (!fileUrl) {
         return;
       }
