@@ -18,6 +18,15 @@ To run the development server for the verification web application, use the foll
 
 ## Usage
 
+### Opening a file directly for verification
+
+Adding the query param `?source=<file_path>` to the URL will open the file directly in the verification web application. For example:
+
+- http://localhost:4200/?o=https://contentauth.github.io/example-assets/images/Firefly_tabby_cat.jpg
+- http://localhost:4200/?open=https://contentauth.github.io/example-assets/images/Firefly_tabby_cat.jpg
+- http://localhost:4200/?s=https://contentauth.github.io/example-assets/images/Firefly_tabby_cat.jpg
+- http://localhost:4200/?source=https://contentauth.github.io/example-assets/images/Firefly_tabby_cat.jpg
+
 ### Configuring the trust-list
 
 The trust-list is configured at build time based on the application configuration:
