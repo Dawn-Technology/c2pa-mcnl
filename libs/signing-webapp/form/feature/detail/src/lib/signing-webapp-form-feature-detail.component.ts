@@ -174,13 +174,10 @@ zGH8APsZpMMoeUQXGEYipO375Pds5j0kG4WiW0xyaQmfwI5yoikfs7/s
       verifiableCredentialIssuer: model.verifiableCredentialIssuer,
     });
 
-    const blob = new Blob([new Uint8Array(file)], {
-      type: model.assetFile.type || 'application/octet-stream',
-    });
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(file);
     const a = document.createElement('a');
     a.href = url;
-    a.download = model.assetFile.name;
+    a.download = file.name;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

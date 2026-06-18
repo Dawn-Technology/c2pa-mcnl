@@ -16,11 +16,13 @@ import {
   ThumbnailType,
   ValidationError,
   ValidationResult,
-  ValidationStatusCode,
 } from '@dawn-technology/c2pa-ts/manifest';
-import { CawgValidationOptions } from '@dawn-technology/c2pa-ts/cawg';
-import { SuperBox } from '@dawn-technology/c2pa-ts/jumbf';
-import { Asset, createAsset } from '@dawn-technology/c2pa-ts/asset';
+import { ValidationFactory } from '@dawn-technology/c2pa-ts/factory';
+import {
+  CawgTrustConfiguration,
+  CawgValidationOptions,
+} from '@dawn-technology/c2pa-ts/cawg';
+import { Asset } from '@dawn-technology/c2pa-ts/asset';
 import { formatDate } from '@angular/common';
 import {
   ActiveManifestIdentityCard,
@@ -282,11 +284,11 @@ export const VerifyStore = signalStore(
         }));
 
         try {
-          const asset = await createAsset(file);
-          const jumbfBytes = await asset.getManifestJUMBF();
+          const validationOptions = await this._getCawgValidationOptions();
 
-          /* no manifest found */
-          if (!jumbfBytes) {
+          const { asset, manifestStore, validationResult } =
+            await ValidationFactory.validate(file, validationOptions);
+          if (!asset || !manifestStore) {
             return patchState(store, {
               isLoading: false,
               manifestStore: null,
@@ -294,49 +296,22 @@ export const VerifyStore = signalStore(
             });
           }
 
-          let manifestStore: ManifestStore;
-          let manifestValidationResults: VerifyStoreState['manifestValidationResults'];
-          try {
-            manifestStore = ManifestStore.read(SuperBox.fromBuffer(jumbfBytes));
-
-            manifestValidationResults = await this._validateManifests(
-              manifestStore,
-              asset,
+          let manifestThumbnailUrls: Map<string, string>,
+            activeManifest: Manifest | undefined;
+          if (manifestStore) {
+            manifestThumbnailUrls = this._createManifestThumbnailUrls(
+              manifestStore.manifests,
             );
 
-            console.log(manifestValidationResults);
-            console.log(manifestStore.manifests);
-          } catch (error) {
-            if (error instanceof ValidationError) {
-              console.error('Manifest validation error:', error);
-              return patchState(store, () => ({
-                isLoading: false,
-                manifestStoreReadValidationError: error,
-              }));
-            } else {
-              console.error(
-                'Manifest validation unknown error.',
-                String(error),
-              );
-              return patchState(store, () => ({
-                isLoading: false,
-                error,
-              }));
-            }
+            activeManifest = manifestStore.getActiveManifest();
           }
-
-          const manifestThumbnailUrls = this._createManifestThumbnailUrls(
-            manifestStore.manifests,
-          );
-
-          const activeManifest = manifestStore.getActiveManifest();
 
           patchState(store, () => ({
             isLoading: false,
             asset,
             manifestStore,
             manifestThumbnailUrls,
-            manifestValidationResults,
+            validationResult,
             activeManifest,
           }));
         } catch (error) {
@@ -538,56 +513,28 @@ export const VerifyStore = signalStore(
         return timestampTrustAnchorsPromise;
       },
 
-      async _validateManifests(
-        manifestStore: VerifiedManifestStore,
-        asset: Asset,
-      ) {
-        const validationResults: VerifyStoreState['manifestValidationResults'] =
-          new Map();
-
-        const activeManifest = manifestStore.getActiveManifest();
-        if (!activeManifest) {
-          throw new ValidationError(
-            ValidationStatusCode.ClaimCBORInvalid,
-            manifestStore.sourceBox,
-            'Active manifest is missing',
-          );
-        }
-
+      async _getCawgValidationOptions(): Promise<CawgValidationOptions> {
         const trustAnchors = await this._getTrustAnchors();
         const timestampTrustAnchors = await this._getTimestampTrustAnchors();
         const trustedIssuers = await this._getTrustedIcaIssuers();
 
-        const cawgOptions: Record<string, unknown> = {};
-        if (timestampTrustAnchors.length) {
-          cawgOptions['timestampTrustAnchors'] = timestampTrustAnchors;
-        }
+        const cawgTrustConfiguration: CawgTrustConfiguration = {};
         if (trustedIssuers.length) {
-          cawgOptions['trustedIcaIssuers'] = trustedIssuers;
+          cawgTrustConfiguration.trustedIcaIssuers = trustedIssuers;
         }
 
-        for (const manifest of manifestStore.manifests) {
-          const label = manifest.label;
-          if (!label) {
-            throw new ValidationError(
-              ValidationStatusCode.GeneralError,
-              manifestStore.sourceBox,
-              'The manifest is missing a label',
-            );
-          }
-          const validationOptions: CawgValidationOptions = {
-            trustAnchors,
-            timestampTrustAnchors,
-            cawg: {
-              trustedIcaIssuers: trustedIssuers,
-            },
-          };
-
-          const result = await manifest.validate(asset, validationOptions);
-          manifest.validationResult = result;
-          validationResults.set(label, result);
+        const validationOptions: CawgValidationOptions & {
+          cawg: CawgTrustConfiguration;
+        } = {
+          trustAnchors,
+          timestampTrustAnchors,
+          cawg: {},
+        };
+        if (trustedIssuers.length) {
+          validationOptions.cawg.trustedIcaIssuers = trustedIssuers;
         }
-        return validationResults;
+
+        return validationOptions;
       },
 
       _createManifestThumbnailUrls(
