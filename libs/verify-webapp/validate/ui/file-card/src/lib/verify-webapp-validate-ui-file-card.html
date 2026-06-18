@@ -2,12 +2,32 @@
   <div
     class="rounded border border-gray-700 bg-white overflow-hidden flex-shrink-0 w-[65px] h-[65px]"
   >
-    <img
-      [src]="fileUrl()"
-      [alt]="imageAltText()"
-      [title]="fileName()"
-      class="w-full h-full object-contain"
-    />
+    @if (fileUrl()) {
+      <img
+        [src]="fileUrl()!"
+        [alt]="imageAltText()"
+        [title]="fileName()"
+        class="w-full h-full object-contain"
+      />
+    } @else if (isVideoFile()) {
+      <div
+        class="flex h-full w-full items-center justify-center bg-gray-100 text-gray-700"
+        [attr.aria-label]="fileName() || 'Videobestand'"
+        [attr.title]="fileName()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          class="h-8 w-8"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M4.5 5.25A2.25 2.25 0 0 1 6.75 3h6.69a2.25 2.25 0 0 1 1.59.66l2.31 2.31a2.25 2.25 0 0 1 .66 1.59v.69h.75a2.25 2.25 0 0 1 2.25 2.25v7.5a2.25 2.25 0 0 1-2.25 2.25h-12A2.25 2.25 0 0 1 4.5 18V5.25zm12 .75v2.25h2.25L16.5 6zm-6.53 3.42a.75.75 0 0 0-1.22.58v5a.75.75 0 0 0 1.22.58l3.125-2.5a.75.75 0 0 0 0-1.16l-3.125-2.5z"
+          />
+        </svg>
+      </div>
+    }
   </div>
   <figcaption class="min-w-0">
     <p class="text-sm font-bold text-gray-900 truncate">{{ fileName() }}</p>

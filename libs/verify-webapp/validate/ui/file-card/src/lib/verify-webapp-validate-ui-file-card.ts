@@ -7,9 +7,14 @@ import { Component, input } from '@angular/core';
   styleUrl: './verify-webapp-validate-ui-file-card.css',
 })
 export class VerifyWebappValidateUiFileCard {
-  fileUrl = input.required<string>();
+  fileUrl = input<string | null>();
   fileName = input<string>();
   subText = input<string>();
+  mimeType = input<string | null>();
+
+  isVideoFile(): boolean {
+    return this.mimeType()?.startsWith('video/') ?? false;
+  }
 
   imageAltText(): string {
     const name = this.fileName()?.trim();
