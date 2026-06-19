@@ -6,7 +6,9 @@ on:
       - test
 
 permissions:
+  actions: read
   contents: read
+  packages: read
   
 jobs:
   deploy:
@@ -16,6 +18,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - uses: pnpm/action-setup@v4
+      
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
