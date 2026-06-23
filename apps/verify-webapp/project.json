@@ -41,7 +41,11 @@
               "replace": "libs/verify-webapp/shared/environments/src/lib/environment.ts",
               "with": "libs/verify-webapp/shared/environments/src/lib/environment.prod.ts"
             }
-          ]
+          ],
+          "optimization": true,
+          "extractLicenses": true,
+          "aot": true,
+          "sourceMap": false
         },
         "development": {
           "optimization": false,
