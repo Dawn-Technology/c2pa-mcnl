@@ -115,15 +115,13 @@
                       claim of identity.linkedIdentityClaims;
                       track $index
                     ) {
-                      <li class="text-sm">
+                      <li class="text-sm flex flex-row gap-1">
                         <span class="font-semibold">{{ claim.type }}:</span>
                         <span>{{ claim.value }}</span>
-                        <span class="text-xs text-gray-500"
+                        <span class="text-gray-500"
                           >via {{ claim.provider }}</span
                         >
-                        <span class="text-xs text-gray-500"
-                          >({{ claim.method }})</span
-                        >
+                        <span class="text-gray-500">({{ claim.method }})</span>
                       </li>
                     }
                   </ul>
