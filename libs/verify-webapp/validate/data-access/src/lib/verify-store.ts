@@ -110,6 +110,13 @@ export const VerifyStore = signalStore(
       getActionAssertions: computed(
         () => activeManifest()?.assertions?.getActionAssertions() ?? [],
       ),
+      activeManifestSubjectOrganization: computed(() => {
+        return (
+          activeManifest()
+            ?.signature?.signatureData.certificate?.subjectName.getField('O')
+            .join(',') ?? '—'
+        );
+      }),
       activeManifestIdentityCards: computed<ActiveManifestIdentityCard[]>(
         () => {
           const identities =
@@ -180,9 +187,7 @@ export const VerifyStore = signalStore(
           return '—';
         }
 
-        return claim.claimGeneratorVersion
-          ? `${claim.claimGeneratorName} ${claim.claimGeneratorVersion}`
-          : claim.claimGeneratorName;
+        return claim.claimGeneratorName;
       }),
       activeManifestIssuedOn: computed(() => {
         const timestamp = activeManifest()?.signature?.signatureData?.timestamp;
@@ -210,14 +215,7 @@ export const VerifyStore = signalStore(
           }
         }
 
-        const claim = activeManifest()?.claim;
-        if (!claim?.claimGeneratorName) {
-          return '—';
-        }
-
-        return claim.claimGeneratorVersion
-          ? `${claim.claimGeneratorName} ${claim.claimGeneratorVersion}`
-          : claim.claimGeneratorName;
+        return;
       }),
       activeManifestCameraInfo: computed(() => {
         const assertions = activeManifest()?.assertions?.assertions ?? [];
@@ -249,7 +247,7 @@ export const VerifyStore = signalStore(
           }
         }
 
-        return '—';
+        return;
       }),
     }),
   ),

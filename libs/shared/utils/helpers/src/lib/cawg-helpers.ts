@@ -201,7 +201,6 @@ export function linkedIdentityClaimsForAssertion(
 ): ActiveManifestIdentityCard['linkedIdentityClaims'] {
   const credential = parseIcaCredentialFromSignature(assertion.signature);
   const identities = credential?.credentialSubject?.verifiedIdentities ?? [];
-
   return identities.map((identity) => ({
     type: readableIdentityClaimTypeMap[identity.type] ?? identity.type,
     value: getIdentityClaimValue(identity),
@@ -209,6 +208,7 @@ export function linkedIdentityClaimsForAssertion(
     method: readableIdentityClaimMethod(identity.method),
     verifiedAt: identity.verifiedAt ?? '—',
     verified: statusState === 'verified',
+    url: identity.uri,
   }));
 }
 

@@ -2,7 +2,9 @@
   @if (store.hasManifests()) {
     <div>
       <h2 class="font-extrabold">{{ store.file()?.name }}</h2>
-      <p class="text-sm">Uitgegeven door {{ store.activeManifestIssuer() }}</p>
+      <p class="text-sm">
+        Uitgegeven door {{ store.activeManifestSubjectOrganization() }}
+      </p>
     </div>
     @if (store.activeManifestIdentityCards().length) {
       <div class="flex flex-col gap-4">
@@ -51,7 +53,7 @@
 
               <p class="text-xs text-gray-600">{{ identity.status.detail }}</p>
 
-              <div>
+              <!-- <div>
                 <h5
                   class="text-xs font-bold uppercase tracking-wide text-gray-500"
                 >
@@ -64,7 +66,7 @@
                 <h5
                   class="text-xs font-bold uppercase tracking-wide text-gray-500"
                 >
-                  Geverifieerde bij
+                  Geverifieerd bij
                 </h5>
                 <p class="text-sm break-all" [title]="identity.issuer">
                   {{ identity.shortIssuer }}
@@ -99,7 +101,7 @@
                     </li>
                   }
                 </ul>
-              </div>
+              </div> -->
 
               <div>
                 <h5
@@ -113,15 +115,13 @@
                       claim of identity.linkedIdentityClaims;
                       track $index
                     ) {
-                      <li class="text-sm">
+                      <li class="text-sm flex flex-row gap-1">
                         <span class="font-semibold">{{ claim.type }}:</span>
                         <span>{{ claim.value }}</span>
-                        <span class="text-xs text-gray-500"
+                        <span class="text-gray-500"
                           >via {{ claim.provider }}</span
                         >
-                        <span class="text-xs text-gray-500"
-                          >({{ claim.method }})</span
-                        >
+                        <span class="text-gray-500">({{ claim.method }})</span>
                       </li>
                     }
                   </ul>
@@ -146,7 +146,7 @@
 
       <div>
         <h4 class="text-sm font-bold">Gebruikte app of apparaat</h4>
-        <p class="text-sm">{{ store.activeManifestSoftwareAgent() }}</p>
+        <p class="text-sm">{{ store.activeManifestIssuer() }}</p>
       </div>
 
       <div>
@@ -171,43 +171,33 @@
           [subText]="store.fileDate()"
         />
       </div>
-    </div>
 
-    <div class="flex flex-col gap-4">
       <div>
-        <h3 class="font-bold">Gegevens over camera-opname</h3>
+        <h4 class="text-sm font-bold">Vastgelegd door</h4>
         <p class="text-sm">
-          Aanvullende gegevens afkomstig van de camera die is gebruikt om een
-          foto of video te maken. EXIF-gegevens kunnen worden bewerkt door de
-          maker van de content.
+          {{ store.activeManifestSubjectOrganization() }} op
+          {{ store.activeManifestIssuedOn() }}
         </p>
       </div>
-
-      <div>
-        <h4 class="text-sm font-bold">Info</h4>
-        <p class="text-sm">{{ store.activeManifestCameraInfo() }}</p>
-      </div>
     </div>
 
-    <div class="flex flex-col gap-4">
-      <div>
-        <h3 class="font-bold">Over deze Content Credential</h3>
-        <p class="text-sm">
-          De app of het apparaat dat is gebruikt om deze content te produceren,
-          heeft de volgende informatie vastgelegd:
-        </p>
-      </div>
+    @if (store.activeManifestCameraInfo()) {
+      <div class="flex flex-col gap-4">
+        <div>
+          <h3 class="font-bold">Gegevens over camera-opname</h3>
+          <p class="text-sm">
+            Aanvullende gegevens afkomstig van de camera die is gebruikt om een
+            foto of video te maken. EXIF-gegevens kunnen worden bewerkt door de
+            maker van de content.
+          </p>
+        </div>
 
-      <div>
-        <h4 class="text-sm font-bold">Uitgegeven door</h4>
-        <p class="text-sm">{{ store.activeManifestIssuer() }}</p>
+        <div>
+          <h4 class="text-sm font-bold">Info</h4>
+          <p class="text-sm">{{ store.activeManifestCameraInfo() }}</p>
+        </div>
       </div>
-
-      <div>
-        <h4 class="text-sm font-bold">Uitgegeven op</h4>
-        <p class="text-sm">{{ store.activeManifestIssuedOn() }}</p>
-      </div>
-    </div>
+    }
   } @else {
     <div>
       <h2 class="font-extrabold mb-3">Geen Content Credentials gevonden</h2>
