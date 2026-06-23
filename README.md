@@ -30,16 +30,17 @@ https://github.com/Dawn-Technology/c2pa-mcnl-trust-list
 ### C2PA implementation using JavaScript/TypeScript
 The project utilizes JavaScript/TypeScript for the C2PA implementation, leveraging existing libraries and tools to facilitate development and integration.
 
-Creating an SDK of the entire C2PA specification is a complex task. Therefore, the project focuses on using existing resources, such as:
+Creating an SDK of the entire C2PA specification is a complex task. Therefore, the project builds on existing resources, with our SDK as the primary implementation:
 
-- [c2pa-ts](https://github.com/TrustNXT/c2pa-ts): A TypeScript implementation of the C2PA specification maintained (indepentantly) by [TrustNXT](https://trustnxt.com/).
+- [c2pa-ts (Dawn-Technology fork)](https://github.com/Dawn-Technology/c2pa-ts): Our TypeScript SDK, forked from [TrustNXT/c2pa-ts](https://github.com/TrustNXT/c2pa-ts), and extended to support the CAWG specification and certificate chain validation.
+
 - [c2pa-js](https://github.com/contentauth/c2pa-js): A C2PA JavaScript implementation maintained by the Content Authenticity Initiative, which wraps the Rust implementation in WebAssembly.
 - [c2pa-rs](https://github.com/contentauth/c2pa-rs): The "official" C2PA Rust implementation maintained by the Content Authenticity Initiative
 - [c2patool](https://github.com/contentauth/c2pa-rs/tree/main/cli): A command-line tool for working with C2PA manifests, built on top of the c2pa-rs library.
 - [c2pa-attacks](https://github.com/contentauth/c2pa-attacks): A repository containing various attack scenarios and test cases for C2PA implementations, useful for testing and validation. Maintained by the Content Authenticity Initiative.
 - [c2pa-explorations](https://github.com/christianpaquin/c2pa-explorations/tree/main?tab=readme-ov-file): Experimentation and prototyping done by [Christian Paquin](https://www.microsoft.com/en-us/research/people/cpaquin/), a Microsoft engineer.
 
-With these resources, the project aims to build a functional C2PA implementation that meets the specified goals.
+These resources are used to evolve the SDK with CAWG-compatible functionality and robust certificate chain validation, while keeping alignment with the broader C2PA ecosystem.
 
 ### Verification website
 A website similar to the Content Authenticity Initiative's [verify.contentauthenticity.org](https://verify.contentauthenticity.org/) that allows users to upload media files and verify their C2PA manifests. The main difference is that this website will use our own JavaScript/TypeScript implementation and trust list to verify the manifests. 
