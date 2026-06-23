@@ -33,8 +33,8 @@ importers:
         specifier: 21.1.6
         version: 21.1.6(@angular/common@21.1.6(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2))(@angular/platform-browser@21.1.6(@angular/common@21.1.6(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2)))(rxjs@7.8.2)
       '@dawn-technology/c2pa-ts':
-        specifier: ^0.15.2
-        version: 0.15.2(encoding@0.1.13)(typescript@5.9.3)
+        specifier: ^0.16.0
+        version: 0.16.0(encoding@0.1.13)(typescript@5.9.3)
       '@ngrx/signals':
         specifier: ^21.0.1
         version: 21.0.1(@angular/core@21.1.6(@angular/compiler@21.1.6)(rxjs@7.8.2))(rxjs@7.8.2)
@@ -1207,8 +1207,8 @@ packages:
     resolution: {integrity: sha512-QxULHAm7cNu72w97JUNCBFODFaXpbDg+dP8b/oWFAZ2MTRppA3U00Y2L1HqaS4J6yBqxwa/Y3nMBaxVKbB/NsA==}
     engines: {node: '>=20.19.0'}
 
-  '@dawn-technology/c2pa-ts@0.15.2':
-    resolution: {integrity: sha512-Qr/McA3vE2hqhfwvN9uU1Uea1glKQIYijQa9j8tKFRDG6q/IdgQcBZBPTMYiV7UVnLAADUI5XtFKJJUSslbrLA==, tarball: https://npm.pkg.github.com/download/@dawn-technology/c2pa-ts/0.15.2/15fe3cc3528bf1e1d6b393309311079c97df19df}
+  '@dawn-technology/c2pa-ts@0.16.0':
+    resolution: {integrity: sha512-U4UUuKFV/1z5w4UCYHZnMiZtsL8zwI23JWeZS3rPcUgtpN+/HVJiKOqRN0CBKuaJClH8foi9qEBfqdXzHZhDJg==, tarball: https://npm.pkg.github.com/download/@dawn-technology/c2pa-ts/0.16.0/387ddea7e004fefd5ebf7fa22f863dffa0c71594}
 
   '@emnapi/core@1.4.5':
     resolution: {integrity: sha512-XsLw1dEOpkSX/WucdqUhPWP7hDxSvZiY+fsUC14h+FtQ2Ifni4znbBt8punRX+Uj2JG/uDb8nEHVKvrVlvdZ5Q==}
@@ -4919,6 +4919,9 @@ packages:
   eventsource@3.0.7:
     resolution: {integrity: sha512-CRT1WTyuQoD771GW56XEZFQ/ZoSfWid1alKGDYMmkt2yl8UXrVR4pspqWNEcqKvVIzg6PAltWjxcSSPrboA4iA==}
     engines: {node: '>=18.0.0'}
+
+  exifr@7.1.3:
+    resolution: {integrity: sha512-g/aje2noHivrRSLbAUtBPWFbxKdKhgj/xr1vATDdUXPOFYJlQ62Ft0oy+72V6XLIpDJfHs6gXLbBLAolqOXYRw==}
 
   exit-x@0.2.2:
     resolution: {integrity: sha512-+I6B/IkJc1o/2tiURyz/ivu/O0nKNEArIUB5O7zBrlDVJr22SCLH3xTeEry428LvFhRzIA1g8izguxJ/gbNcVQ==}
@@ -9484,13 +9487,14 @@ snapshots:
 
   '@csstools/css-tokenizer@4.0.0': {}
 
-  '@dawn-technology/c2pa-ts@0.15.2(encoding@0.1.13)(typescript@5.9.3)':
+  '@dawn-technology/c2pa-ts@0.16.0(encoding@0.1.13)(typescript@5.9.3)':
     dependencies:
       '@noble/hashes': 2.0.1
       '@peculiar/x509': 2.0.0
       cbor-x: 1.6.0
       crc-32: 1.2.2
       did-resolver: 4.1.0
+      exifr: 7.1.3
       key-did-resolver: 4.0.0
       pkijs: 3.3.3
       schema-dts: 2.0.0(typescript@5.9.3)
@@ -13661,6 +13665,8 @@ snapshots:
   eventsource@3.0.7:
     dependencies:
       eventsource-parser: 3.0.6
+
+  exifr@7.1.3: {}
 
   exit-x@0.2.2: {}
 
