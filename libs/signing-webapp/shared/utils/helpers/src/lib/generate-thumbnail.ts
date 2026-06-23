@@ -1,18 +1,18 @@
 /**
  * Generates a thumbnail from an image file using HTML5 Canvas.
- * @param file - The input image File or Blob.
+ * @param file - The input image File
  * @param maxWidth - The maximum width of the thumbnail.
  * @param maxHeight - The maximum height of the thumbnail.
  * @param quality - The JPEG compression quality (0.0 to 1.0). Default is 0.8.
- * @returns A Promise that resolves with the thumbnail as a Blob.
+ * @returns A Promise that resolves with the thumbnail as a File.
  * @throws Error Either an issue with the Image or the canvas will throw an error
  */
 export function generateThumbnail(
-  file: File | Blob,
-  maxWidth: number,
-  maxHeight: number,
+  file: File,
+  maxWidth = 250,
+  maxHeight = 250,
   quality = 0.8,
-): Promise<Blob> {
+): Promise<File> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const objectUrl = URL.createObjectURL(file);
@@ -47,7 +47,12 @@ export function generateThumbnail(
       canvas.toBlob(
         (blob: Blob | null) => {
           if (blob) {
-            resolve(blob);
+            resolve(
+              new File([blob], file.name, {
+                type: file.type,
+                lastModified: Date.now(),
+              }),
+            );
           } else {
             reject(new Error('Canvas to Blob conversion failed'));
           }

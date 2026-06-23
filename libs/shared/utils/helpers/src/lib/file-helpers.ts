@@ -76,7 +76,7 @@ export async function fetchFileFromUrl(
 
   // Derive filename from URL path, falling back to Content-Disposition
   let filename = 'file-from-url';
-  const pathSegment = parsedUrl.pathname.split('/').at(-1);
+  const pathSegment = parsedUrl.pathname.split('/').slice(-1)[0];
   if (pathSegment) {
     filename = pathSegment.split('?')[0] || filename;
   }
