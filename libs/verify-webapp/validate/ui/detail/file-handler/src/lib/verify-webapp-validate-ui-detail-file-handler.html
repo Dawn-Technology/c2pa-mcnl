@@ -3,10 +3,11 @@
 >
   <h2 class="text-sm">Huidig bestand</h2>
 
-  @if (store.fileDataUrl(); as fileDataUrl) {
+  @if (store.file(); as file) {
     <lib-verify-webapp-validate-ui-file-card
-      [fileUrl]="fileDataUrl"
-      [fileName]="store.file()?.name"
+      [fileUrl]="store.fileDataUrl()"
+      [fileName]="file.name"
+      [mimeType]="file.type"
       [subText]="store.fileDate()"
     />
   } @else {

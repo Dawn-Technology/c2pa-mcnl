@@ -27,4 +27,22 @@ describe('VerifyWebappValidateUiFileCard', () => {
   it('should return fallback alt text when file name is missing', () => {
     expect(component.imageAltText()).toBe('Voorbeeldbestand');
   });
+
+  it('should detect video files based on mime type', () => {
+    fixture.componentRef.setInput('mimeType', 'video/mp4');
+
+    expect(component.isVideoFile()).toBe(true);
+  });
+
+  it('should render a video icon when no preview url exists for video files', () => {
+    fixture.componentRef.setInput('mimeType', 'video/mp4');
+    fixture.componentRef.setInput('fileName', 'clip.mp4');
+    fixture.detectChanges();
+
+    const svgIcon = fixture.nativeElement.querySelector('svg');
+    const previewImage = fixture.nativeElement.querySelector('img');
+
+    expect(svgIcon).not.toBeNull();
+    expect(previewImage).toBeNull();
+  });
 });

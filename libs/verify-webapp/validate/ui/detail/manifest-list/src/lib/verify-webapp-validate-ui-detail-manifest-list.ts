@@ -17,6 +17,10 @@ import { ValidationResult } from '@dawn-technology/c2pa-ts/manifest';
 export class VerifyWebappValidateUiDetailManifestList {
   readonly store = inject(VerifyStore);
 
+  isVideoFile(mimeType: string | null | undefined): boolean {
+    return mimeType?.startsWith('video/') ?? false;
+  }
+
   manifestAriaLabel(label: string | undefined, index: number): string {
     const manifestLabel = label?.trim() || `manifest ${index + 1}`;
     return `Selecteer ${manifestLabel}`;

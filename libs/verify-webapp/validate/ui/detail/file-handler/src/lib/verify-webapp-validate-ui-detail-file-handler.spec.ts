@@ -36,12 +36,32 @@ describe('VerifyWebappValidateUiDetailFileHandler', () => {
   it('should render fallback preview text as paragraph when no file preview exists', () => {
     fixture.detectChanges();
 
-    const fallbackText: HTMLElement | null = Array.from(
-      fixture.nativeElement.querySelectorAll('p'),
-    ).find((el: Element) =>
+    const paragraphs = Array.from(
+      fixture.nativeElement.querySelectorAll('p') as NodeListOf<HTMLElement>,
+    );
+
+    const fallbackText: HTMLElement | null = paragraphs.find((el) =>
       el.textContent?.includes('Geen preview beschikbaar voor dit bestand'),
     ) as HTMLElement | null;
 
     expect(fallbackText).not.toBeNull();
+  });
+
+  it('should render a video icon card when the selected file is a video', () => {
+    storeStub.file.set(new File(['video'], 'clip.mp4', { type: 'video/mp4' }));
+    fixture.detectChanges();
+
+    const paragraphs = Array.from(
+      fixture.nativeElement.querySelectorAll('p') as NodeListOf<HTMLElement>,
+    );
+
+    const fallbackText: HTMLElement | null = paragraphs.find((el) =>
+      el.textContent?.includes('Geen preview beschikbaar voor dit bestand'),
+    ) as HTMLElement | null;
+
+    const svgIcon = fixture.nativeElement.querySelector('svg');
+
+    expect(fallbackText).toBeNull();
+    expect(svgIcon).not.toBeNull();
   });
 });

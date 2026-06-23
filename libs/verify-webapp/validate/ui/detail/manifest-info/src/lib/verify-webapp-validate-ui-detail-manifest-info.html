@@ -165,8 +165,9 @@
       <div>
         <h4 class="text-sm font-bold mb-2">Bestandsdelen</h4>
         <lib-verify-webapp-validate-ui-file-card
-          [fileUrl]="store.fileDataUrl() ?? ''"
+          [fileUrl]="store.fileDataUrl()"
           [fileName]="store.file()?.name!"
+          [mimeType]="store.file()?.type ?? null"
           [subText]="store.fileDate()"
         />
       </div>
@@ -210,10 +211,11 @@
   } @else {
     <div>
       <h2 class="font-extrabold mb-3">Geen Content Credentials gevonden</h2>
-      @if (store.fileDataUrl(); as fileDataUrl) {
+      @if (store.file(); as file) {
         <lib-verify-webapp-validate-ui-file-card
-          [fileUrl]="fileDataUrl"
-          [fileName]="store.file()?.name"
+          [fileUrl]="store.fileDataUrl()"
+          [fileName]="file.name"
+          [mimeType]="file.type"
           [subText]="store.fileDate()"
         />
       } @else {
