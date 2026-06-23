@@ -1,0 +1,48 @@
+name: Deploy Website
+
+on:
+  push:
+    branches:
+      - test
+
+permissions:
+  actions: read
+  contents: read
+  packages: read
+  
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'pnpm'
+          registry-url: https://npm.pkg.github.com
+          scope: '@dawn-technology'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Build Angular app
+        run: npx nx build verify-webapp --configuration=production
+
+      - name: Upload to Scaleway Object Storage
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.SCW_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SCW_SECRET_KEY }}
+        run: |
+          aws s3 sync \
+            dist/apps/verify-webapp/browser \
+            s3://${{ secrets.SCW_BUCKET }} \
+            --delete \
+            --endpoint-url https://s3.${{ secrets.SCW_REGION }}.scw.cloud
