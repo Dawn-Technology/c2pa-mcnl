@@ -286,8 +286,12 @@ export const VerifyStore = signalStore(
         try {
           const validationOptions = await this._getCawgValidationOptions();
 
-          const { asset, manifestStore, validationResult } =
-            await ValidationFactory.validate(file, validationOptions);
+          const {
+            asset,
+            manifestStore,
+            validationResult: manifestValidationResults,
+          } = await ValidationFactory.validate(file, validationOptions);
+
           if (!asset || !manifestStore) {
             return patchState(store, {
               isLoading: false,
@@ -311,7 +315,7 @@ export const VerifyStore = signalStore(
             asset,
             manifestStore,
             manifestThumbnailUrls,
-            validationResult,
+            manifestValidationResults,
             activeManifest,
           }));
         } catch (error) {
