@@ -23,8 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: ${{ vars.VERIFY_WEBAPP_URL }}
-
+      url: ${{ steps.get_release_url.outputs.release_url }}
 
     steps:
       - name: Checkout
@@ -61,3 +60,7 @@ jobs:
             s3://${{ secrets.SCW_BUCKET }} \
             --delete \
             --endpoint-url https://s3.${{ secrets.SCW_REGION }}.scw.cloud
+
+      - name: Set release url
+        id: get_release_url
+        run: echo release_url=${{ vars.VERIFY_WEBAPP_URL }} >> $GITHUB_OUTPUT
