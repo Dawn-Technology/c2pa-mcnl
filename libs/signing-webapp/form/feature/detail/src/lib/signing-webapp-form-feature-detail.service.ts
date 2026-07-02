@@ -19,7 +19,7 @@ import {
   ManifestFactory,
   ThumbnailAssertionFactory,
 } from '@dawn-technology/c2pa-ts/factory';
-import { generateThumbnail } from '@c2pa-mcnl/verify-webapp/shared/utils/helpers';
+import { generateThumbnail } from '@c2pa-mcnl/signing-webapp/shared/utils/helpers';
 import { X509Certificate } from '@peculiar/x509';
 
 /**
