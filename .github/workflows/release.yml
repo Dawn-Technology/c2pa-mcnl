@@ -21,7 +21,10 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: production
+    environment:
+      name: production
+      url: ${{ vars.VERIFY_WEBAPP_URL }}
+
 
     steps:
       - name: Checkout
