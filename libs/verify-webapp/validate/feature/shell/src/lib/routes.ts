@@ -15,6 +15,20 @@ export const routes: Route[] = [
     pathMatch: 'full',
   },
   {
+    path: 'about',
+    loadComponent: async () =>
+      (await import('@c2pa-mcnl/verify-webapp/validate/feature/about'))
+        .VerifyWebappValidateFeatureAboutComponent,
+    pathMatch: 'full',
+  },
+  {
+    path: 'why',
+    loadComponent: async () =>
+      (await import('@c2pa-mcnl/verify-webapp/validate/feature/why'))
+        .VerifyWebappValidateFeatureWhyComponent,
+    pathMatch: 'full',
+  },
+  {
     path: '**',
     redirectTo: '',
     pathMatch: 'full',
