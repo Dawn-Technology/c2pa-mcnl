@@ -1,7 +1,9 @@
-<nav>
-  <button>Terug naar home</button>
+<nav class="px-[25vw] text-sm p-4">
+  <button class="flex flex-row gap-4 items-center p-4" routerLink="/">
+    <img src="./back-arrow.svg" alt="Back Arrow" />Terug naar home
+  </button>
 </nav>
-<section class="px-[30vw] flex flex-col gap-8">
+<section class="px-[35vw] flex flex-col gap-8 leading-8 pb-10">
   <h1 class="font-extrabold text-5xl/tight">
     Waarom is Verifieer Mij opgericht?
   </h1>
@@ -22,7 +24,7 @@
     te doen als de afzender.
   </p>
 
-  <ul>
+  <ul class="list-disc ps-7">
     <li>
       Het zegel bewijst of de envelop onderweg is geopend en of de inhoud sinds
       de ondertekening ongewijzigd is gebleven.
@@ -45,7 +47,7 @@
     transparantie, maar kent in de praktijk drie grote nadelen:
   </p>
 
-  <ul>
+  <ul class="list-disc ps-7">
     <li>
       <strong>Identiteitsfraude is nog steeds mogelijk:</strong>In de
       standaardversie van C2PA ontbreekt een verplichte koppeling met een echte,
@@ -71,14 +73,43 @@
   </ul>
 
   <p>
-    Om deze kwetsbaarheden op te lossen, hebben <a href="#">Media Campus NL</a>,
-    de <a href="#">VRPO</a> en <a href="#">Dawn Technology</a> – met steun van
-    het <a href="#">SIDN Fonds</a> – een Nederlandse implementatie ontwikkeld.
+    Om deze kwetsbaarheden op te lossen, hebben
+    <a
+      href="https://mediacampus.nl/"
+      title="Media Campus Nederland"
+      class="underline"
+      target="_blank"
+      >Media Campus NL</a
+    >, de
+    <a
+      href="https://www.vpro.nl/"
+      title="VPRO"
+      class="underline"
+      target="_blank"
+      >VRPO</a
+    >
+    en
+    <a
+      href="https://dawn.tech/"
+      title="Dawn Technology"
+      class="underline"
+      target="_blank"
+      >Dawn Technology</a
+    >
+    – met steun van het
+    <a
+      href="https://www.sidnfonds.nl/"
+      title="SIDN Fonds"
+      class="underline"
+      target="_blank"
+      >SIDN Fonds</a
+    >
+    – een Nederlandse implementatie ontwikkeld.
   </p>
 
   <p>Verifieer Mij voegt twee essentiële bouwstenen toe aan de technologie:</p>
 
-  <ul>
+  <ul class="list-disc ps-7">
     <li>
       <strong>Koppelen aan een echte Digitale Identiteit:</strong>Wij maken het
       mogelijk om C2PA-zegels te koppelen aan een verifieerbare digitale
