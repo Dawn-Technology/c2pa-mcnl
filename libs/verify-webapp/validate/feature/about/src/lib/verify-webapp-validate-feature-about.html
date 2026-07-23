@@ -1,135 +1,229 @@
 <nav class="px-[25vw] text-sm p-4">
-  <button class="flex flex-row gap-4 items-center p-4" routerLink="/">
-    <img src="./back-arrow.svg" alt="Back Arrow" />Terug naar home
+  <button class="flex flex-row gap-4 items-center p-4" routerlink="/">
+    <img src="./back-arrow.svg" alt="back arrow" />terug naar home
   </button>
 </nav>
-<section class="px-[35vw] flex flex-col gap-8 leading-8 pb-10">
-  <h1 class="font-extrabold text-5xl/tight">
-    Waarom is Verifieer Mij opgericht?
-  </h1>
 
-  <p>
-    Met de snelle opkomst van generatieve AI en deepfakes wordt het voor
-    mediaconsumenten steeds moeilijker om online het verschil tussen feit en
-    fictie te herkennen. Het is eenvoudig om logo's te kopiëren, teksten aan te
-    passen of video's en afbeeldingen digitaal te manipuleren. Om het digitale
-    vertrouwen te herstellen en mensen te helpen de échte afzender van een
-    bericht te herkennen, is het platform Verifieer Mij opgezet.
-  </p>
-
-  <p>
-    Verifieer Mij helpt bij het verkennen van digitale lakzegels. Een lakzegel
-    op een middeleeuwse brief liet zien dat het bericht niet geopend was (en dus
-    niet was aangepast). Bovendien maakte het zegel het erg moeilijk om je voor
-    te doen als de afzender.
-  </p>
-
-  <ul class="list-disc ps-7">
-    <li>
-      Het zegel bewijst of de envelop onderweg is geopend en of de inhoud sinds
-      de ondertekening ongewijzigd is gebleven.
-    </li>
-    <li>
-      Het zegel is geen 'waarheidsmachine'; het controleert niet of de inhoud
-      van de brief feitelijk juist, eerlijk of objectief is.
-    </li>
-    <li>
-      Het bevestigt puur dat een specifieke afzender achter de claims staat en
-      dat er tijdens het transport niet met het bestand is gerommeld.
-    </li>
-  </ul>
-
-  <h2 class="font-bold font-[Inter] text-lg">C2PA is een digitaal lakzegel</h2>
-
-  <p>
-    Wij gebruiken hiervoor de internationale specificatie C2PA (Coalition for
-    Content Provenance and Authenticity). C2PA is een waardevol instrument voor
-    transparantie, maar kent in de praktijk drie grote nadelen:
-  </p>
-
-  <ul class="list-disc ps-7">
-    <li>
-      <strong>Identiteitsfraude is nog steeds mogelijk:</strong>In de
-      standaardversie van C2PA ontbreekt een verplichte koppeling met een echte,
-      gecontroleerde digitale identiteit. Iemand met kwade bedoelingen kan
-      daardoor eenvoudig een digitaal zegel maken dat er op het eerste gezicht
-      uitziet alsof het van een betrouwbare omroep of overheidsinstantie is.
-    </li>
-    <li>
-      <strong>Privacyrisico's:</strong>De meeste bestaande tools om deze
-      digitale zegels te controleren, draaien op de infrastructuur van grote
-      commerciële techbedrijven zoals Adobe en Microsoft, die deel van hun
-      inkomsten genereren met het verkopen van gebruikersgegevens. Deze systemen
-      kunnen surf- en kijkgedrag bijhouden om profielen van gebruikers op te
-      stellen. Wij geloven dat burgers de echtheid van media moeten kunnen
-      controleren zonder dat zij hiervoor met hun privacy hoeven te 'betalen'.
-    </li>
-    <li>
-      <strong>Vereist vertrouwen in Amerikaanse bedrijven:</strong>Net als een
-      lakzegel moet je vertrouwen hebben in maker van de zegel. Bij C2PA worden
-      deze certificaten uitgeven door het C2PA-consortium dat gedomineerd wordt
-      door Amerikaanse big-tech.
-    </li>
-  </ul>
-
-  <p>
-    Om deze kwetsbaarheden op te lossen, hebben
-    <a
-      href="https://mediacampus.nl/"
-      title="Media Campus Nederland"
-      class="underline"
-      target="_blank"
-      >Media Campus NL</a
-    >, de
-    <a
-      href="https://www.vpro.nl/"
-      title="VPRO"
-      class="underline"
-      target="_blank"
-      >VRPO</a
+<div
+  class="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-12 text-base leading-8 text-slate-700 sm:px-8 sm:py-16"
+>
+  <section class="max-w-3xl border-b border-slate-200 pb-10">
+    <h1
+      class="max-w-2xl text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl"
     >
-    en
-    <a
-      href="https://dawn.tech/"
-      title="Dawn Technology"
-      class="underline"
-      target="_blank"
-      >Dawn Technology</a
-    >
-    – met steun van het
-    <a
-      href="https://www.sidnfonds.nl/"
-      title="SIDN Fonds"
-      class="underline"
-      target="_blank"
-      >SIDN Fonds</a
-    >
-    – een Nederlandse implementatie ontwikkeld.
-  </p>
+      Hoe werkt Verifieer Mij?
+    </h1>
+    <p class="mt-6 text-lg leading-8 text-slate-800">
+      Met deze website controleer je of een mediabestand Content Credentials
+      bevat. Deze gegevens kunnen informatie geven over de herkomst, bewerkingen
+      en betrokken personen of organisaties. De controle is gebaseerd op de open
+      C2PA-standaard en CAWG Identity.
+    </p>
+  </section>
 
-  <p>Verifieer Mij voegt twee essentiële bouwstenen toe aan de technologie:</p>
+  <section class="border-b border-slate-200 py-10">
+    <div class="max-w-3xl">
+      <h2 class="text-2xl font-bold tracking-tight text-slate-950">
+        Een bestand controleren
+      </h2>
 
-  <ul class="list-disc ps-7">
-    <li>
-      <strong>Koppelen aan een echte Digitale Identiteit:</strong>Wij maken het
-      mogelijk om C2PA-zegels te koppelen aan een verifieerbare digitale
-      identiteit. In deze tool controleren we ook op de aanwezigheid hiervan.
-      Hierdoor weet je als mediaconsument zeker welke instantie of redacteur het
-      zegel heeft geplaatst.
-    </li>
-    <li>
-      <strong>Onafhankelijke en privacyvriendelijke controle:</strong>Verifieer
-      Mij is een onafhankelijke, publiek-gecontroleerde validatieservice. Hier
-      kun je veilig documenten en media controleren, zonder dat jouw gegevens
-      naar de servers van Big Tech lekken. Wij houden geen statistieken bij over
-      wat je verifieert.
-    </li>
-    <li>
-      <strong>Ruimte voor eigen, externe certificaten:</strong>Verifieer Mij
-      vertrouwt de standaard C2PA-certificaten, maar schept ook de mogelijkheid
-      om externe certificaten te vertrouwen. Hierdoor zijn we niet uitsluitend
-      afhankelijk van de Amerikaanse techgiganten en behouden we onze digitale
-      soevereiniteit.
-    </li>
-  </ul>
-</section>
+      <ol
+        class="mt-6 list-decimal space-y-6 pl-6 text-slate-700 marker:font-semibold marker:text-slate-950"
+      >
+        <li class="pl-2">
+          <h3 class="font-semibold text-slate-950">Selecteer een bestand</h3>
+          <p class="mt-1 leading-7">
+            Sleep een ondersteund mediabestand naar het uploadvlak of kies een
+            bestand vanaf je apparaat.
+          </p>
+        </li>
+        <li class="pl-2">
+          <h3 class="font-semibold text-slate-950">
+            Wacht op de technische controle
+          </h3>
+          <p class="mt-1 leading-7">
+            De applicatie zoekt naar een C2PA-manifest en controleert onder
+            andere de cryptografische handtekening, de koppeling met het
+            bestand, de certificaatketen en aanwezige CAWG Identity Assertions.
+          </p>
+        </li>
+        <li class="pl-2">
+          <h3 class="font-semibold text-slate-950">Bekijk het resultaat</h3>
+          <p class="mt-1 leading-7">
+            Wanneer Content Credentials aanwezig zijn, toont de website de
+            beschikbare herkomstinformatie, validatiestatus, versiegeschiedenis
+            en eventuele identiteitsgegevens.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="border-b border-slate-200 py-10">
+    <div class="max-w-3xl">
+      <h2 class="text-2xl font-bold tracking-tight text-slate-950">
+        Wat wordt er gecontroleerd?
+      </h2>
+
+      <div class="mt-8 space-y-8">
+        <article>
+          <h3 class="text-lg font-semibold text-slate-950">
+            C2PA Content Credentials
+          </h3>
+          <p class="mt-2 leading-7 text-slate-700">
+            Een C2PA-manifest bevat cryptografisch gekoppelde informatie over
+            een mediabestand. Het kan bijvoorbeeld beschrijven met welke
+            toepassing het bestand is gemaakt, welke bewerkingen zijn vastgelegd
+            en welke eerdere versies als bron zijn gebruikt. De validatie
+            controleert of het manifest en de bijbehorende gegevens technisch
+            intact zijn.
+          </p>
+        </article>
+
+        <article>
+          <h3 class="text-lg font-semibold text-slate-950">CAWG Identity</h3>
+          <p class="mt-2 leading-7 text-slate-700">
+            CAWG Identity vult de herkomstinformatie aan met een verifieerbare
+            verklaring over wie bij een bestand betrokken was. Een Identity
+            Assertion kan aantonen dat de ondertekenaar controle had over een
+            digitale identiteit en kan de rol van een persoon of organisatie in
+            de levenscyclus van het bestand vastleggen.
+          </p>
+          <p class="mt-3 leading-7 text-slate-700">
+            Wanneer een CAWG Identity Assertion aanwezig is, controleert de
+            website of deze technisch aan de Content Credential is gekoppeld en
+            of het gebruikte identiteitsbewijs geldig is binnen het gehanteerde
+            vertrouwensmodel.
+          </p>
+        </article>
+
+        <article>
+          <h3 class="text-lg font-semibold text-slate-950">
+            Certificaten en vertrouwen
+          </h3>
+          <p class="mt-2 leading-7 text-slate-700">
+            Cryptografische handtekeningen worden beoordeeld aan de hand van
+            certificaatketens en een geconfigureerde trust list. Zo kan de
+            applicatie controleren of een ondertekenaar binnen dit
+            vertrouwensmodel als betrouwbaar is aangemerkt.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-b border-slate-200 py-10">
+    <div class="max-w-3xl">
+      <h2 class="text-2xl font-bold tracking-tight text-slate-950">
+        De resultaten begrijpen
+      </h2>
+
+      <dl class="mt-6 divide-y divide-slate-200 border-y border-slate-200">
+        <div class="py-5 sm:grid sm:grid-cols-3 sm:gap-6">
+          <dt class="font-semibold text-slate-950">Geldig</dt>
+          <dd class="mt-2 leading-7 text-slate-700 sm:col-span-2 sm:mt-0">
+            De aanwezige Content Credentials hebben de uitgevoerde technische
+            controles doorstaan. Dit zegt iets over integriteit en herkomst,
+            niet automatisch over de waarheid van de inhoud.
+          </dd>
+        </div>
+
+        <div class="py-5 sm:grid sm:grid-cols-3 sm:gap-6">
+          <dt class="font-semibold text-slate-950">Waarschuwing</dt>
+          <dd class="mt-2 leading-7 text-slate-700 sm:col-span-2 sm:mt-0">
+            Een controle kon niet volledig worden uitgevoerd of een onderdeel
+            voldoet niet aan de verwachte validatieregels. Bekijk de details om
+            te zien welke controle een waarschuwing opleverde.
+          </dd>
+        </div>
+
+        <div class="py-5 sm:grid sm:grid-cols-3 sm:gap-6">
+          <dt class="font-semibold text-slate-950">Geen Content Credentials</dt>
+          <dd class="mt-2 leading-7 text-slate-700 sm:col-span-2 sm:mt-0">
+            Het bestand bevat geen leesbaar C2PA-manifest. Dat betekent niet dat
+            het bestand onbetrouwbaar of gemanipuleerd is; er is alleen geen
+            verifieerbare herkomstinformatie beschikbaar via C2PA.
+          </dd>
+        </div>
+
+        <div class="py-5 sm:grid sm:grid-cols-3 sm:gap-6">
+          <dt class="font-semibold text-slate-950">Identiteit gevonden</dt>
+          <dd class="mt-2 leading-7 text-slate-700 sm:col-span-2 sm:mt-0">
+            Het manifest bevat een CAWG Identity Assertion. De website toont de
+            beschikbare identiteit, rol en validatiestatus voor zover deze
+            informatie in het bestand is opgenomen.
+          </dd>
+        </div>
+      </dl>
+
+      <div class="mt-6 border-l-4 border-slate-950 bg-slate-50 px-5 py-4">
+        <h3 class="font-semibold text-slate-950">Belangrijk om te weten</h3>
+        <p class="mt-2 leading-7 text-slate-700">
+          C2PA en CAWG maken informatie controleerbaar, maar bepalen niet of een
+          foto, video of verklaring inhoudelijk waar is. Gebruik de resultaten
+          als aanvullende broninformatie en beoordeel ook de context waarin het
+          bestand wordt gebruikt.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-10">
+    <div class="max-w-3xl">
+      <h2 class="text-2xl font-bold tracking-tight text-slate-950">
+        Technische implementatie en open source
+      </h2>
+      <p class="mt-4 leading-7 text-slate-700">
+        De verificatie wordt uitgevoerd met onze custom C2PA SDK in TypeScript.
+        Deze SDK ondersteunt het lezen en valideren van C2PA-manifests en is
+        uitgebreid met ondersteuning voor CAWG en validatie van
+        certificaatketens.
+      </p>
+
+      <div class="mt-6 grid gap-4 sm:grid-cols-2">
+        <a
+          href="https://github.com/Dawn-Technology/c2pa-ts/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="block rounded-md border border-slate-300 p-5 transition hover:border-slate-500 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2"
+        >
+          <h3 class="font-semibold text-slate-950">Custom C2PA SDK</h3>
+          <p class="mt-2 break-words font-mono text-sm text-slate-600">
+            github.com/Dawn-Technology/c2pa-ts
+          </p>
+        </a>
+
+        <a
+          href="https://github.com/Dawn-Technology/c2pa-mcnl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="block rounded-md border border-slate-300 p-5 transition hover:border-slate-500 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2"
+        >
+          <h3 class="font-semibold text-slate-950">Volledige codebase</h3>
+          <p class="mt-2 break-words font-mono text-sm text-slate-600">
+            github.com/Dawn-Technology/c2pa-mcnl
+          </p>
+        </a>
+      </div>
+
+      <p class="mt-6 leading-7 text-slate-700">
+        De volledige applicatie is open source. Daardoor is inzichtelijk hoe
+        bestanden worden verwerkt, welke controles worden uitgevoerd en hoe de
+        resultaten worden weergegeven. Bijdragen en technische feedback kunnen
+        via GitHub worden gedeeld.
+      </p>
+
+      <p class="mt-4 text-sm leading-6 text-slate-600">
+        Meer informatie over de Identity Assertion is beschikbaar in de
+        <a
+          href="https://cawg.io/specs/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-medium text-slate-950 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-950"
+        >
+          technische specificaties van CAWG </a
+        >.
+      </p>
+    </div>
+  </section>
+</div>
