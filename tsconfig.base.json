@@ -84,6 +84,15 @@
       ],
       "@c2pa-mcnl/verify-webapp/shared/environments": [
         "./libs/verify-webapp/shared/environments/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/shared/ui/layout-footer": [
+        "./libs/verify-webapp/shared/ui/layout-footer/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/feature/about": [
+        "./libs/verify-webapp/validate/feature/about/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/validate/feature/why": [
+        "./libs/verify-webapp/validate/feature/why/src/index.ts"
       ]
     }
   },

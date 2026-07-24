@@ -1,29 +1,44 @@
 name: Deploy Website
 
 on:
-  push:
-    branches:
-      - prod
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: false
+        default: 'main'
+        type: choice
+        options:
+          - main
+          - prod
 
 permissions:
   actions: read
   contents: read
   packages: read
-  
+  deployments: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.VERIFY_WEBAPP_URL }}
+
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.branch }}
 
-      - uses: pnpm/action-setup@v4
-      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version-file: .nvmrc
           cache: 'pnpm'
           registry-url: https://npm.pkg.github.com
           scope: '@dawn-technology'
@@ -32,7 +47,7 @@ jobs:
         run: pnpm install --frozen-lockfile
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Build Angular app
         run: npx nx build verify-webapp --configuration=production
 
