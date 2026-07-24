@@ -36,6 +36,11 @@ import {
   toHexSnippet,
 } from '@c2pa-mcnl/shared/utils/helpers';
 import {
+  formatFileDateForLocale,
+  getOrderedIngredients,
+  resolveIngredientPreviewDataUrl,
+} from '@c2pa-mcnl/verify-webapp/shared/utils/helpers';
+import {
   identitySortOrder,
   readableIdentityRoleMap,
   readableVerificationMethodMap,
@@ -66,6 +71,14 @@ type VerifyStoreState = {
   error?: unknown;
 };
 
+type VerifyIngredientCard = {
+  id: string;
+  fileName: string;
+  mimeType: string | null;
+  fileUrl: string | null;
+  subText: string;
+};
+
 const initialState: VerifyStoreState = {
   isLoading: false,
   file: null,
@@ -87,13 +100,61 @@ export const VerifyStore = signalStore(
     ) => ({
       hasFile: computed(() => !!file()),
       hasManifests: computed(() => manifestStore()?.manifests.length),
-      fileDate: computed(() => {
-        const lastModified = file()?.lastModified;
-        if (!lastModified) {
-          return '—';
+      activeManifestDisplayTitle: computed(() => {
+        const manifest = activeManifest();
+        const manifests = manifestStore()?.manifests ?? [];
+        const latestManifest = manifests[manifests.length - 1] ?? null;
+        const isLatestManifest =
+          !!manifest && !!latestManifest && manifest === latestManifest;
+
+        if (isLatestManifest) {
+          return file()?.name || '—';
         }
 
-        return formatDate(lastModified, 'dd MMMM yyyy', localeId);
+        const ingredients = getOrderedIngredients(manifest);
+
+        const preferredTitle = ingredients.find((ingredient) =>
+          ingredient.title?.trim(),
+        )?.title;
+
+        return preferredTitle?.trim() || file()?.name || '—';
+      }),
+      fileDate: computed(() => {
+        return formatFileDateForLocale(file(), localeId);
+      }),
+      activeManifestIngredientCards: computed<VerifyIngredientCard[]>(() => {
+        const manifest = activeManifest();
+        if (!manifest) {
+          return [];
+        }
+
+        const ingredients = getOrderedIngredients(manifest);
+        const uploadedFile = file();
+        const fileDateText = formatFileDateForLocale(
+          uploadedFile,
+          localeId,
+          '',
+        );
+
+        return ingredients.map((ingredient, index) => {
+          const fileName =
+            ingredient.title?.trim() ||
+            ingredient.instanceID?.trim() ||
+            ingredient.label ||
+            uploadedFile?.name ||
+            '—';
+
+          return {
+            id:
+              ingredient.instanceID?.trim() ||
+              ingredient.fullLabel ||
+              `${ingredient.relationship ?? 'ingredient'}-${index}`,
+            fileName,
+            mimeType: ingredient.format ?? null,
+            fileUrl: resolveIngredientPreviewDataUrl(manifest, ingredient),
+            subText: fileDateText,
+          };
+        });
       }),
       manifestsReversed: computed(() =>
         [...(manifestStore()?.manifests ?? [])].reverse(),
@@ -308,7 +369,8 @@ export const VerifyStore = signalStore(
             activeManifest = manifestStore.getActiveManifest();
           }
 
-          console.log(manifestValidationResults);
+          console.debug(manifestValidationResults);
+
           patchState(store, () => ({
             isLoading: false,
             asset,

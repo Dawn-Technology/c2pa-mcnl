@@ -76,8 +76,11 @@
       "@c2pa-mcnl/verify-webapp/validate/ui/validation-badge": [
         "libs/verify-webapp/validate/ui/validation-badge/src/index.ts"
       ],
-      "@c2pa-mcnl/verify-webapp/shared/utils/helpers": [
+      "@c2pa-mcnl/signing-webapp/shared/utils/helpers": [
         "libs/signing-webapp/shared/utils/helpers/src/index.ts"
+      ],
+      "@c2pa-mcnl/verify-webapp/shared/utils/helpers": [
+        "libs/verify-webapp/shared/utils/helpers/src/index.ts"
       ],
       "@c2pa-mcnl/verify-webapp/shared/environments": [
         "./libs/verify-webapp/shared/environments/src/index.ts"

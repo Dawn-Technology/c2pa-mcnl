@@ -1,7 +1,7 @@
 <div class="bg-white p-12 flex flex-col gap-6 h-full">
   @if (store.hasManifests()) {
     <div>
-      <h2 class="font-extrabold">{{ store.file()?.name }}</h2>
+      <h2 class="font-extrabold">{{ store.activeManifestDisplayTitle() }}</h2>
       <p class="text-sm">
         Uitgegeven door {{ store.activeManifestSubjectOrganization() }}
       </p>
@@ -164,12 +164,26 @@
 
       <div>
         <h4 class="text-sm font-bold mb-2">Bestandsdelen</h4>
-        <lib-verify-webapp-validate-ui-file-card
-          [fileUrl]="store.fileDataUrl()"
-          [fileName]="store.file()?.name!"
-          [mimeType]="store.file()?.type ?? null"
-          [subText]="store.fileDate()"
-        />
+        @let ingredients = store.activeManifestIngredientCards();
+        @if (ingredients.length > 0) {
+          <div class="flex flex-col gap-2">
+            @for (ingredient of ingredients; track ingredient.id) {
+              <lib-verify-webapp-validate-ui-file-card
+                [fileUrl]="ingredient.fileUrl"
+                [fileName]="ingredient.fileName"
+                [mimeType]="ingredient.mimeType"
+                [subText]="ingredient.subText"
+              />
+            }
+          </div>
+        } @else {
+          <lib-verify-webapp-validate-ui-file-card
+            [fileUrl]="store.fileDataUrl()"
+            [fileName]="store.file()?.name!"
+            [mimeType]="store.file()?.type ?? null"
+            [subText]="store.fileDate()"
+          />
+        }
       </div>
 
       <div>

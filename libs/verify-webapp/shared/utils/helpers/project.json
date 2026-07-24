@@ -1,0 +1,12 @@
+{
+  "name": "verify-webapp-shared-utils-helpers",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/verify-webapp/shared/utils/helpers/src",
+  "projectType": "library",
+  "tags": ["scope:verify-webapp", "type:util"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
