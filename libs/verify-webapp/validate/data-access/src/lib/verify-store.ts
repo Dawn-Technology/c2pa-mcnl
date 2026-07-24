@@ -308,6 +308,7 @@ export const VerifyStore = signalStore(
             activeManifest = manifestStore.getActiveManifest();
           }
 
+          console.log(manifestValidationResults);
           patchState(store, () => ({
             isLoading: false,
             asset,
