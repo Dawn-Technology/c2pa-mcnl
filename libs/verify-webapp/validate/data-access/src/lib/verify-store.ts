@@ -8,6 +8,7 @@ import {
 import { computed, inject, LOCALE_ID } from '@angular/core';
 import {
   ActionAssertion,
+  DigitalSourceType,
   Manifest,
   ManifestStore,
   MetadataAssertion,
@@ -242,6 +243,21 @@ export const VerifyStore = signalStore(
           );
         },
       ),
+      activeManifestIsAiGenerated: computed(() => {
+        console.log(activeManifest());
+        return activeManifest()
+          ?.assertions?.getActionAssertions()
+          ?.some((actionAssertion) =>
+            actionAssertion.actions?.some((action) =>
+              [
+                DigitalSourceType.TrainedAlgorithmicMedia,
+                DigitalSourceType.CompositeWithTrainedAlgorithmicMedia,
+              ].includes(
+                action.digitalSourceType || DigitalSourceType.DigitalArt,
+              ),
+            ),
+          );
+      }),
       activeManifestIssuer: computed(() => {
         const claim = activeManifest()?.claim;
         if (!claim?.claimGeneratorName) {
