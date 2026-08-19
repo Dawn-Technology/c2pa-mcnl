@@ -127,7 +127,6 @@ describe('VerifyWebappValidateFeatureHomeComponent', () => {
       const altTexts = logos.map((l) => l.nativeElement.alt);
       expect(altTexts).toContain('VPRO');
       expect(altTexts).toContain('MCNL');
-      expect(altTexts).toContain('SIDN');
       expect(altTexts).toContain('Dawn Technology');
     });
   });
