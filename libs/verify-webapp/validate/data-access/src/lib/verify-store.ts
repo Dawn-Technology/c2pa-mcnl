@@ -146,10 +146,12 @@ export const VerifyStore = signalStore(
             '—';
 
           return {
-            id:
+            id: `${
               ingredient.instanceID?.trim() ||
               ingredient.fullLabel ||
-              `${ingredient.relationship ?? 'ingredient'}-${index}`,
+              ingredient.relationship ||
+              'ingredient'
+            }-${index}`,
             fileName,
             mimeType: ingredient.format ?? null,
             fileUrl: resolveIngredientPreviewDataUrl(manifest, ingredient),
@@ -244,7 +246,7 @@ export const VerifyStore = signalStore(
         },
       ),
       activeManifestIsAiGenerated: computed(() => {
-        console.log(activeManifest());
+        console.debug(activeManifest());
         return activeManifest()
           ?.assertions?.getActionAssertions()
           ?.some((actionAssertion) =>

@@ -50,6 +50,7 @@ export type ManifestValidationState = 'valid' | 'invalid' | 'untrusted';
 const untrustedManifestStatusCodes = new Set<ValidationStatusCode>([
   ValidationStatusCode.SigningCredentialUntrusted,
   ValidationStatusCode.TimeStampUntrusted,
+  ValidationStatusCode.IcaUntrustedIssuer,
 ]);
 
 export function getManifestValidationState(
@@ -246,7 +247,7 @@ export function statusForIdentity(
   if (firstInvalidCode) {
     return {
       state: 'invalid',
-      label: 'Verificatie mislukt',
+      label: 'Ongeldig',
       detail: readableStatusDetail(firstInvalidCode),
     };
   }
@@ -264,7 +265,7 @@ export function statusForIdentity(
   );
   return {
     state: 'warning',
-    label: 'Niet geverifieerd',
+    label: 'Niet vertrouwd',
     detail: firstWarningCode
       ? readableStatusDetail(firstWarningCode)
       : 'Geen vertrouwde identiteit gevonden voor deze assertion.',
