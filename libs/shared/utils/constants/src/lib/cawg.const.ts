@@ -45,15 +45,7 @@ export const readableReferencedAssertionMap: Record<string, string> = {
 };
 
 export const identityWarningCodes = new Set<ValidationStatusCode>([
-  ValidationStatusCode.WellFormed,
   ValidationStatusCode.IcaUntrustedIssuer,
-  ValidationStatusCode.IcaDidUnavailable,
-  ValidationStatusCode.IcaDidUnsupportedMethod,
-  ValidationStatusCode.IcaRevocationUnavailable,
-  ValidationStatusCode.IcaRevocationUnsupported,
-  ValidationStatusCode.IcaValidFromMissing,
-  ValidationStatusCode.IcaValidFromInvalid,
-  ValidationStatusCode.IcaValidUntilInvalid,
 ]);
 
 export const identityInvalidCodes = new Set<ValidationStatusCode>([
@@ -82,6 +74,13 @@ export const identityInvalidCodes = new Set<ValidationStatusCode>([
   ValidationStatusCode.IcaSignerPayloadMismatch,
   ValidationStatusCode.IcaVerifiedIdentitiesMissing,
   ValidationStatusCode.IcaVerifiedIdentitiesInvalid,
+  ValidationStatusCode.IcaDidUnavailable,
+  ValidationStatusCode.IcaDidUnsupportedMethod,
+  ValidationStatusCode.IcaRevocationUnavailable,
+  ValidationStatusCode.IcaRevocationUnsupported,
+  ValidationStatusCode.IcaValidFromMissing,
+  ValidationStatusCode.IcaValidFromInvalid,
+  ValidationStatusCode.IcaValidUntilInvalid,
 ]);
 
 export const identityTrustedCodes = new Set<ValidationStatusCode>([

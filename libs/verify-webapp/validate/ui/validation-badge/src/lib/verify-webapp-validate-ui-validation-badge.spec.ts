@@ -30,10 +30,10 @@ describe('VerifyWebappValidateUiValidationBadge', () => {
 
   it('should render invalid state text', () => {
     fixture.componentRef.setInput('state', 'invalid');
-    fixture.componentRef.setInput('textInvalid', 'Gemanipuleerd');
+    fixture.componentRef.setInput('textInvalid', 'Ongeldig');
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Gemanipuleerd');
+    expect(fixture.nativeElement.textContent).toContain('Ongeldig');
   });
 
   it('should render untrusted state text', () => {

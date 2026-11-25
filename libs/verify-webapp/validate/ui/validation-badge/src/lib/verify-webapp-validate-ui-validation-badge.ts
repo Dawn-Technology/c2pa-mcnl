@@ -10,7 +10,7 @@ export type ValidationBadgeState = 'valid' | 'invalid' | 'untrusted';
 export class VerifyWebappValidateUiValidationBadge {
   state = input.required<ValidationBadgeState>();
   textValid = input<string>('');
-  textInvalid = input('Gemanipuleerd');
+  textInvalid = input('Ongeldig');
   textUntrusted = input('Niet vertrouwd');
 
   statusLabel(): string {
